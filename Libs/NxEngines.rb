@@ -1,5 +1,7 @@
-# An engine represent a requirement to do something a certain number of hours 
+# An engine represents a requirement to do something a certain number of hours 
 # per day or per week
+
+# A project is a task with an engine
 
 class NxEngines
 
@@ -68,32 +70,9 @@ class NxEngines
         timespan
     end
 
-    # NxEngines::engined()
-    def self.engined()
-        Items::items().select{|item| item["engine-1437"] }
-    end
-
-    # NxEngines::listingItems()
-    def self.listingItems()
-        # Version 1
-        # NxEngines::engined().select{|item| NxEngines::ratio(item) < 1 }.sort_by{|item| NxEngines::ratio(item) }
-
-        # Version 2
-        NxEngines::engined().each{|item|
-            needed = NxEngines::missing_timespan_for_today(item) -  NxEngineDelegate::total_capacity_for_targetuuid(item["uuid"])
-            next if needed <= 0
-            5.times {
-                capacity = needed.to_f/5
-                puts "issuing delegate for #{PolyFunctions::toString(item)}, capacity: #{capacity}".yellow
-                NxEngineDelegate::issue(item["uuid"], capacity)
-            }
-        }
-        []
-    end
-
     # NxEngines::interactivelySelectEnginedOrNull()
     def self.interactivelySelectEnginedOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("engined", NxEngines::engined(), lambda{|item| PolyFunctions::toString(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("engined", Projects::projects(), lambda{|item| PolyFunctions::toString(item) })
     end
 
     # NxEngines::engineToString(item)

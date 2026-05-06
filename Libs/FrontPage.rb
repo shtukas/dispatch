@@ -107,7 +107,7 @@ class FrontPage
             NxOndates::listingItemsTodayAbsolute(),
             NxBackups::listingItems(),
             NxEngineDelegate::listingItems(),
-            NxEngines::listingItems(),
+            Projects::listingItems(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
