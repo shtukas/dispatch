@@ -146,6 +146,7 @@ require_relative "Fsck.rb"
 require_relative "FrontPage.rb"
 
 require_relative "Galaxy.rb"
+require_relative "GlobalPositioning.rb"
 
 require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"

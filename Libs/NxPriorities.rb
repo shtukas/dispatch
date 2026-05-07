@@ -22,6 +22,7 @@ class NxPriorities
 
     # NxPriorities::listingItems()
     def self.listingItems()
-        Items::mikuType("NxPriority").sort_by{|item| item["unixtime"] }.reverse
+        Items::mikuType("NxPriority")
+            .sort_by{|item| item["global-pos-07"] || 0 }
     end
 end

@@ -138,6 +138,7 @@ class CommandsAndInterpreters
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             puts JSON.pretty_generate(item)
+            Cliques::setCliqueAttempt(item)
             return
         end
 
@@ -162,7 +163,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::program3(lambda { 
-                Projects::projects()
+                Projects::projects().sort_by{|item| item["global-pos-07"] || 0 }
             })
             return
         end

@@ -24,4 +24,11 @@ class Cliques
         return cliquename if cliquename != ""
         nil
     end
+
+    # Cliques::setCliqueAttempt(item)
+    def self.setCliqueAttempt(item)
+        cliquename = Cliques::architectCliqueNameOrNull()
+        return if cliquename.nil?
+        Cliques::setClique(item, cliquename)
+    end
 end

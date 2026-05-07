@@ -50,7 +50,7 @@ class NxTasks
         items = Items::mikuType("NxTask")
                     .select{|item| item["engine-1437"].nil? }
                     .select{|item| item["clique-13"].nil? }
-                    .sort_by{|item| item["unixtime"] }
+                    .sort_by{|item| item["global-pos-07"] || 0 }
                     .take(30)
         XCache::set("1c4e4f1a-b032-48d5-9e3c-b14c56bfc20a:#{cursor}", JSON.generate(items.map{|item| item["uuid"] }))
         items
