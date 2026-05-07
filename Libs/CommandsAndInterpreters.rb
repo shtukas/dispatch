@@ -6,6 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | project *",
+            "sorting       : priorities sort",
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | project",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | projects | delegates | cliques",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -270,6 +271,16 @@ class CommandsAndInterpreters
             Items::setAttribute(uuid, "today-absolute", CommonUtils::today())
             item = Items::itemOrNull(uuid)
             puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("priorities sort", input) then
+            items = NxPriorities::itemsInGlobalPositioningOrder()
+            selected, _ = LucilleCore::selectZeroOrMore("priorities", [], items, lambda {|item| PolyFunctions::toString(item) })
+            selected.reverse.each{|item|
+                GlobalPositioning::insert_first(item)
+            }
+
             return
         end
 

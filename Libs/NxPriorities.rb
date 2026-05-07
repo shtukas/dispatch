@@ -20,9 +20,14 @@ class NxPriorities
         "🔥 #{item["description"]}"
     end
 
-    # NxPriorities::listingItems()
-    def self.listingItems()
+    # NxPriorities::itemsInGlobalPositioningOrder()
+    def self.itemsInGlobalPositioningOrder()
         Items::mikuType("NxPriority")
             .sort_by{|item| item["global-pos-07"] || 0 }
+    end
+
+    # NxPriorities::listingItems()
+    def self.listingItems()
+        NxPriorities::itemsInGlobalPositioningOrder()
     end
 end
