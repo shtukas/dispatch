@@ -51,11 +51,19 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxPriority" then
+            if item["targetuuid"] then
+                target = Items::itemOrNull(item["targetuuid"])
+                PolyActions::done(target)
+            end
             Items::deleteItem(item["uuid"])
             return
         end
 
         if item["mikuType"] == "NxNotification" then
+            if item["targetuuid"] then
+                target = Items::itemOrNull(item["targetuuid"])
+                PolyActions::done(target)
+            end
             Items::deleteItem(item["uuid"])
             return
         end
@@ -186,9 +194,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxPriority" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
+            if item["targetuuid"] then
+                target = Items::itemOrNull(item["targetuuid"])
+                PolyActions::destroy(target)
             end
+            Items::deleteItem(item["uuid"])
             return
         end
 
@@ -231,6 +241,9 @@ class PolyActions
     # PolyActions::editDescription(item) # item
     def self.editDescription(item)
         if item["mikuType"] == "NxEngineDelegate" then
+            return
+        end
+        if item["mikuType"] == "NxPriority" and item["targetuuid"] then
             return
         end
         puts "edit description:"

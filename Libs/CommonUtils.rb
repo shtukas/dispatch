@@ -343,7 +343,7 @@ class CommonUtils
     # CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
     def self.interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
         days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-        CommonUtils::selectZeroOrMore(days)
+        CommonUtils::selectZeroOrMore1(days)
     end
 
     # ----------------------------------------------------
@@ -685,8 +685,8 @@ class CommonUtils
         raise "CommonUtils::computeThatPosition failed: positions: #{positions.join(", ")}"
     end
 
-    # CommonUtils::selectZeroOrMore(items, printLambda = lambda {|item| item })
-    def self.selectZeroOrMore(items, printLambda = lambda {|item| item })
+    # CommonUtils::selectZeroOrMore1(items, printLambda = lambda {|item| item })
+    def self.selectZeroOrMore1(items, printLambda = lambda {|item| item })
         puts "select zero or more (sort):"
         items.each_with_index{|item, i|
             puts "    [#{(i+1).to_s.rjust(2)}] #{printLambda.call(item)}"

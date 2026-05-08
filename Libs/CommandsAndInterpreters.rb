@@ -5,8 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | project *",
-            "sorting       : priorities sort",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | project * | :: * (prioritise)",
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | project",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | projects | delegates | cliques",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -84,6 +83,16 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmute::transmute(item)
+            return
+        end
+
+        if Interpreting::match(":: *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            item = NxPriorities::prioritise(item)
+            puts JSON.pretty_generate(item)
+            GlobalPositioning::insert_last(item)
             return
         end
 
@@ -215,13 +224,11 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("cliques", input) then
-            cliquename = Cliques::interactivelySelectCliqueNameOrNull()
-            return if cliquename.nil?
-            Operations::program3(lambda { 
-                Items::mikuType("NxTask")
-                    .select{|item| item["engine-1437"].nil? }
-                    .select{|item| item["clique-13"] == cliquename }
-            })
+            loop {
+                cliquename = Cliques::interactivelySelectCliqueNameOrNull()
+                return if cliquename.nil?
+                Cliques::dive(cliquename)
+            }
             return
         end
 
@@ -274,20 +281,20 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("priorities sort", input) then
-            items = NxPriorities::itemsInGlobalPositioningOrder()
-            selected, _ = LucilleCore::selectZeroOrMore("priorities", [], items, lambda {|item| PolyFunctions::toString(item) })
-            selected.reverse.each{|item|
-                GlobalPositioning::insert_first(item)
-            }
-
-            return
-        end
-
         if Interpreting::match("todays", input) then
             Operations::program3(lambda { 
                 Items::mikuType("NxOndate").select{|item| item["date"] <= CommonUtils::today() }
             })
+            return
+        end
+
+        if Interpreting::match("sort", input) then
+            items = store.items()
+            selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda {|item| PolyFunctions::toString(item) })
+            selected = selected.map{|item| NxPriorities::prioritiseIfNotPriorityOrIdentity(item) }
+            selected.reverse.each{|item|
+                GlobalPositioning::insert_first(item)
+            }
             return
         end
 

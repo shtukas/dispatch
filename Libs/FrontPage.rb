@@ -155,6 +155,10 @@ class FrontPage
 
         items = CommonUtils::removeDuplicateObjectsOnAttribute(NxPriorities::listingItems() + NxBalls::activeItems() + Dispatch::dispatch(FrontPage::head(), [], FrontPage::today(), FrontPage::tail()), "uuid")
 
+        priorities_target_uuids = Items::mikuType("NxPriority").map{|item| item["targetuuid"]}.collect
+
+        items = items.select{|item| !priorities_target_uuids.include?(item["uuid"]) }
+
         if Config::isPrimaryInstance() then
             report = `#{Config::pathToGalaxy()}/DataBank/Palmer/binary/palmer print-dispatch-missing-report`.strip
             if report != "" then

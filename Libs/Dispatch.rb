@@ -33,6 +33,12 @@ class Dispatch
             return 0
         end
 
+        if item["mikuType"] == "NxPriority" and item["targetuuid"] then
+            target = Items::itemOrNull(item["targetuuid"])
+            return 0 if target.nil?
+            return Dispatch::item_to_timespan(target)
+        end
+
         if item["dispatch:timespan"] then
             return item["dispatch:timespan"]
         end
