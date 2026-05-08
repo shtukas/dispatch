@@ -52,7 +52,7 @@ class Cliques
             return if input == ""
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda {|item| PolyFunctions::toString(item) })
+                selected = CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
                     GlobalPositioning::insert_first(item)
                 }

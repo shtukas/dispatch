@@ -290,7 +290,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("sort", input) then
             items = store.items()
-            selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda {|item| PolyFunctions::toString(item) })
+            selected = CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
             selected = selected.map{|item| NxPriorities::prioritiseIfNotPriorityOrIdentity(item) }
             selected.reverse.each{|item|
                 GlobalPositioning::insert_first(item)
