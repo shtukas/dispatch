@@ -343,7 +343,7 @@ class CommonUtils
     # CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
     def self.interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
         days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-        CommonUtils::selectZeroOrMore1(days)
+        CommonUtils::selectZeroOrMore(days)
     end
 
     # ----------------------------------------------------
@@ -685,37 +685,53 @@ class CommonUtils
         raise "CommonUtils::computeThatPosition failed: positions: #{positions.join(", ")}"
     end
 
-    # CommonUtils::selectZeroOrMore1(items, printLambda = lambda {|item| item })
-    def self.selectZeroOrMore1(items, printLambda = lambda {|item| item })
+    # CommonUtils::selectZeroOrMore(items, printLambda = lambda {|item| item })
+    def self.selectZeroOrMore(items, printLambda = lambda {|item| item })
         puts "select zero or more (sort):"
-        items.each_with_index{|item, i|
-            puts "    [#{(i+1).to_s.rjust(2)}] #{printLambda.call(item)}"
-        }
-        indices = []
-        loop {
-            indx = LucilleCore::askQuestionAnswerAsString("> ")
-            break if indx == ""
-            if indx == "sort" then
-                i1s, i2s = LucilleCore::selectZeroOrMore("items", [], indices, lambda { |indx| printLambda.call(items[indx]) })
-                indices = i1s + i2s
-                indices.each{|i|
-                    puts "[#{(i+1).to_s.rjust(2)}] #{printLambda.call(items[i])}"
-                }
-                next
-            end
-            indx = indx.to_i - 1
-            if indices.include?(indx) then
-                indices = indices - [indx]
-                indices.each{|i|
-                    puts "[#{(i+1).to_s.rjust(2)}] #{printLambda.call(items[i])}"
-                }
-                next
-            end
-            indices << indx
-            indices.each{|i|
-                puts "[#{(i+1).to_s.rjust(2)}] #{printLambda.call(items[i])}"
+        choices = []
+        items.each_with_index{|item, indx|
+            choices << {
+                "item" => item,
+                "index" => indx + 1,
+                "description" => printLambda.call(item)
             }
         }
-        indices.map{|i| items[i] }
+
+        selected = []
+        unselected = choices
+
+        loop {
+            puts ""
+            puts "unselected:"
+            unselected.each{|choice|
+                puts "#{choice["index"]}: #{choice["description"]}"
+            }
+            puts "selected:"
+            selected.each{|choice|
+                puts "#{choice["index"]}: #{choice["description"]}"
+            }
+            print "> "
+            indx = STDIN.gets().strip
+            if indx == "" then
+                break
+            end
+            if unselected.select{|choice| choice["index"] == indx.to_i }.size > 0 then
+                choice = unselected.select{|choice| choice["index"] == indx.to_i }.first
+                if choice then
+                    selected << choice
+                    unselected = unselected.reject{|choice| choice["index"] == indx.to_i }
+                end
+            else
+                # We assume it might have been a selected
+                # but ifi it was out of bounds that works to as this will have no effect
+                choice = selected.select{|choice| choice["index"] == indx.to_i }.first
+                if choice then
+                    unselected << choice
+                    selected = selected.reject{|choice| choice["index"] == indx.to_i }
+                end
+            end
+        }
+
+        selected.map{|choice| choice["item"] }
     end
 end
