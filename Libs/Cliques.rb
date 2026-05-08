@@ -6,14 +6,19 @@ class Cliques
         Items::setAttribute(item["uuid"], "clique-13", cliquename)
     end
 
+    # Cliques::getCliquenames()
+    def self.getCliquenames()
+        Items::mikuType("NxTask")
+            .select{|item| item["clique-13"] }
+            .map{|item| item["clique-13"] }
+            .compact
+            .uniq
+            .sort
+    end
+
     # Cliques::interactivelySelectCliqueNameOrNull()
     def self.interactivelySelectCliqueNameOrNull()
-        names = Items::mikuType("NxTask")
-                    .select{|item| item["clique-13"] }
-                    .map{|item| item["clique-13"] }
-                    .uniq
-                    .sort
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", names)
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", Cliques::getCliquenames())
     end
 
     # Cliques::architectCliqueNameOrNull()

@@ -685,30 +685,30 @@ class CommonUtils
         raise "CommonUtils::computeThatPosition failed: positions: #{positions.join(", ")}"
     end
 
-    # CommonUtils::selectZeroOrMore(items, printLambda = lambda {|item| item })
-    def self.selectZeroOrMore(items, printLambda = lambda {|item| item })
-        puts "select zero or more (sort):"
+    # CommonUtils::selectZeroOrMore(items, printer = lambda {|item| item })
+    def self.selectZeroOrMore(items, printer = lambda {|item| item })
         choices = []
         items.each_with_index{|item, indx|
             choices << {
                 "item" => item,
                 "index" => indx + 1,
-                "description" => printLambda.call(item)
+                "description" => printer.call(item)
             }
         }
 
         selected = []
         unselected = choices
+        number_padding = items.size.digits.size
 
         loop {
             puts ""
             puts "unselected:"
             unselected.each{|choice|
-                puts "#{choice["index"]}: #{choice["description"]}"
+                puts "#{choice["index"].to_s.ljust(number_padding)}: #{choice["description"]}"
             }
             puts "selected:"
             selected.each{|choice|
-                puts "#{choice["index"]}: #{choice["description"]}"
+                puts "#{choice["index"].to_s.ljust(number_padding)}: #{choice["description"]}"
             }
             print "> "
             indx = STDIN.gets().strip
@@ -719,6 +719,72 @@ class CommonUtils
                 choice = unselected.select{|choice| choice["index"] == indx.to_i }.first
                 if choice then
                     selected << choice
+                    unselected = unselected.reject{|choice| choice["index"] == indx.to_i }
+                end
+            else
+                # We assume it might have been a selected
+                # but ifi it was out of bounds that works to as this will have no effect
+                choice = selected.select{|choice| choice["index"] == indx.to_i }.first
+                if choice then
+                    unselected << choice
+                    selected = selected.reject{|choice| choice["index"] == indx.to_i }
+                end
+            end
+        }
+
+        selected.map{|choice| choice["item"] }
+    end
+
+    # CommonUtils::terminal_move_up_and_clear(n)
+    def self.terminal_move_up_and_clear(n)
+        cursor_up = "\033[1A"
+        erase_line = "\033[K"
+        n.times { print cursor_up + erase_line }
+        $stdout.flush
+    end
+
+    # CommonUtils::selectZeroOrMoreWithSelectionBehavior(items, printer = lambda {|item| item }, selection_behavior = lambda {|item| item })
+    # The selection behavior is a function that take the item and either return the item (possibly edited) or null
+    # It was introduced to for instance actually `done` an item from a list of items I was selecting 
+    # to be prioritised during the day.
+    def self.selectZeroOrMoreWithSelectionBehavior(items, printer = lambda {|item| item }, selection_behavior = lambda {|item| item })
+        choices = []
+        items.each_with_index{|item, indx|
+            choices << {
+                "item" => item,
+                "index" => indx + 1,
+                "description" => printer.call(item)
+            }
+        }
+
+        selected = []
+        unselected = choices
+        number_padding = items.size.digits.size
+
+        loop {
+            puts ""
+            puts "unselected:"
+            unselected.each{|choice|
+                puts "#{choice["index"].to_s.ljust(number_padding)}: #{choice["description"]}"
+            }
+            puts "selected:"
+            selected.each{|choice|
+                puts "#{choice["index"].to_s.ljust(number_padding)}: #{choice["description"]}"
+            }
+            print "> "
+            indx = STDIN.gets().strip
+            if indx == "" then
+                break
+            end
+            if unselected.select{|choice| choice["index"] == indx.to_i }.size > 0 then
+                choice = unselected.select{|choice| choice["index"] == indx.to_i }.first
+                if choice then
+                    # We apply the selection behavior 
+                    item = selection_behavior.call(choice["item"])
+                    if item then
+                        choice["item"] = item # we do this in case the item was updated by the selection behaviour
+                        selected << choice
+                    end
                     unselected = unselected.reject{|choice| choice["index"] == indx.to_i }
                 end
             else

@@ -7,6 +7,10 @@ class Transmute
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Items::itemOrNull(item["uuid"])
         end
+        if item["mikuType"] == "NxOndate" and targetType == "NxPriority" then
+            Items::setAttribute(item["uuid"], "mikuType", "NxPriority")
+            return Items::itemOrNull(item["uuid"])
+        end
         raise "(error a7093fd4-0236) I do not know how to transmute #{item["mikuType"]} to #{targetType}"
     end
 

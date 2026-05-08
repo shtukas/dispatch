@@ -76,6 +76,9 @@ class PolyFunctions
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end
+        if item["mikuType"] == "NxClique" then
+            return item["cliquename"]
+        end
         if item["mikuType"] == "NxEngineDelegate" then
             return NxEngineDelegate::toString(item)
         end

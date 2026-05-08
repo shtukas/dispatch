@@ -121,6 +121,13 @@ class FrontPage
             Waves::listingItemsNonInterruption(),
             BufferIn::listingItems(),
             NxTasks::listingItems(),
+            Cliques::getCliquenames().map{|cliquename|
+                {
+                    "uuid" => Digest::SHA1.hexdigest("8fc72c47:#{cliquename}"),
+                    "mikuType" => "NxClique",
+                    "cliquename" => cliquename
+                }
+            }
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }

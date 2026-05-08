@@ -21,6 +21,9 @@ class PolyActions
             NxCounters::interactivelyIncrement(item)
             return
         end
+        if item["mikuType"] == "NxClique" then
+            return Cliques::dive(item["cliquename"])
+        end
         UxPayloads::access(item["payload-37"])
     end
 
@@ -33,6 +36,10 @@ class PolyActions
     def self.done(item)
         PolyActions::stop(item)
         Items::setAttribute(item["uuid"], "dispatch:position", nil)
+
+        if item["mikuType"] == "NxClique" then
+            return
+        end
 
         if item["mikuType"] == "NxCounter" then
             return
@@ -164,6 +171,10 @@ class PolyActions
     def self.destroy(item)
 
         NxBalls::stop(item)
+
+        if item["mikuType"] == "NxClique" then
+            return
+        end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then

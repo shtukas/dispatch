@@ -33,6 +33,14 @@ class Dispatch
             return 0
         end
 
+        if item["mikuType"] == "NxClique" then
+            return 0
+        end
+
+        if item["mikuType"] == "BufferIn" then
+            return 10
+        end
+
         if item["mikuType"] == "NxPriority" and item["targetuuid"] then
             target = Items::itemOrNull(item["targetuuid"])
             return 0 if target.nil?
@@ -48,7 +56,7 @@ class Dispatch
             if (Time.new.to_i - lastTimeAsked) < 60 then
                 return 300
             end
-            timespan = LucilleCore::askQuestionAnswerAsString("dispatch timespan for #{PolyFunctions::toString(item)} in minutes ? ").to_f
+            timespan = LucilleCore::askQuestionAnswerAsString("dispatch timespan for #{PolyFunctions::toString(item)} in minutes ?").to_f
             timespan = timespan * 60
             Items::setAttribute(item["uuid"], "dispatch:timespan", timespan)
             XCache::set("fd15039e-0c31-4ef6-b558-a8b0e72cde47", Time.new.to_i)
