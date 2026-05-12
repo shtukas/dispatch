@@ -5,9 +5,9 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | project * | :: * (prioritise)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | project",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | projects | delegates | cliques",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | set engine * | :: * (prioritise)",
+            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | task with engine",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | engined | delegates | cliques",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | global-maintenance",
         ].join("\n")
@@ -152,28 +152,27 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("project", input) then
-            puts "projects are tasks with engines"
+        if Interpreting::match("task with engine", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             puts JSON.pretty_generate(item)
             NxEngines::setEngineAttempt(item)
             return
         end
 
-        if Interpreting::match("project *", input) then
-            _, listord = Interpreting::tokenizer(input)
+        if Interpreting::match("set engine *", input) then
+            _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             NxEngines::setEngineAttempt(item)
             return
         end
 
-        if Interpreting::match("projects", input) then
+        if Interpreting::match("engined", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::program3(lambda { 
-                Projects::projects().sort_by{|item| item["global-pos-07"] || 0 }
+                TasksWithEngines::items().sort_by{|item| item["global-pos-07"] || 0 }
             })
             return
         end

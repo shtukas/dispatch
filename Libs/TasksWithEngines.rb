@@ -3,19 +3,19 @@
 
 # A project is a task with an engine
 
-class Projects
-    # Projects::projects()
-    def self.projects()
+class TasksWithEngines
+    # TasksWithEngines::items()
+    def self.items()
         Items::items().select{|item| item["engine-1437"] }
     end
 
-    # Projects::listingItems()
+    # TasksWithEngines::listingItems()
     def self.listingItems()
         # Version 1
-        # Projects::projects().select{|item| NxEngines::ratio(item) < 1 }.sort_by{|item| NxEngines::ratio(item) }
+        # TasksWithEngines::items().select{|item| NxEngines::ratio(item) < 1 }.sort_by{|item| NxEngines::ratio(item) }
 
         # Version 2
-        Projects::projects().each{|item|
+        TasksWithEngines::items().each{|item|
             needed = NxEngines::missing_timespan_for_today(item) -  NxEngineDelegate::total_capacity_for_targetuuid(item["uuid"])
             next if needed <= 0
             5.times {

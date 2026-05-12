@@ -72,7 +72,7 @@ class NxEngines
 
     # NxEngines::interactivelySelectEnginedOrNull()
     def self.interactivelySelectEnginedOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("engined", Projects::projects(), lambda{|item| PolyFunctions::toString(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("engined", TasksWithEngines::items(), lambda{|item| PolyFunctions::toString(item) })
     end
 
     # NxEngines::engineToString(item)
