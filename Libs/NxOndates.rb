@@ -46,10 +46,11 @@ class NxOndates
     def self.listingItemsTodayAbsolute()
         if Config::isPrimaryInstance() then
             if CommonUtils::today() != XCache::getOrNull("e61c25ae-3139-4ad7-8cc4-0b1142d4a6c9") and Time.new.hour >= 6 then
-                puts "daily structuration"
+                puts "ondates daily structuration"
                 items = Items::mikuType("NxOndate").select{|item| item["date"] <= CommonUtils::today() }
                 # We have not yet selected absolutes for today
                 selection_behaviour = lambda {|item|
+                    puts ""
                     option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["transmute to priority item", "today absolute (default)", "today not important", "tomorrow", "ondate", "done"])
                     if option == "transmute to priority item" then
                         Transmute::transmuteTo(item, "NxPriority")

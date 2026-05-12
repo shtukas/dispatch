@@ -90,9 +90,9 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            item = NxPriorities::prioritise(item)
-            puts JSON.pretty_generate(item)
-            GlobalPositioning::insert_last(item)
+            pitem = NxPriorities::prioritise(item)
+            puts JSON.pretty_generate(pitem)
+            GlobalPositioning::insert_last(pitem)
             return
         end
 

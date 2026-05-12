@@ -160,7 +160,7 @@ class FrontPage
 
         store = ItemStore.new()
 
-        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxPriorities::listingItems() + NxBalls::activeItems() + Dispatch::dispatch(FrontPage::head(), [], FrontPage::today(), FrontPage::tail()), "uuid")
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + NxPriorities::listingItems() + Dispatch::dispatch(FrontPage::head(), [], FrontPage::today(), FrontPage::tail()), "uuid")
 
         priorities_target_uuids = Items::mikuType("NxPriority").map{|item| item["targetuuid"]}.collect
 

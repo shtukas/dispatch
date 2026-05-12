@@ -3,7 +3,7 @@ class Dispatch
 
     # Dispatch::deadlineUnixtimeOrNull()
     def self.deadlineUnixtimeOrNull()
-        if Time.new.hour < 10 then
+        if Time.new.hour < 11 then
             return DateTime.parse("#{CommonUtils::today()}T12:00:00Z").to_time.to_i
         end
 
@@ -11,7 +11,7 @@ class Dispatch
             return DateTime.parse("#{CommonUtils::today()}T18:00:00Z").to_time.to_i
         end
 
-        if Time.new.hour >= 22 then
+        if Time.new.hour >= 21 then
             return nil
         end
 
@@ -29,41 +29,17 @@ class Dispatch
             return item["capacity"] - Bank::getValue(item["uuid"])
         end
 
-        if item["mikuType"] == "NxNotification" then
-            return 0
-        end
-
-        if item["mikuType"] == "NxClique" then
-            return 0
-        end
-
-        if item["mikuType"] == "BufferIn" then
-            return 10
-        end
-
         if item["mikuType"] == "NxPriority" and item["targetuuid"] then
             target = Items::itemOrNull(item["targetuuid"])
-            return 0 if target.nil?
-            return Dispatch::item_to_timespan(target)
-        end
-
-        if item["dispatch:timespan"] then
-            return item["dispatch:timespan"]
-        end
-
-        if Config::isPrimaryInstance() then
-            lastTimeAsked = XCache::getOrDefaultValue("fd15039e-0c31-4ef6-b558-a8b0e72cde47", "0").to_i
-            if (Time.new.to_i - lastTimeAsked) < 60 then
-                return 300
+            if target then
+                return Dispatch::item_to_timespan(target)
             end
-            timespan = LucilleCore::askQuestionAnswerAsString("dispatch timespan for #{PolyFunctions::toString(item)} in minutes ?").to_f
-            timespan = timespan * 60
-            Items::setAttribute(item["uuid"], "dispatch:timespan", timespan)
-            XCache::set("fd15039e-0c31-4ef6-b558-a8b0e72cde47", Time.new.to_i)
-            return timespan
         end
 
-        300
+        # There are situations, such as above, where we know the answer, 
+        # but for the rest, we use a blanket 10 minutes duration
+
+        600
     end
 
     # -------------------------------------
@@ -105,26 +81,43 @@ class Dispatch
         # This function return the sequence made using the largest lucky1,
         # makes it so that lucky + today1 meets the next deadline
 
-        timeToDeadlineInSeconds = Dispatch::timeToNextDeadlineInSecondsOrNull()
-        if timeToDeadlineInSeconds.nil? then
-            if today.size > 0 then
-                puts "it's past 10pm and you haven't done a certain amount of todays, let's review and decide to dismiss"
-                today.clone().each {|item|
-                    if LucilleCore::askQuestionAnswerAsBoolean("dismiss '#{PolyFunctions::toString(item)}' ? ") then
-                        Operations::dismiss(item)
-                        today = today.reject{|i| i["uuid"] == item["uuid"] }
-                    end
-                }
-            end
-            return head + lucky1 + today + tail
+        if Time.new.hour >= 22 and today.size > 0 then
+            puts "it's past 10pm and you haven't done a certain amount of todays, let's review and decide to dismiss"
+            today.clone().each {|item|
+                puts PolyFunctions::toString(item).green
+                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["tomorrow (default)", "ondate", "done"])
+                if option.nil? or option == "tomorrow (default)" then
+                    Operations::dismiss(item)
+                    next
+                end
+                if option == "ondate" then
+                    date = CommonUtils::interactivelyMakeADate()
+                    Items::setAttribute(item["uuid"], "date", date)
+                    next
+                end
+                if option == "done" then
+                    Items::deleteItem(item["uuid"])
+                    next
+                end
+            }
+            return head + lucky1 + tail
         end
+
         if tail.empty? then
             return head + lucky1 + today + tail
         end
+
+        timeToDeadlineInSeconds = Dispatch::timeToNextDeadlineInSecondsOrNull()
+        if timeToDeadlineInSeconds.nil? then
+            return head + lucky1 + today + tail
+        end
+
         today1, today2 = Dispatch::splitTodayForCurrentTime(today)
+
         if Dispatch::computeSequenceLengthInSeconds(head + lucky1 + tail.take(1) + today1) < timeToDeadlineInSeconds then
             return Dispatch::dispatch(head, lucky1 + tail.take(1), today1, tail.drop(1) + today2)
         end
+
         return head + lucky1 + today1 + tail + today2
     end
 end

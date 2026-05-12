@@ -13,8 +13,8 @@ class NxPriorities
         item
     end
 
-    # NxPriorities::issuePriorityDelegateOrNull(targetuuid)
-    def self.issuePriorityDelegateOrNull(targetuuid)
+    # NxPriorities::issuePriorityDelegateOrNull(targetuuid, payload)
+    def self.issuePriorityDelegateOrNull(targetuuid, payload)
         target = Items::itemOrNull(targetuuid)
         return nil if target.nil?
         uuid = SecureRandom.uuid
@@ -22,6 +22,7 @@ class NxPriorities
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", PolyFunctions::toString(target))
+        Items::setAttribute(uuid, "payload-37", payload)
         Items::setAttribute(uuid, "targetuuid", targetuuid)
         Items::setAttribute(uuid, "mikuType", "NxPriority")
         item = Items::itemOrNull(uuid)
@@ -38,7 +39,7 @@ class NxPriorities
     # NxPriorities::prioritise(item)
     def self.prioritise(item)
         return if item["mikuType"] == "NxPriority"
-        NxPriorities::issuePriorityDelegateOrNull(item["uuid"])
+        NxPriorities::issuePriorityDelegateOrNull(item["uuid"], item["payload-37"])
     end
 
     # NxPriorities::prioritiseIfNotPriorityOrIdentity(item)
