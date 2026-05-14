@@ -110,4 +110,15 @@ class Dispatch
         data = Dispatch::core(head, lucky, today, tail)
         data["head"] + data["lucky"] + data["today"] + data["tail"]
     end
+
+    # Dispatch::printBreakdown()
+    def self.printBreakdown()
+        data = Dispatch::core(FrontPage::prioritized(), [], FrontPage::today(), FrontPage::tail())
+        ["head", "lucky", "today", "tail"].each{|label|
+            puts "#{label}:"
+            data[label].each{|item|
+                puts "   - #{PolyFunctions::toString(item)}"
+            }
+        }
+    end
 end
