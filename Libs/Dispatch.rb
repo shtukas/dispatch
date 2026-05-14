@@ -3,19 +3,11 @@ class Dispatch
 
     # Dispatch::deadlineUnixtimeOrNull()
     def self.deadlineUnixtimeOrNull()
-        if Time.new.hour < 11 then
-            return DateTime.parse("#{CommonUtils::today()}T12:00:00Z").to_time.to_i
-        end
-
-        if Time.new.hour < 16 then
-            return DateTime.parse("#{CommonUtils::today()}T18:00:00Z").to_time.to_i
-        end
-
-        if Time.new.hour >= 21 then
-            return nil
-        end
-
-        DateTime.parse("#{CommonUtils::today()}T21:00:00Z").to_time.to_i
+        return nil if Time.new.hour >= 21
+        # The deadline is half way between now and 21:00
+        unixtime_at_21 = DateTime.parse("#{CommonUtils::today()}T21:00:00Z").to_time.to_i
+        unixtime_now = Time.new.to_i
+        0.5 * unixtime_now + 0.5 * unixtime_at_21
     end
 
     # Dispatch::item_to_timespan(item)
@@ -112,12 +104,10 @@ class Dispatch
             return head + lucky1 + today + tail
         end
 
-        today1, today2 = Dispatch::splitTodayForCurrentTime(today)
-
-        if Dispatch::computeSequenceLengthInSeconds(head + lucky1 + tail.take(1) + today1) < timeToDeadlineInSeconds then
-            return Dispatch::dispatch(head, lucky1 + tail.take(1), today1, tail.drop(1) + today2)
+        if Dispatch::computeSequenceLengthInSeconds(head + lucky1 + tail.take(1) + today) < timeToDeadlineInSeconds then
+            return Dispatch::dispatch(head, lucky1 + tail.take(1), today, tail.drop(1))
         end
 
-        return head + lucky1 + today1 + tail + today2
+        return head + lucky1 + today + tail
     end
 end

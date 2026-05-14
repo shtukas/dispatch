@@ -87,12 +87,13 @@ class FrontPage
         # not needed at the moment
     end
 
-    # FrontPage::head()
-    def self.head()
+    # FrontPage::prioritized()
+    def self.prioritized()
         [
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             NxNotifications::listingItems(),
+            NxPriorities::listingItems(),
             Waves::listingItemsInterruption(),
             NxCounters::listingItems(),
         ]
@@ -104,7 +105,7 @@ class FrontPage
     # FrontPage::today()
     def self.today()
         [
-            NxOndates::listingItemsTodayAbsolute(),
+            NxOndates::listingItems(),
             NxBackups::listingItems(),
             NxEngineDelegate::listingItems(),
             TasksWithEngines::listingItems(),
@@ -117,7 +118,6 @@ class FrontPage
     # FrontPage::tail()
     def self.tail()
         [
-            NxOndates::listingItemsTail(),
             Waves::listingItemsNonInterruption(),
             BufferIn::listingItems(),
             NxTasks::listingItems(),
@@ -160,7 +160,7 @@ class FrontPage
 
         store = ItemStore.new()
 
-        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + NxPriorities::listingItems() + Dispatch::dispatch(FrontPage::head(), [], FrontPage::today(), FrontPage::tail()), "uuid")
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + Dispatch::dispatch(FrontPage::prioritized(), [], FrontPage::today(), FrontPage::tail()), "uuid")
 
         priorities_target_uuids = Items::mikuType("NxPriority").map{|item| item["targetuuid"]}.collect
 

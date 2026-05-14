@@ -37,17 +37,6 @@ class BufferIn
         if BankDerivedData::recoveredAverageHoursPerDay("95580b8d-b62f-4fa2-88ad-aefdc3ca450c") > 1 then
             return []
         end
-        items = Items::mikuType("BufferIn").sort_by{|item| item["unixtime"] }
-        items.reduce([]){|selected, item|
-            if selected.size >= 15 then
-                selected
-            else
-                if DoNotShowUntil::isVisible(item) and BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]) < 1 then
-                    selected + [item]
-                else
-                    selected
-                end
-            end
-        }
+        Items::mikuType("BufferIn").sort_by{|item| item["unixtime"] }
     end
 end
