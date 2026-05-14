@@ -1,13 +1,21 @@
 
 class Dispatch
 
-    # Dispatch::deadlineUnixtimeOrNull()
-    def self.deadlineUnixtimeOrNull()
-        return nil if Time.new.hour >= 21
-        # The deadline is half way between now and 21:00
-        unixtime_at_21 = DateTime.parse("#{CommonUtils::today()}T21:00:00Z").to_time.to_i
+    # Dispatch::deadlineUnixtime()
+    def self.deadlineUnixtime()
+        if Time.new.hour <= 18 then
+            unixtime_at_limit = DateTime.parse("#{CommonUtils::today()}T18:00:00Z").to_time.to_i
+            unixtime_now = Time.new.to_i
+            return 0.5 * unixtime_now + 0.5 * unixtime_at_limit
+        end
+        if Time.new.hour <= 21 then
+            unixtime_at_limit = DateTime.parse("#{CommonUtils::today()}T21:00:00Z").to_time.to_i
+            unixtime_now = Time.new.to_i
+            return 0.5 * unixtime_now + 0.5 * unixtime_at_limit
+        end
+        unixtime_at_limit = CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
         unixtime_now = Time.new.to_i
-        0.5 * unixtime_now + 0.5 * unixtime_at_21
+        0.5 * unixtime_now + 0.5 * unixtime_at_limit
     end
 
     # Dispatch::item_to_timespan(item)
@@ -36,11 +44,9 @@ class Dispatch
 
     # -------------------------------------
 
-    # Dispatch::timeToNextDeadlineInSecondsOrNull()
-    def self.timeToNextDeadlineInSecondsOrNull()
-        deadline = Dispatch::deadlineUnixtimeOrNull()
-        return nil if deadline.nil?
-        deadline - Time.new.to_i
+    # Dispatch::timespanToNextDeadlineInSeconds()
+    def self.timespanToNextDeadlineInSeconds()
+        Dispatch::deadlineUnixtime() - Time.new.to_i
     end
 
     # Dispatch::computeSequenceLengthInSeconds(sequence)
@@ -48,66 +54,60 @@ class Dispatch
         sequence.map{|item| Dispatch::item_to_timespan(item) }.sum
     end
 
-    # Dispatch::splitTodayForCurrentTime(today)
-    def self.splitTodayForCurrentTime(today)
-        hour = Time.new.hour
-        if hour >= 18 then
-            return [today, []]
-        end
-        ratio = hour.to_f/18
-        today.partition{|item| item["random"] < ratio }
-    end
-
-    # Dispatch::dispatch(head, lucky1, today, tail)
-    def self.dispatch(head, lucky1, today, tail)
-        # first we ensure that each today has a random value
-        today = today.map{|item|
-            if item["random"].nil? then
-                value = rand
-                Items::setAttribute(item["uuid"], "random", rand)
-                item["random"] = value
-            end
-            item
-        }
-
-        # This function return the sequence made using the largest lucky1,
+    # Dispatch::core(head, lucky, today, tail)
+    def self.core(head, lucky, today, tail)
+        # This function return the sequence made using the largest lucky,
         # makes it so that lucky + today1 meets the next deadline
 
-        if Time.new.hour >= 22 and today.size > 0 then
-            puts "it's past 10pm and you haven't done a certain amount of todays, let's review and decide to dismiss"
-            today.clone().each {|item|
-                puts PolyFunctions::toString(item).green
-                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["tomorrow (default)", "ondate", "done"])
-                if option.nil? or option == "tomorrow (default)" then
-                    Operations::dismiss(item)
-                    next
-                end
-                if option == "ondate" then
-                    date = CommonUtils::interactivelyMakeADate()
-                    Items::setAttribute(item["uuid"], "date", date)
-                    next
-                end
-                if option == "done" then
-                    Items::deleteItem(item["uuid"])
-                    next
-                end
-            }
-            return head + lucky1 + tail
-        end
-
         if tail.empty? then
-            return head + lucky1 + today + tail
+            return {
+                "head" => head,
+                "lucky" => lucky,
+                "today" => today,
+                "tail" => tail
+            }
         end
 
-        timeToDeadlineInSeconds = Dispatch::timeToNextDeadlineInSecondsOrNull()
-        if timeToDeadlineInSeconds.nil? then
-            return head + lucky1 + today + tail
+        if Time.new.hour >= 20 and !XCache::getFlag("5873d84c-0235-4e22-afa4-e2010fe153f2:#{CommonUtils::today()}") then
+            today = today
+                .map {|item|
+                    (lambda {|item|
+                        puts ""
+                        puts PolyFunctions::toString(item).green
+                        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["tomorrow (default)", "ondate", "done"])
+                        if option.nil? or option == "tomorrow (default)" then
+                            Operations::dismiss(item)
+                            next
+                        end
+                        if option == "ondate" then
+                            date = CommonUtils::interactivelyMakeADate()
+                            Items::setAttribute(item["uuid"], "date", date)
+                            next
+                        end
+                        if option == "done" then
+                            Items::deleteItem(item["uuid"])
+                            next
+                        end
+                    }).call(item)
+                }.compact
+            XCache::setFlag("5873d84c-0235-4e22-afa4-e2010fe153f2:#{CommonUtils::today()}", true)
         end
 
-        if Dispatch::computeSequenceLengthInSeconds(head + lucky1 + tail.take(1) + today) < timeToDeadlineInSeconds then
-            return Dispatch::dispatch(head, lucky1 + tail.take(1), today, tail.drop(1))
+        if Dispatch::computeSequenceLengthInSeconds(head + lucky + tail.take(1) + today) <= Dispatch::timespanToNextDeadlineInSeconds() then
+            return Dispatch::core(head, lucky + tail.take(1), today, tail.drop(1))
         end
 
-        return head + lucky1 + today + tail
+        {
+            "head"  => head,
+            "lucky" => lucky,
+            "today" => today,
+            "tail"  => tail
+        }
+    end
+
+    # Dispatch::dispatch(head, lucky, today, tail)
+    def self.dispatch(head, lucky, today, tail)
+        data = Dispatch::core(head, lucky, today, tail)
+        data["head"] + data["lucky"] + data["today"] + data["tail"]
     end
 end
