@@ -207,7 +207,9 @@ class PolyActions
         if item["mikuType"] == "NxPriority" then
             if item["targetuuid"] then
                 target = Items::itemOrNull(item["targetuuid"])
-                PolyActions::destroy(target)
+                if target then
+                    PolyActions::destroy(target)
+                end
             end
             Items::deleteItem(item["uuid"])
             return

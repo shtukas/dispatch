@@ -5,12 +5,17 @@ $InMemoryItemsF6F6ECA5 = nil
 
 class Items
 
+    # Items::loadInMemoryItemsFromDisk()
+    def self.loadInMemoryItemsFromDisk()
+        puts "loading items to memory".yellow
+        $InMemoryItemsF6F6ECA5 = Index::getItems()
+    end
+
     # Items::ensureItems()
     def self.ensureItems()
         # This function just ensures that 
         if $InMemoryItemsF6F6ECA5.nil? then
-            puts "loading items to memory".yellow
-            $InMemoryItemsF6F6ECA5 = Index::getItems()
+            Items::loadInMemoryItemsFromDisk()
         end
     end
 
