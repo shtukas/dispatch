@@ -92,46 +92,6 @@ class Waves
 
     # Waves::listingItemsNonInterruption()
     def self.listingItemsNonInterruption()
-        if Config::isPrimaryInstance() then
-            if CommonUtils::today() != XCache::getOrNull("3509419c-aabc-4216-ba31-a0d04a5f9699") and Time.new.hour >= 6 then
-                puts "waves daily structuration"
-                processor = lambda {|item|
-                    next if NxPriorities::itemHasPriorityDelegate(item)
-                    next if item["daily-process:0947"] == CommonUtils::today()
-                    option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["transmute to priority item", "standard positioning (default)", "tomorrow", "ondate", "done"])
-                    if option == "transmute to priority item" then
-                        pitem = NxPriorities::prioritise(item)
-                        puts JSON.pretty_generate(pitem)
-                        GlobalPositioning::insert_last(pitem)
-                        return nil
-                    end
-                    if option.nil? or option == "standard positioning (default)" then
-                        Items::setAttribute(item["uuid"], "daily-process:0947", CommonUtils::today())
-                        return item
-                    end
-                    if option == "tomorrow" then
-                        Operations::dismiss(item)
-                        return nil
-                    end
-                    if option == "ondate" then
-                        unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCode()
-                        DoNotShowUntil::doNotShowUntil(item, unixtime)
-                        return nil
-                    end
-                    if option == "done" then
-                        Waves::performDone(item)
-                        return nil
-                    end
-                }
-                Waves::nonInterruptionWaves().each{|item|
-                    puts ""
-                    puts PolyFunctions::toString(item).green
-                    processor.call(item)
-                }
-                XCache::set("3509419c-aabc-4216-ba31-a0d04a5f9699", CommonUtils::today())
-            end
-        end
-
         items = Waves::nonInterruptionWaves()
             .sort_by{|item| item["lastDoneUnixtime"] }
     end

@@ -139,7 +139,6 @@ class FrontPage
 
         BufferIn::import()
 
-        Broadcasts::processIncoming()
         NxNotifications::pickup()
 
         sheight = CommonUtils::screenHeight() - 5

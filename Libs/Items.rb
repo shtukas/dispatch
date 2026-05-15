@@ -1,113 +1,82 @@
 
 # encoding: UTF-8
 
+$InMemoryItemsF6F6ECA5 = nil
+
 class Items
 
-    # CREATE TABLE items (uuid TEXT primary key, mikuType TEXT, item TEXT);
-
-    # Items::database_filepath()
-    def self.database_filepath()
-        "#{Config::pathToDataRepository()}/items/#{Config::instanceId()}/items.sqlite"
+    # Items::ensureItems()
+    def self.ensureItems()
+        # This function just ensures that 
+        if $InMemoryItemsF6F6ECA5.nil? then
+            puts "loading items from memory".yellow
+            $InMemoryItemsF6F6ECA5 = Index::getItems()
+        end
     end
 
     # Items::items()
     def self.items()
-        items = []
-        db = SQLite3::Database.new(Items::database_filepath())
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from items", []) do |row|
-            items << JSON.parse(row["item"])
-        end
-        db.close
-        items
+        Items::ensureItems()
+        $InMemoryItemsF6F6ECA5.clone()
     end
 
     # Items::mikuType(mikuType)
     def self.mikuType(mikuType)
-        items = []
-        db = SQLite3::Database.new(Items::database_filepath())
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from items where mikuType = ?", [mikuType]) do |row|
-            items << JSON.parse(row["item"])
-        end
-        db.close
-        items
+        Items::ensureItems()
+        $InMemoryItemsF6F6ECA5.select{|i| i["mikuType"] == mikuType }
     end
 
     # Items::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-        item = nil
-        db = SQLite3::Database.new(Items::database_filepath())
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from items where uuid = ?", [uuid]) do |row|
-            item = JSON.parse(row["item"])
-        end
-        db.close
-        item
-    end
-
-    # Items::commitItemNoBroadcast(item)
-    def self.commitItemNoBroadcast(item)
-        db = SQLite3::Database.new(Items::database_filepath())
-        db.busy_timeout = 117 # overriden by the next instruction
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("
-            INSERT INTO items (uuid, mikuType, item) 
-            VALUES (?, ?, ?) 
-            ON CONFLICT(uuid) DO UPDATE SET 
-            mikuType = excluded.mikuType, 
-            item = excluded.item", [item["uuid"], item["mikuType"], JSON.generate(item)])
-        db.close
+        Items::ensureItems()
+        $InMemoryItemsF6F6ECA5.select{|i| i["uuid"] == uuid }.first
     end
 
     # Items::commitItem(item)
     def self.commitItem(item)
-        Items::commitItemNoBroadcast(item)
-        Broadcasts::send({
-            "type"  => "item",
-            "item"  => item
-        })
+        # Here we need to send the item to disk and update the in memory dataset
+
+        # Index::commitItem returns an item, because it may not be the item that 
+        # was submitted, in case we had to do a reconciliation
+        item = Index::commitItem(item)
+
+        if $InMemoryItemsF6F6ECA5 then
+            $InMemoryItemsF6F6ECA5 = $InMemoryItemsF6F6ECA5.reject{|i| i["uuid"] == item["uuid"] } + [item]
+        end
+
+        item
     end
 
     # Items::init(uuid)
     def self.init(uuid)
-        Items::commitItem({
+        item = {
             "uuid" => uuid,
-            "mikuType" => "NxDeleted"
-        })
+            "mikuType" => "NxDeleted",
+            "unixtime" => Time.new.to_i
+        }
+        Items::commitItem(item)
+        Items::ensureItems()
+        $InMemoryItemsF6F6ECA5 = $InMemoryItemsF6F6ECA5 + [item]
     end
 
     # Items::setAttribute(uuid, attribute_name, attribute_value) # -> updated Item
     def self.setAttribute(uuid, attribute_name, attribute_value)
         item = Items::itemOrNull(uuid)
         return if item.nil?
-        item[attribute_name] = attribute_value
-        Items::commitItem(item)
-    end
 
-    # Items::deleteItemNoBroadcast(uuid)
-    def self.deleteItemNoBroadcast(uuid)
-        db = SQLite3::Database.new(Items::database_filepath())
-        db.busy_timeout = 117 # overriden by the next instruction
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("delete from items where uuid = ?", [uuid])
-        db.close
+        item[attribute_name] = attribute_value
+        # Index::commitItem returns an item, because it may not be the item that 
+        # was submitted, in case we had to do a reconciliation
+        item = Items::commitItem(item)
+
+        item
     end
 
     # Items::deleteItem(uuid)
     def self.deleteItem(uuid)
-        Items::deleteItemNoBroadcast(uuid)
-        Broadcasts::send({
-            "type" => "delete",
-            "uuid" => uuid
-        })
+        Index::deleteItem(uuid)
+        if $InMemoryItemsF6F6ECA5 then
+            $InMemoryItemsF6F6ECA5 = $InMemoryItemsF6F6ECA5.reject{|i| i["uuid"] == uuid }
+        end
     end
 end

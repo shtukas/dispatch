@@ -126,7 +126,6 @@ require_relative "Anniversaries.rb"
 
 require_relative "Bank.rb"
 require_relative "BufferIn.rb"
-require_relative "Broadcasts.rb"
 
 require_relative "CommonUtils.rb"
 require_relative "CommandsAndInterpreters.rb"
@@ -151,6 +150,7 @@ require_relative "GlobalPositioning.rb"
 require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 require_relative "Items.rb"
+require_relative "Index.rb"
 
 require_relative "NxNotifications.rb"
 require_relative "NxBalls.rb"
