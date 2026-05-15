@@ -89,12 +89,14 @@ class FrontPage
 
     # FrontPage::prioritized()
     def self.prioritized()
+        priorities = NxPriorities::listingItems()
         [
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             NxNotifications::listingItems(),
-            NxPriorities::listingItems(),
+            priorities.take(1),
             Waves::listingItemsInterruption(),
+            priorities.drop(1),
             NxCounters::listingItems(),
         ]
             .flatten
