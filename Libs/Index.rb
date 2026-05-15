@@ -171,7 +171,7 @@ class Index
 
     # Index::deleteItem(uuid)
     def self.deleteItem(uuid)
-        directory = Index::uuid_to_directory(item["uuid"], false)
+        directory = Index::uuid_to_directory(uuid, false)
         return if !File.exist?(directory)
         LucilleCore::removeFileSystemLocation(directory)
     end
