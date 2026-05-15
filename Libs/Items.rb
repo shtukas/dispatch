@@ -9,7 +9,7 @@ class Items
     def self.ensureItems()
         # This function just ensures that 
         if $InMemoryItemsF6F6ECA5.nil? then
-            puts "loading items from memory".yellow
+            puts "loading items to memory".yellow
             $InMemoryItemsF6F6ECA5 = Index::getItems()
         end
     end
