@@ -199,6 +199,18 @@ class FrontPage
 
     # FrontPage::main()
     def self.main()
+        Thread.new {
+            sleep 20
+            loop {
+                if !Shared1502::values_are_in_sync() then
+                    puts "monitor thread is reloading items from disk to memory".yellow
+                    Items::loadItemsFromDiskToMemory()
+                    Shared1502::issue_new_common_value()
+                end
+                sleep 60
+            }
+        }
+
         initialCodeTrace = CommonUtils::catalystTraceCode()
         loop {
             FrontPage::preliminaries(initialCodeTrace)
