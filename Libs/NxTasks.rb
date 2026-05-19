@@ -38,7 +38,11 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "#{NxTasks::icon()} #{item["description"]}"
+        cliquesuffix = ""
+        if item["clique-13"] then
+            cliquesuffix = " [#{item["clique-13"]}]"
+        end
+        "#{NxTasks::icon()} #{item["description"]}#{cliquesuffix}"
     end
 
     # NxTasks::listingItems()

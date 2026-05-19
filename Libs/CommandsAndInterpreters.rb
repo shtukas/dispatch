@@ -6,7 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | set engine * | :: * (prioritise)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | task with engine",
+            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | task with engine | >> * (transmute)",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | engined | delegates | cliques",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | global-maintenance | print dispatch breakdown",
@@ -224,7 +224,7 @@ class CommandsAndInterpreters
             return if item.nil?
             cliquename = Cliques::architectCliqueNameOrNull()
             return if cliquename.nil?
-            Cliques::setClique(item, cliquename)
+            Items::setAttribute(item["uuid"], "clique-13", cliquename)
             return
         end
 
@@ -232,7 +232,7 @@ class CommandsAndInterpreters
             loop {
                 cliquename = Cliques::interactivelySelectCliqueNameOrNull()
                 return if cliquename.nil?
-                Cliques::dive(cliquename)
+                Cliques::diveClique(cliquename)
             }
             return
         end

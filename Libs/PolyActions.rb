@@ -22,7 +22,7 @@ class PolyActions
             return
         end
         if item["mikuType"] == "NxClique" then
-            return Cliques::dive(item["cliquename"])
+            return Cliques::diveClique(item["cliquename"])
         end
         UxPayloads::access(item["payload-37"])
     end

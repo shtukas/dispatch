@@ -1,11 +1,6 @@
 
 class Cliques
 
-    # Cliques::setClique(item, cliquename)
-    def self.setClique(item, cliquename)
-        Items::setAttribute(item["uuid"], "clique-13", cliquename)
-    end
-
     # Cliques::getCliquenames()
     def self.getCliquenames()
         Items::mikuType("NxTask")
@@ -30,15 +25,29 @@ class Cliques
         nil
     end
 
+    # Cliques::architectCliqueName()
+    def self.architectCliqueName()
+        loop {
+            cliquename = Cliques::architectCliqueNameOrNull()
+            return cliquename if cliquename
+        }
+    end
+
     # Cliques::setCliqueAttempt(item)
     def self.setCliqueAttempt(item)
         cliquename = Cliques::architectCliqueNameOrNull()
         return if cliquename.nil?
-        Cliques::setClique(item, cliquename)
+        Items::setAttribute(item["uuid"], "clique-13", cliquename)
     end
 
-    # Cliques::dive(cliquename)
-    def self.dive(cliquename)
+    # Cliques::setCliqueForce(item)
+    def self.setCliqueForce(item)
+        cliquename = Cliques::architectCliqueName()
+        Items::setAttribute(item["uuid"], "clique-13", cliquename)
+    end
+
+    # Cliques::diveClique(cliquename)
+    def self.diveClique(cliquename)
         loop {
             items = Items::mikuType("NxTask")
                         .select{|item| item["engine-1437"].nil? }

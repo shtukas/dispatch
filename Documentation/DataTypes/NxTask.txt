@@ -1,9 +1,8 @@
 
 NxTask:
-    - uuid         : String
-    - mikuType     : "NxTask"
-    - unixtime     :
-    - datetime     :
-    - description  : String
-
-Cliqued items don't show up in the main listing but one that operate the clique itself.
+    - uuid          : String
+    - mikuType      : "NxTask"
+    - unixtime      :
+    - datetime      :
+    - description   : String
+    - global-pos-07 : Float
