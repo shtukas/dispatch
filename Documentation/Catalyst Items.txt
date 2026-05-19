@@ -13,3 +13,4 @@ Cross types conventions (all optional):
     - donation-14           : null or String # bank account to donate to
     - engine-1437           : NxEngine or null
     - global-pos-07         : global positioning, Real
+    - clique-13             : null or String # name of the clique the item belong to
