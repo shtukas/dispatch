@@ -36,7 +36,7 @@ class Shared1502
 
     # Shared1502::values_are_in_sync()
     def self.values_are_in_sync()
-        Shared1502::read_shared_value() == XCache::getOrNull("c7b6952f-0bbc-48a2-b41e-c2c29e6b28f3").strip
+        Shared1502::read_shared_value() == XCache::getOrDefaultValue("c7b6952f-0bbc-48a2-b41e-c2c29e6b28f3", "").strip
     end
 
     # Shared1502::issue_new_common_value()

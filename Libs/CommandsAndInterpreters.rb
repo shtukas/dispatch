@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | task with engine",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | engined | delegates | cliques",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | print dispatch breakdown",
         ].join("\n")
     end
 
@@ -209,6 +209,12 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Donations::interactivelySetDonation(item)
+            return
+        end
+
+        if Interpreting::match("print dispatch breakdown", input) then
+            Dispatch::printBreakdown()
+            LucilleCore::pressEnterToContinue()
             return
         end
 
