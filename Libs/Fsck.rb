@@ -42,6 +42,9 @@ class Fsck
         end
 
         if item["mikuType"] == "NxTask" then
+            if item["clique-0928"].nil? then
+                raise "item: #{item} is missing its clique-0928"
+            end
             return
         end
 

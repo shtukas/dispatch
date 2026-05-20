@@ -122,7 +122,7 @@ class FrontPage
         [
             Waves::listingItemsNonInterruption(),
             BufferIn::listingItems(),
-            NxTasks::listingItems(),
+            Cliques::listingItems(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
@@ -192,22 +192,13 @@ class FrontPage
 
     # FrontPage::main()
     def self.main()
-
-        # If there is data in the cache then we start with that
-        data = XCache::getOrNull("e5ef0ba2-1a4f-4420-b878-f81737b6f7c9")
-        if data then
-            $InMemoryItemsF6F6ECA5 = JSON.parse(data)
-        end
-
         # The in memory items should be updated during activity, but we load from disk every 2 mins 
         # to pick up changes from other instances
         Thread.new {
-            sleep 20
+            sleep 300
             loop {
-                if $InMemoryItemsF6F6ECA5 then
-                    XCache::set("e5ef0ba2-1a4f-4420-b878-f81737b6f7c9", JSON.generate($InMemoryItemsF6F6ECA5))
-                end
-                sleep 120
+                Items::loadItemsFromDiskToMemory()
+                sleep 300
             }
         }
 

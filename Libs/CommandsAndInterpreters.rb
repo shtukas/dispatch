@@ -146,9 +146,10 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
-            item = NxTasks::interactivelyIssueNewOrNull()
+            clique = Cliques::architectClique()
+            return if clique.nil?
+            item = NxTasks::interactivelyIssueNewOrNull(clique)
             puts JSON.pretty_generate(item)
-            Cliques::setCliqueAttempt(item)
             return
         end
 

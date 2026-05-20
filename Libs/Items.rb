@@ -39,6 +39,9 @@ class Items
 
     # Items::commitItem(item)
     def self.commitItem(item)
+
+        Fsck::fsckItemOrError(item, false)
+
         # Here we need to send the item to disk and update the in memory dataset
 
         # Index::commitItem returns an item, because it may not be the item that 

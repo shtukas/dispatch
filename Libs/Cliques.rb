@@ -1,58 +1,66 @@
 
 class Cliques
 
-    # Cliques::getCliquenames()
-    def self.getCliquenames()
-        Items::mikuType("NxTask")
-            .select{|item| item["clique-13"] }
-            .map{|item| item["clique-13"] }
-            .compact
-            .uniq
-            .sort
-    end
-
-    # Cliques::interactivelySelectCliqueNameOrNull()
-    def self.interactivelySelectCliqueNameOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", Cliques::getCliquenames())
-    end
-
-    # Cliques::architectCliqueNameOrNull()
-    def self.architectCliqueNameOrNull()
-        cliquename = Cliques::interactivelySelectCliqueNameOrNull()
-        return cliquename if cliquename
-        cliquename = LucilleCore::askQuestionAnswerAsString("clique name (empty for null): ")
-        return cliquename if cliquename != ""
-        nil
-    end
-
-    # Cliques::architectCliqueName()
-    def self.architectCliqueName()
-        loop {
-            cliquename = Cliques::architectCliqueNameOrNull()
-            return cliquename if cliquename
+    # Cliques::orphanClique()
+    def self.orphanClique()
+        {
+            "uuid"        => "22e79bb3-f30b-4f48-9b8e-2826bab1df71",
+            "mikuType"    => "NxClique",
+            "description" => "orphan tasks"
         }
     end
 
-    # Cliques::setCliqueAttempt(item)
-    def self.setCliqueAttempt(item)
-        cliquename = Cliques::architectCliqueNameOrNull()
-        return if cliquename.nil?
-        Items::setAttribute(item["uuid"], "clique-13", cliquename)
+    # Cliques::getDistinctCliques()
+    def self.getDistinctCliques()
+        Items::mikuType("NxTask").reduce([]){|cliques, item|
+            known_clique_uuids = cliques.map{|clique| clique["uuid"] }
+            if known_clique_uuids.include?(item["clique-0928"]["uuid"]) then
+                cliques
+            else
+                cliques + [item["clique-0928"]]
+            end
+        }
     end
 
-    # Cliques::setCliqueForce(item)
-    def self.setCliqueForce(item)
-        cliquename = Cliques::architectCliqueName()
-        Items::setAttribute(item["uuid"], "clique-13", cliquename)
+    # Cliques::interactivelySelectOneCliqueOrNull()
+    def self.interactivelySelectOneCliqueOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", Cliques::getDistinctCliques(), lambda {|clique| clique["description"] })
     end
 
-    # Cliques::diveClique(cliquename)
-    def self.diveClique(cliquename)
+    # Cliques::architectCliqueOrNull()
+    def self.architectCliqueOrNull()
+        clique = Cliques::interactivelySelectOneCliqueOrNull()
+        return clique if clique
+        cliquename = LucilleCore::askQuestionAnswerAsString("new clique description (empty for null clique): ")
+        if cliquename then
+            return {
+                "uuid"        => SecureRandom.hex,
+                "mikuType"    => "NxClique",
+                "description" => cliquename
+            }
+        end
+        nil
+    end
+
+    # Cliques::architectClique()
+    def self.architectClique()
         loop {
-            items = Items::mikuType("NxTask")
-                        .select{|item| item["engine-1437"].nil? }
-                        .select{|item| item["clique-13"] == cliquename }
-                        .sort_by {|item| item["global-pos-07"] || 0 }
+            clique = Cliques::architectCliqueOrNull()
+            return clique if clique
+        }
+    end
+
+    # Cliques::getCliqueItems(clique)
+    def self.getCliqueItems(clique)
+        Items::mikuType("NxTask")
+            .select{|item| item["clique-0928"]["uuid"] == clique["uuid"] }
+            .sort_by {|item| item["global-pos-07"] || 0 }
+    end
+
+    # Cliques::diveClique(clique)
+    def self.diveClique(clique)
+        loop {
+            items = Cliques::getCliqueItems(clique)
             store = ItemStore.new()
             puts ""
             items
@@ -75,5 +83,10 @@ class Cliques
 
             CommandsAndInterpreters::interpreter(input, store)
         }
+    end
+
+    # Cliques::listingItems()
+    def self.listingItems()
+        Cliques::getDistinctCliques()
     end
 end
