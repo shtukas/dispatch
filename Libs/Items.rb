@@ -7,7 +7,7 @@ class Items
 
     # Items::loadItemsFromDiskToMemory()
     def self.loadItemsFromDiskToMemory()
-        puts "loading items to memory".yellow
+        #puts "loading items to memory".yellow
         $InMemoryItemsF6F6ECA5 = Index::getItems()
     end
 
