@@ -6,7 +6,7 @@ class Dispatch
         return nil if Time.new.hour >= 21
         unixtime_at_limit = DateTime.parse("#{CommonUtils::today()} 21:00:00 +#{CommonUtils::getLocalTimeZone()}").to_time.to_i
         unixtime_now = Time.new.to_i
-        0.5 * unixtime_now + 0.5 * unixtime_at_limit
+        0.7 * unixtime_now + 0.3 * unixtime_at_limit
     end
 
     # Dispatch::dayRatio()
