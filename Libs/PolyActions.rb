@@ -35,7 +35,6 @@ class PolyActions
     # PolyActions::done(item)
     def self.done(item)
         PolyActions::stop(item)
-        Items::setAttribute(item["uuid"], "dispatch:position", nil)
 
         if item["mikuType"] == "NxClique" then
             return

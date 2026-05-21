@@ -24,7 +24,6 @@ class CommandsAndInterpreters
             unixtime = Time.new.to_i + 3600
             puts "dot not show until: #{Time.at(unixtime).to_s}".yellow
             DoNotShowUntil::doNotShowUntil(item, unixtime)
-            Items::setAttribute(item["uuid"], "dispatch:position", nil)
             return
         end
 
@@ -33,7 +32,6 @@ class CommandsAndInterpreters
                 PolyActions::stop(item)
                 puts "dot not show until: #{Time.at(unixtime).to_s}".yellow
                 DoNotShowUntil::doNotShowUntil(item, unixtime)
-                Items::setAttribute(item["uuid"], "dispatch:position", nil)
                 return
             end
         end
@@ -214,6 +212,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("print dispatch breakdown", input) then
+            puts "rolling deadline for today items: #{Dispatch::deadlineUnixtimeOrNull()}, #{Time.at(Dispatch::deadlineUnixtimeOrNull()).to_s}"
             Dispatch::printBreakdown()
             LucilleCore::pressEnterToContinue()
             return

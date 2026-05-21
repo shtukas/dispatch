@@ -263,7 +263,7 @@ class CommonUtils
 
     # CommonUtils::unixtimeAtLastMidnightAtGivenTimeZone(timezone)
     def self.unixtimeAtLastMidnightAtGivenTimeZone(timezone)
-        DateTime.parse("#{(DateTime.now.to_date).to_s} 00:00:00 #{timezone}").to_time.to_i
+        DateTime.parse("#{(DateTime.now.to_date).to_s} 00:00:00 +#{timezone}").to_time.to_i
     end
 
     # CommonUtils::unixtimeAtLastMidnightAtLocalTimezone()

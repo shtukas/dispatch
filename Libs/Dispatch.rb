@@ -1,21 +1,24 @@
 
 class Dispatch
 
-    # Dispatch::deadlineUnixtime()
-    def self.deadlineUnixtime()
-        if Time.new.hour <= 18 then
-            unixtime_at_limit = DateTime.parse("#{CommonUtils::today()}T18:00:00Z").to_time.to_i
-            unixtime_now = Time.new.to_i
-            return 0.5 * unixtime_now + 0.5 * unixtime_at_limit
-        end
-        if Time.new.hour <= 21 then
-            unixtime_at_limit = DateTime.parse("#{CommonUtils::today()}T21:00:00Z").to_time.to_i
-            unixtime_now = Time.new.to_i
-            return 0.5 * unixtime_now + 0.5 * unixtime_at_limit
-        end
-        unixtime_at_limit = CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
+    # Dispatch::deadlineUnixtimeOrNull()
+    def self.deadlineUnixtimeOrNull()
+        return nil if Time.new.hour >= 21
+        unixtime_at_limit = DateTime.parse("#{CommonUtils::today()} 21:00:00 +#{CommonUtils::getLocalTimeZone()}").to_time.to_i
         unixtime_now = Time.new.to_i
         0.5 * unixtime_now + 0.5 * unixtime_at_limit
+    end
+
+    # Dispatch::dayRatio()
+    def self.dayRatio()
+        # day ratio is 0 until 9am and then increases to 1 until 9pm
+        return 0 if Time.new.hour < 9
+        local_timezone = 
+        unixtime_at_9am = DateTime.parse("#{CommonUtils::today()} 09:00:00 +#{CommonUtils::getLocalTimeZone()}").to_time.to_i
+        unixtime_at_9pm = DateTime.parse("#{CommonUtils::today()} 21:00:00 +#{CommonUtils::getLocalTimeZone()}").to_time.to_i
+        time_since_9_am = Time.new.to_i - unixtime_at_9am
+        ratio = time_since_9_am / ( unixtime_at_9pm - unixtime_at_9am )
+        ratio
     end
 
     # Dispatch::item_to_timespan(item)
@@ -42,79 +45,109 @@ class Dispatch
         600
     end
 
-    # -------------------------------------
-
-    # Dispatch::timespanToNextDeadlineInSeconds()
-    def self.timespanToNextDeadlineInSeconds()
-        Dispatch::deadlineUnixtime() - Time.new.to_i
+    # Dispatch::timespanToNextDeadlineInSecondsOrNull()
+    def self.timespanToNextDeadlineInSecondsOrNull()
+        deadline = Dispatch::deadlineUnixtimeOrNull()
+        return nil if deadline.nil?
+        deadline - Time.new.to_i
     end
 
-    # Dispatch::computeSequenceLengthInSeconds(sequence)
-    def self.computeSequenceLengthInSeconds(sequence)
+    # Dispatch::sequenceToTimespanInSeconds(sequence)
+    def self.sequenceToTimespanInSeconds(sequence)
         sequence.map{|item| Dispatch::item_to_timespan(item) }.sum
     end
 
-    # Dispatch::core(head, lucky, today, tail)
-    def self.core(head, lucky, today, tail)
+    # Dispatch::today_split(today, split_value)
+    def self.today_split(today, split_value)
+        # We are going to ensure that each today item has a random attribute 
+        # between 0 and 1
+        # Then we are going to split the collection using the split_value
+        # This function exists to determine the subset of today, we are considering 
+        # for dispatch calculations. The split value is meant to be the day ratio
+
+        today = today.map{|item|
+            if item["random"].nil? then
+                item["random"] = rand
+                Items::setAttribute(item["uuid"], "random", item["random"])
+            end
+            item
+        }
+        today.partition{|item| item["random"] <= split_value } 
+    end
+
+    # Dispatch::core(head, lucky, today_before_deadline, tail, today_later)
+    def self.core(head, lucky, today_before_deadline, tail, today_later)
         # This function return the sequence made using the largest lucky,
         # makes it so that lucky + today1 meets the next deadline
 
         if tail.empty? then
             return {
-                "head" => head,
-                "lucky" => lucky,
-                "today" => today,
-                "tail" => tail
+                "head"        => head,
+                "lucky"       => lucky,
+                "today_before_deadline" => today_before_deadline,
+                "tail"        => tail,
+                "today_later" => today_later,
             }
         end
 
-        if Time.new.hour >= 20 and !XCache::getFlag("5873d84c-0235-4e22-afa4-e2010fe153f2:#{CommonUtils::today()}") then
-            today = today
-                .map {|item|
-                    (lambda {|item|
-                        puts ""
-                        puts PolyFunctions::toString(item).green
-                        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["tomorrow (default)", "ondate", "done"])
-                        if option.nil? or option == "tomorrow (default)" then
-                            Operations::dismiss(item)
-                            next
-                        end
-                        if option == "ondate" then
-                            date = CommonUtils::interactivelyMakeADate()
-                            Items::setAttribute(item["uuid"], "date", date)
-                            next
-                        end
-                        if option == "done" then
-                            Items::deleteItem(item["uuid"])
-                            next
-                        end
-                    }).call(item)
-                }.compact
-            XCache::setFlag("5873d84c-0235-4e22-afa4-e2010fe153f2:#{CommonUtils::today()}", true)
+        timespan_to_deadline = Dispatch::timespanToNextDeadlineInSecondsOrNull()
+
+        if timespan_to_deadline.nil? then
+            if XCache::getOrNull("172cd807-2969-480a-8bd8-184f227e6b5d:#{CommonUtils::today()}") != "done" then
+                puts "I do not have a dispatch deadline, which I interpret as the end of the day is nearing"
+                puts "We need to review your remaining today items"
+                (today_before_deadline+today_later).each{|item|
+                    puts ""
+                    puts "processing: #{PolyFunctions::toString(item).green}"
+                    option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["done", "dismiss", "ondate"])
+                    if option == "done" then
+                        PolyActions::done(item)
+                    end
+                    if option == "dismiss" then
+                        Operations::dismiss(item)
+                    end
+                    if option == "ondate" then
+                        unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
+                        next if unixtime.nil?
+                        DoNotShowUntil::doNotShowUntil(item, unixtime)
+                    end
+                }
+                XCache::set("172cd807-2969-480a-8bd8-184f227e6b5d:#{CommonUtils::today()}", "done")
+            end
+            return {
+                "head"        => head,
+                "lucky"       => lucky,
+                "today_before_deadlne" => [],
+                "tail"        => tail,
+                "today_later" => [],
+            }
         end
 
-        if Dispatch::computeSequenceLengthInSeconds(head + lucky + tail.take(1) + today) <= Dispatch::timespanToNextDeadlineInSeconds() then
-            return Dispatch::core(head, lucky + tail.take(1), today, tail.drop(1))
+        if Dispatch::sequenceToTimespanInSeconds(head + lucky + tail.take(1) + today_before_deadline) <= timespan_to_deadline then
+            return Dispatch::core(head, lucky + tail.take(1), today_before_deadline, tail.drop(1), today_later)
         end
 
         {
-            "head"  => head,
-            "lucky" => lucky,
-            "today" => today,
-            "tail"  => tail
+            "head"        => head,
+            "lucky"       => lucky,
+            "today_before_deadline" => today_before_deadline,
+            "tail"        => tail,
+            "today_later" => today_later,
         }
     end
 
     # Dispatch::dispatch(head, lucky, today, tail)
     def self.dispatch(head, lucky, today, tail)
-        data = Dispatch::core(head, lucky, today, tail)
-        data["head"] + data["lucky"] + data["today"] + data["tail"]
+        today_before_deadline, today_later = Dispatch::today_split(today, Dispatch::dayRatio())
+        data = Dispatch::core(head, lucky, today_before_deadline, tail, today_later)
+        data["head"] + data["lucky"] + data["today_before_deadline"] + data["tail"] + data["today_later"]
     end
 
     # Dispatch::printBreakdown()
     def self.printBreakdown()
-        data = Dispatch::core(FrontPage::prioritized(), [], FrontPage::today(), FrontPage::tail())
-        ["head", "lucky", "today", "tail"].each{|label|
+        today_before_deadline, today_later = Dispatch::today_split(FrontPage::today(), Dispatch::dayRatio())
+        data = Dispatch::core(FrontPage::prioritized(), [], today_before_deadline, FrontPage::tail(), today_later)
+        ["head", "lucky", "today_before_deadline", "tail", "today_later"].each{|label|
             puts "#{label}:"
             data[label].each{|item|
                 puts "   - #{PolyFunctions::toString(item)}"
