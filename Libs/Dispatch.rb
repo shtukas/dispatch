@@ -9,6 +9,13 @@ class Dispatch
         0.7 * unixtime_now + 0.3 * unixtime_at_limit
     end
 
+    # Dispatch::deadlineAsStringOrNull()
+    def self.deadlineAsStringOrNull()
+        deadline = Dispatch::deadlineUnixtimeOrNull()
+        return nil if deadline.nil?
+        "[#{Time.at(deadline).to_s[11, 5]}]"
+    end
+
     # Dispatch::dayRatio()
     def self.dayRatio()
         # day ratio is 0 until 9am and then increases to 1 until 9pm

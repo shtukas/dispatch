@@ -35,13 +35,12 @@ class FrontPage
         line
     end
 
-    # FrontPage::printItem(store, item, cursor, screen_width)
-    def self.printItem(store, item, cursor, screen_width)
+    # FrontPage::printItem(store, item, cursor_string, screen_width)
+    def self.printItem(store, item, cursor_string, screen_width)
         return 0 if item.nil?
         store.register(item, FrontPage::canBeDefault(item))
         height = 0
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        cursor_string = "[#{Time.at(cursor).to_s[11, 5]}]"
         line = "#{storePrefix} #{cursor_string} #{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -169,8 +168,18 @@ class FrontPage
 
         cursor = Time.new.to_i
 
+        deadline_string = Dispatch::deadlineAsStringOrNull()
+
         items.each{|item|
-            d = FrontPage::printItem(store, item, cursor, swidth)
+            cursor_string = "[#{Time.at(cursor).to_s[11, 5]}]"
+            d = FrontPage::printItem(store, item, cursor_string, swidth)
+
+            if deadline_string and deadline_string < cursor_string then
+                puts "  --[ deadline ]-------------------------------------------------------"
+                sheight = sheight - 1
+                deadline_string = nil
+            end
+
             cursor = cursor + Dispatch::item_to_timespan(item)
             sheight = sheight - d
             break if sheight <= 0
