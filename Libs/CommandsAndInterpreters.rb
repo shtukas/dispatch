@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | task with engine | >> * (transmute)",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | engined | delegates | cliques",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | print dispatch breakdown",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | numbers",
         ].join("\n")
     end
 
@@ -211,8 +211,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("print dispatch breakdown", input) then
-            puts "rolling deadline for today items: #{Dispatch::deadlineUnixtimeOrNull()}, #{Time.at(Dispatch::deadlineUnixtimeOrNull()).to_s}"
+        if Interpreting::match("numbers", input) then
             Dispatch::printBreakdown()
             LucilleCore::pressEnterToContinue()
             return

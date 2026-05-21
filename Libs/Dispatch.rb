@@ -13,11 +13,10 @@ class Dispatch
     def self.dayRatio()
         # day ratio is 0 until 9am and then increases to 1 until 9pm
         return 0 if Time.new.hour < 9
-        local_timezone = 
         unixtime_at_9am = DateTime.parse("#{CommonUtils::today()} 09:00:00 +#{CommonUtils::getLocalTimeZone()}").to_time.to_i
         unixtime_at_9pm = DateTime.parse("#{CommonUtils::today()} 21:00:00 +#{CommonUtils::getLocalTimeZone()}").to_time.to_i
         time_since_9_am = Time.new.to_i - unixtime_at_9am
-        ratio = time_since_9_am / ( unixtime_at_9pm - unixtime_at_9am )
+        ratio = time_since_9_am.to_f / ( unixtime_at_9pm - unixtime_at_9am )
         ratio
     end
 
@@ -147,8 +146,15 @@ class Dispatch
     def self.printBreakdown()
         today_before_deadline, today_later = Dispatch::today_split(FrontPage::today(), Dispatch::dayRatio())
         data = Dispatch::core(FrontPage::prioritized(), [], today_before_deadline, FrontPage::tail(), today_later)
-        ["head", "lucky", "today_before_deadline", "tail", "today_later"].each{|label|
-            puts "#{label}:"
+        ["head", "lucky", "today_before_deadline"].each{|label|
+            puts "#{label} (#{data[label].size} items):"
+            data[label].each{|item|
+                puts "   - #{PolyFunctions::toString(item)}"
+            }
+        }
+        puts "rolling deadline for today items: #{Dispatch::deadlineUnixtimeOrNull()}, #{Time.at(Dispatch::deadlineUnixtimeOrNull()).to_s}"
+        ["tail", "today_later"].each{|label|
+            puts "#{label} (#{data[label].size} items):"
             data[label].each{|item|
                 puts "   - #{PolyFunctions::toString(item)}"
             }
