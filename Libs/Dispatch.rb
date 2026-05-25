@@ -103,6 +103,7 @@ class Dispatch
                 puts "I do not have a dispatch deadline, which I interpret as the end of the day is nearing"
                 puts "We need to review your remaining today items"
                 (today_before_deadline+today_later).each{|item|
+                    next if item["mikuType"] == "NxEngineDelegate"
                     puts ""
                     puts "processing: #{PolyFunctions::toString(item).green}"
                     option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["done", "dismiss", "ondate"])
@@ -123,7 +124,7 @@ class Dispatch
             return {
                 "head"        => head,
                 "lucky"       => lucky,
-                "today_before_deadlne" => [],
+                "today_before_deadline" => [],
                 "tail"        => tail,
                 "today_later" => [],
             }
