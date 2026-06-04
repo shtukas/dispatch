@@ -91,6 +91,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxFloat" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
+                Items::deleteItem(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxOndate" then
             puts "#{PolyFunctions::toString(item).green}"
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
@@ -176,6 +183,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
+                Items::deleteItem(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Items::deleteItem(item["uuid"])
             end

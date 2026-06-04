@@ -93,6 +93,7 @@ class FrontPage
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             NxNotifications::listingItems(),
+            NxFloats::listingItems(),
             priorities.take(1),
             Waves::listingItemsInterruption(),
             priorities.drop(1),

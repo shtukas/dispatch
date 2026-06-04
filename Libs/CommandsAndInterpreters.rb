@@ -6,7 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | set engine * | :: * (prioritise)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | task with engine | >> * (transmute)",
+            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | task with engine | >> * (transmute) | float",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | engined | delegates | cliques",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | global-maintenance | numbers",
@@ -143,10 +143,18 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("float", input) then
+            item = NxFloats::interactivelyIssueNewOrNull()
+            return  if item.nil?
+            puts JSON.pretty_generate(item)
+            return
+        end
+
         if Interpreting::match("todo", input) then
             clique = Cliques::architectClique()
             return if clique.nil?
             item = NxTasks::interactivelyIssueNewOrNull(clique)
+            return  if item.nil?
             puts JSON.pretty_generate(item)
             return
         end

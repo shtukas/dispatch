@@ -21,6 +21,10 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "NxFloat" then
+            return
+        end
+
         if item["mikuType"] == "BufferIn" then
             return
         end
@@ -57,6 +61,10 @@ class Fsck
         end
 
         if item["mikuType"] == "NxEngineDelegate" then
+            return
+        end
+
+        if item["mikuType"] == "NxNotification" then
             return
         end
 

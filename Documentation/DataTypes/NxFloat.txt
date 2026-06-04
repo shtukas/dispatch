@@ -1,0 +1,7 @@
+
+NxFloat:
+    - uuid         : String
+    - mikuType     : "NxFloat"
+    - unixtime     :
+    - datetime     :
+    - description  : String
