@@ -27,11 +27,13 @@ class UxPayloads
 
     # UxPayloads::locationToPayload(location)
     def self.locationToPayload(location)
-        nhash = AionCore::commitLocationReturnHash(Elizabeth.new(), location)
+        bladeuuid = SecureRandom.hex
+        nhash = AionCore::commitLocationReturnHash(Elizabeth.new(bladeuuid), location)
         {
-            "uuid"     => SecureRandom.uuid,
-            "mikuType" => "AionPoint",
-            "nhash"    => nhash
+            "uuid"      => SecureRandom.uuid,
+            "mikuType"  => "AionPoint",
+            "bladeuuid" => bladeuuid,
+            "nhash"     => nhash
         }
     end
 
@@ -175,7 +177,7 @@ class UxPayloads
             exportFoldername = "#{exportId}-aion-point"
             exportFolderpath = "#{ENV['HOME']}/x-space/xcache-v1-days/#{Time.new.to_s[0, 10]}/#{exportFoldername}"
             FileUtils.mkpath(exportFolderpath)
-            AionCore::exportHashAtFolder(Elizabeth.new(), nhash, exportFolderpath)
+            AionCore::exportHashAtFolder(Elizabeth.new(payload["bladeuuid"]), nhash, exportFolderpath)
             system("open '#{exportFolderpath}'")
             LucilleCore::pressEnterToContinue()
             return
@@ -314,13 +316,16 @@ class UxPayloads
                 sleep 1
                 return
             end
-            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(), payload["nhash"])
+            if payload["bladeuuid"].nil? then
+                raise "could not find `bladeuui` attribute for payload #{payload}"
+            end
+            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(payload["bladeuuid"]), payload["nhash"])
             return
         end
 
         if payload["mikuType"] == "Dx8Unit" then
             if payload["id"].nil? then
-                raise "could not find `id` attribute for item #{item}"
+                raise "could not find `id` attribute for payload #{payload}"
             end
             return
         end
@@ -331,7 +336,7 @@ class UxPayloads
 
         if payload["mikuType"] == "Text" then
             if payload["text"].nil? then
-                raise "could not find `text` attribute for item #{item}"
+                raise "could not find `text` attribute for payload #{payload}"
             end
             return
         end
