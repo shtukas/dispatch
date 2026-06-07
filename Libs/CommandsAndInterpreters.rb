@@ -237,9 +237,9 @@ class CommandsAndInterpreters
 
         if Interpreting::match("cliques", input) then
             loop {
-                cliquename = Cliques::interactivelySelectCliqueNameOrNull()
-                return if cliquename.nil?
-                Cliques::diveClique(cliquename)
+                clique = Cliques::interactivelySelectOneCliqueOrNull()
+                return if clique.nil?
+                Cliques::diveClique(clique)
             }
             return
         end
