@@ -49,13 +49,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "DropBox" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
-                DropBox::done(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxPriority" then
             if item["targetuuid"] then
                 target = Items::itemOrNull(item["targetuuid"])

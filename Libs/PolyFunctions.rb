@@ -46,9 +46,6 @@ class PolyFunctions
         if item["mikuType"] == "DesktopTx1" then
             return item["announce"]
         end
-        if item["mikuType"] == "DropBox" then
-            return item["description"]
-        end
         if item["mikuType"] == "Anniversary" then
             return Anniversaries::toString(item)
         end

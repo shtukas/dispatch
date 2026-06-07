@@ -5,10 +5,26 @@ $InMemoryItemsF6F6ECA5 = nil
 
 class Items
 
+    # Items::itemsRepository()
+    def self.itemsRepository()
+        "#{Config::pathToGalaxy()}/DataHub/Dispatch/data/items-2107"
+    end
+
+    # Items::getItemsFromDisk()
+    def self.getItemsFromDisk()
+        items = []
+        Find.find(Items::itemsRepository()) do |path|
+            if path[-5, 5] == ".json" then
+                items << JSON.parse(IO.read(path))
+            end
+        end
+        items
+    end
+
     # Items::loadItemsFromDiskToMemory()
     def self.loadItemsFromDiskToMemory()
         #puts "loading items to memory".yellow
-        $InMemoryItemsF6F6ECA5 = Index::getItems()
+        $InMemoryItemsF6F6ECA5 = Items::getItemsFromDisk()
     end
 
     # Items::ensureItems()
@@ -39,14 +55,9 @@ class Items
 
     # Items::commitItem(item)
     def self.commitItem(item)
-
         Fsck::fsckItemOrError(item, false)
-
-        # Here we need to send the item to disk and update the in memory dataset
-
-        # Index::commitItem returns an item, because it may not be the item that 
-        # was submitted, in case we had to do a reconciliation
-        item = Index::commitItem(item)
+        filepath = "#{Items::itemsRepository()}/#{item["uuid"]}.json"
+        File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(item)) }
         if $InMemoryItemsF6F6ECA5 then
             $InMemoryItemsF6F6ECA5 = $InMemoryItemsF6F6ECA5.reject{|i| i["uuid"] == item["uuid"] } + [item]
         end
@@ -69,18 +80,16 @@ class Items
     def self.setAttribute(uuid, attribute_name, attribute_value)
         item = Items::itemOrNull(uuid)
         return if item.nil?
-
         item[attribute_name] = attribute_value
-        # Index::commitItem returns an item, because it may not be the item that 
-        # was submitted, in case we had to do a reconciliation
-        item = Items::commitItem(item)
-
-        item
+        Items::commitItem(item)
     end
 
     # Items::deleteItem(uuid)
     def self.deleteItem(uuid)
-        Index::deleteItem(uuid)
+        filepath = "#{Items::itemsRepository()}/#{item["uuid"]}.json"
+        if File.exist?(filepath) then
+            FileUtils.rm(filepath)
+        end
         if $InMemoryItemsF6F6ECA5 then
             $InMemoryItemsF6F6ECA5 = $InMemoryItemsF6F6ECA5.reject{|i| i["uuid"] == uuid }
         end
