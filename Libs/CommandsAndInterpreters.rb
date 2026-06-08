@@ -283,17 +283,7 @@ class CommandsAndInterpreters
         if Interpreting::match("today", input) then
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
-            uuid = SecureRandom.uuid
-            payload = UxPayloads::makeNewPayloadOrNull()
-            Items::init(uuid)
-            Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-            Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-            Items::setAttribute(uuid, "description", description)
-            Items::setAttribute(uuid, "date", CommonUtils::today())
-            Items::setAttribute(uuid, "payload-37", payload)
-            Items::setAttribute(uuid, "mikuType", "NxOndate")
-            Items::setAttribute(uuid, "today-absolute", CommonUtils::today())
-            item = Items::itemOrNull(uuid)
+            item = NxOndates::interactivelyIssueNewWithDetails(description, CommonUtils::today())
             puts JSON.pretty_generate(item)
             return
         end

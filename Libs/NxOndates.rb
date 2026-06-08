@@ -28,6 +28,9 @@ class NxOndates
         Items::setAttribute(uuid, "date", date)
         Items::setAttribute(uuid, "payload-37", UxPayloads::makeNewPayloadOrNull())
         Items::setAttribute(uuid, "mikuType", "NxOndate")
+        if date == CommonUtils::today() then
+            Items::setAttribute(uuid, "priority-48", CommonUtils::today())
+        end
         item = Items::itemOrNull(uuid)
         item
     end
