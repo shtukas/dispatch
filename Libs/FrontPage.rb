@@ -157,6 +157,7 @@ class FrontPage
 
         lispositionedInOrder = Items::items()
             .select{|item| ListPos39::hasACurrentPosition(item) }
+            .select{|item| DoNotShowUntil::isVisible(item) }
             .sort_by{|item| ListPos39::currentPositionOrNull(item) } # we sre not expecting nil here
 
         head = lispositionedInOrder + FrontPage::prioritized()
