@@ -86,7 +86,7 @@ class Items
 
     # Items::deleteItem(uuid)
     def self.deleteItem(uuid)
-        filepath = "#{Items::itemsRepository()}/#{item["uuid"]}.json"
+        filepath = "#{Items::itemsRepository()}/#{uuid}.json"
         if File.exist?(filepath) then
             FileUtils.rm(filepath)
         end
