@@ -154,7 +154,13 @@ class FrontPage
 
         store = ItemStore.new()
 
-        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + Dispatch::dispatch(FrontPage::prioritized(), [], FrontPage::today(), FrontPage::tail()), "uuid")
+        lispositionedInOrder = Items::items()
+            .select{|item| ListPos39::hasACurrentPosition(item) }
+            .sort_by{|item| ListPos39::currentPositionOrNull(item) } # we sre not expecting nil here
+
+        head = lispositionedInOrder + FrontPage::prioritized()
+
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + Dispatch::dispatch(head, [], FrontPage::today(), FrontPage::tail()), "uuid")
 
         priorities_target_uuids = Items::mikuType("NxPriority").map{|item| item["targetuuid"]}.collect
 

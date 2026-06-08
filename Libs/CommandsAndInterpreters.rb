@@ -303,9 +303,8 @@ class CommandsAndInterpreters
         if Interpreting::match("sort", input) then
             items = store.items()
             selected = CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
-            selected = selected.map{|item| NxPriorities::prioritiseIfNotPriorityOrIdentity(item) }
             selected.reverse.each{|item|
-                GlobalPositioning::insert_first(item)
+                ListPos39::markItemWithFirstPosition(item)
             }
             return
         end
