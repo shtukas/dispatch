@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | task with engine | >> * (transmute) | float",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | engined | delegates | cliques",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | numbers",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | numbers | today priorities",
         ].join("\n")
     end
 
@@ -98,6 +98,11 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Operations::dismiss(item)
+            return
+        end
+
+        if Interpreting::match("today priorities", input) then
+            NxOndates::selectAndMarkPrioritiesForToday()
             return
         end
 

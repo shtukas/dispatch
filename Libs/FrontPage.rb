@@ -98,6 +98,7 @@ class FrontPage
             Waves::listingItemsInterruption(),
             priorities.drop(1),
             NxCounters::listingItems(),
+            NxOndates::todayPriorities()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
