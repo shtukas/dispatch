@@ -27,8 +27,8 @@ class Dispatch
         ratio
     end
 
-    # Dispatch::item_to_timespan(item)
-    def self.item_to_timespan(item)
+    # Dispatch::item_to_timespan_in_seconds(item)
+    def self.item_to_timespan_in_seconds(item)
 
         if item["engine-1437"] then
             return NxEngines::missing_timespan_for_today(item)
@@ -41,14 +41,15 @@ class Dispatch
         if item["mikuType"] == "NxPriority" and item["targetuuid"] then
             target = Items::itemOrNull(item["targetuuid"])
             if target then
-                return Dispatch::item_to_timespan(target)
+                return Dispatch::item_to_timespan_in_seconds(target)
             end
         end
 
-        # There are situations, such as above, where we know the answer, 
-        # but for the rest, we use a blanket 10 minutes duration
+        if item["mikuType"] == "NxNxOndate" then
+            return 3600
+        end
 
-        600
+        600 # default
     end
 
     # Dispatch::timespanToNextDeadlineInSecondsOrNull()
@@ -60,7 +61,7 @@ class Dispatch
 
     # Dispatch::sequenceToTimespanInSeconds(sequence)
     def self.sequenceToTimespanInSeconds(sequence)
-        sequence.map{|item| Dispatch::item_to_timespan(item) }.sum
+        sequence.map{|item| Dispatch::item_to_timespan_in_seconds(item) }.sum
     end
 
     # Dispatch::today_split(today, split_value)

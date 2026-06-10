@@ -189,7 +189,7 @@ class FrontPage
                 deadline_string = nil
             end
 
-            cursor = cursor + Dispatch::item_to_timespan(item)
+            cursor = cursor + Dispatch::item_to_timespan_in_seconds(item)
             sheight = sheight - d
             break if sheight <= 0
         }
