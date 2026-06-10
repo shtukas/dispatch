@@ -94,9 +94,8 @@ class FrontPage
             Desktop::listingItems(),
             NxNotifications::listingItems(),
             NxFloats::listingItems(),
-            priorities.take(1),
+            NxPriorities::listingItems(),
             Waves::listingItemsInterruption(),
-            priorities.drop(1),
             NxCounters::listingItems(),
             NxOndates::todayPriorities()
         ]
