@@ -103,6 +103,13 @@ class CommandsAndInterpreters
 
         if Interpreting::match("today priorities", input) then
             NxOndates::selectAndMarkPrioritiesForToday()
+            wave = Items::itemOrNull("0bcd9517-03ca-4a9a-bf72-59fe01f997ff")
+            if wave.nil? then
+                puts "Please review [8f854be2]"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            PolyActions::done(wave)
             return
         end
 
