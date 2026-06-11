@@ -4,8 +4,9 @@ class Transmute
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
-            clique = Cliques::architectClique()
-            Items::setAttribute(item["uuid"], "clique-0928", clique)
+            parent = Parenting::interactivelyRecursivelySelectParentOrNull(context)
+            return item
+            Items::setAttribute(item["uuid"], "parenting-22", parent["uuid"])
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Items::itemOrNull(item["uuid"])
         end

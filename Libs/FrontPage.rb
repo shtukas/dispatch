@@ -35,13 +35,13 @@ class FrontPage
         line
     end
 
-    # FrontPage::printItem(store, item, cursor_string, screen_width)
-    def self.printItem(store, item, cursor_string, screen_width)
+    # FrontPage::printItem(store, item, screen_width)
+    def self.printItem(store, item, screen_width)
         return 0 if item.nil?
         store.register(item, FrontPage::canBeDefault(item))
         height = 0
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{cursor_string} #{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -120,10 +120,22 @@ class FrontPage
     # FrontPage::tail()
     def self.tail()
         [
-            Waves::listingItemsNonInterruption(),
-            BufferIn::listingItems(),
-            Cliques::listingItems(),
-        ]
+            {
+                "account" => "28c68c60:BufferIn",
+                "items" => BufferIn::listingItems()
+            },
+            {
+                "account" => "28c68c60:Wave",
+                "items" => Waves::listingItemsNonInterruption()
+            },
+            {
+                "account" => "28c68c60:NxRoot",
+                "items" => NxRoots::listingItems()
+            }
+        ].sort_by{|packet|
+            BankDerivedData::recoveredAverageHoursPerDay(packet["account"])
+        }
+            .map{|packet| packet["items"] }
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| FrontPage::isAccessible(item) }
@@ -174,21 +186,8 @@ class FrontPage
             end
         end
 
-        cursor = Time.new.to_i
-
-        deadline_string = Dispatch::deadlineAsStringOrNull()
-
         items.each{|item|
-            cursor_string = "[#{Time.at(cursor).to_s[11, 5]}]"
-            d = FrontPage::printItem(store, item, cursor_string, swidth)
-
-            if deadline_string and deadline_string < cursor_string then
-                puts "  --[ deadline ]-------------------------------------------------------"
-                sheight = sheight - 1
-                deadline_string = nil
-            end
-
-            cursor = cursor + Dispatch::item_to_timespan_in_seconds(item)
+            d = FrontPage::printItem(store, item, swidth)
             sheight = sheight - d
             break if sheight <= 0
         }

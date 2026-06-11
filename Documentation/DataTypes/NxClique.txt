@@ -1,7 +1,0 @@
-
-NxClique:
-    - uuid         : String
-    - mikuType     : "NxClique"
-    - description  : String
-
-Those are synthetic items, they are not part of the items repository

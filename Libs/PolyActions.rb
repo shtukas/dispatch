@@ -21,8 +21,8 @@ class PolyActions
             NxCounters::interactivelyIncrement(item)
             return
         end
-        if item["mikuType"] == "NxClique" then
-            return Cliques::diveClique(item["cliquename"])
+        if item["mikuType"] == "NxRoot" then
+            return Parenting::dive(item["cliquename"])
         end
         UxPayloads::access(item["payload-37"])
     end
@@ -36,7 +36,7 @@ class PolyActions
     def self.done(item)
         PolyActions::stop(item)
 
-        if item["mikuType"] == "NxClique" then
+        if item["mikuType"] == "NxRoot" then
             return
         end
 
@@ -171,7 +171,11 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if item["mikuType"] == "NxClique" then
+        if item["mikuType"] == "NxRoot" then
+            return if Parenting::getChildren(item["uuid"]).size > 0
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
+                Items::deleteItem(item["uuid"])
+            end
             return
         end
 

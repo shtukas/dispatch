@@ -41,6 +41,10 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "NxRoot" then
+            return
+        end
+
         if item["mikuType"] == "Anniversary" then
             return
         end

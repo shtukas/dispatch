@@ -14,7 +14,7 @@ class PolyFunctions
         }
 
         if item["donation-14"] then
-            target = PolyFunctions::uuid_to_item_or_null_cache_results(item["donation-14"])
+            target = Items::itemOrNull(item["donation-14"])
             if target then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
             end
@@ -22,13 +22,20 @@ class PolyFunctions
 
         accounts << {
             "description" => item["mikuType"],
-            "number"      => "28c68c60-64f4-4915-a1af-#{item["mikuType"]}"
+            "number"      => "28c68c60:#{item["mikuType"]}"
         }
 
         if item["mikuType"] == "NxEngineDelegate" then
-            target = PolyFunctions::uuid_to_item_or_null_cache_results(item["targetuuid"])
+            target = Items::itemOrNull(item["targetuuid"])
             if target then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+            end
+        end
+
+        if item["mikuType"] == "NxTask" then
+            parent = Items::itemOrNull(item["parentuuid"])
+            if parent then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end
         end
 
@@ -76,8 +83,8 @@ class PolyFunctions
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end
-        if item["mikuType"] == "NxClique" then
-            return item["cliquename"]
+        if item["mikuType"] == "NxRoot" then
+            return NxRoots::toString(item)
         end
         if item["mikuType"] == "NxEngineDelegate" then
             return NxEngineDelegate::toString(item)
@@ -92,12 +99,5 @@ class PolyFunctions
         item = Items::itemOrNull(uuid)
         XCache::set("00cc1ac4-1a63-437a-802b-8bcadbdb0fb4:#{uuid}", JSON.generate([item]))
         item
-    end
-
-    # PolyFunctions::uuid_to_string_or_null_for_bank_account_display_cache_results(uuid)
-    def self.uuid_to_string_or_null_for_bank_account_display_cache_results(uuid)
-        item = PolyFunctions::uuid_to_item_or_null_cache_results(uuid)
-        return nil if item.nil?
-        item["description"]
     end
 end

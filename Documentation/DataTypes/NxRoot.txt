@@ -1,0 +1,5 @@
+
+NxRoot:
+    - uuid         : String
+    - mikuType     : "NxRoot"
+    - description  : String

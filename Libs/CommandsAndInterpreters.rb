@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | set engine * | :: * (prioritise)",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | set engine * | :: * (prioritise) | dive *",
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | task with engine | >> * (transmute) | float",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | engined | delegates | cliques",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -128,6 +128,14 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("dive *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Parenting::dive(item)
+            return
+        end
+
         if Interpreting::match("global-maintenance", input) then
             Operations::globalMaintenance()
             return
@@ -163,9 +171,9 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
-            clique = Cliques::architectClique()
-            return if clique.nil?
-            item = NxTasks::interactivelyIssueNewOrNull(clique)
+            parent = Parenting::interactivelyRecursivelySelectParentOrNull(nil)
+            return if parent.nil?
+            item = NxTasks::interactivelyIssueNewOrNull(parent)
             return  if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -241,7 +249,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            cliquename = Cliques::architectCliqueNameOrNull()
+            cliquename = NxRoots::architectCliqueNameOrNull()
             return if cliquename.nil?
             Items::setAttribute(item["uuid"], "clique-13", cliquename)
             return
@@ -249,9 +257,9 @@ class CommandsAndInterpreters
 
         if Interpreting::match("cliques", input) then
             loop {
-                clique = Cliques::interactivelySelectOneCliqueOrNull()
+                clique = NxRoots::interactivelySelectOneOrNull()
                 return if clique.nil?
-                Cliques::diveClique(clique)
+                Parenting::dive(clique)
             }
             return
         end
