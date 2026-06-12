@@ -14,7 +14,6 @@ Cross types conventions (all optional):
     - engine-1437           : NxEngine or null
     - global-pos-07         : global positioning, Real [1]
     - listing-pos-39        : ListPos39 # listing positioning, Real
-    - parenting-22          : uuid of the parent of the item
 
 [1] We use that one for every situation where an order is expected 
 
