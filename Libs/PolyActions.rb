@@ -21,8 +21,9 @@ class PolyActions
             NxCounters::interactivelyIncrement(item)
             return
         end
-        if item["mikuType"] == "NxRoot" then
-            return Parenting::dive(item["cliquename"])
+        if item["mikuType"] == "NxFeeder" then
+            Parenting::dive(item)
+            return
         end
         UxPayloads::access(item["payload-37"])
     end
@@ -36,7 +37,7 @@ class PolyActions
     def self.done(item)
         PolyActions::stop(item)
 
-        if item["mikuType"] == "NxRoot" then
+        if item["mikuType"] == "NxFeeder" then
             return
         end
 
@@ -64,11 +65,6 @@ class PolyActions
                 PolyActions::done(target)
             end
             Items::deleteItem(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxEngineDelegate" then
-            # those items are auto done, nothing to do here
             return
         end
 
@@ -107,12 +103,6 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             puts "#{PolyFunctions::toString(item).green}"
-
-            if item["engine-1437"] then
-                NxBalls::stop(item)
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            end
-
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
             if option == "dismiss" then
                 NxBalls::stop(item)
@@ -126,6 +116,9 @@ class PolyActions
         end
 
         if item["mikuType"] == "BufferIn" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
+                Items::deleteItem(item["uuid"])
+            end
             return
         end
 
@@ -171,7 +164,7 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if item["mikuType"] == "NxRoot" then
+        if item["mikuType"] == "NxFeeder" then
             return if Parenting::getChildren(item["uuid"]).size > 0
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Items::deleteItem(item["uuid"])
@@ -194,13 +187,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "Anniversary" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxEngineDelegate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
             end
@@ -270,9 +256,6 @@ class PolyActions
 
     # PolyActions::editDescription(item) # item
     def self.editDescription(item)
-        if item["mikuType"] == "NxEngineDelegate" then
-            return
-        end
         if item["mikuType"] == "NxPriority" and item["targetuuid"] then
             return
         end

@@ -20,7 +20,7 @@ class Donations
 
     # Donations::interactivelySetDonation(item) # -> item
     def self.interactivelySetDonation(item)
-        target = NxEngines::interactivelySelectEnginedOrNull()
+        target = NxFeeders::interactivelySelectOneOrNull()
         return item if target.nil?
         Items::setAttribute(item["uuid"], "donation-14", target["uuid"])
         Items::itemOrNull(item["uuid"])

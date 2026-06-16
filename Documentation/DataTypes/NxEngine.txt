@@ -1,9 +1,0 @@
-{
-    "type" => "per-day",
-    "hours" => hours
-}
-
-{
-    "type" => "per-week",
-    "hours" => hours
-}

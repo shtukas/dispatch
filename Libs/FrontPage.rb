@@ -19,7 +19,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -41,7 +41,7 @@ class FrontPage
         store.register(item, FrontPage::canBeDefault(item))
         height = 0
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxEngines::suffix(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -109,8 +109,6 @@ class FrontPage
         [
             NxOndates::listingItems(),
             NxBackups::listingItems(),
-            NxEngineDelegate::listingItems(),
-            TasksWithEngines::listingItems(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
@@ -129,8 +127,8 @@ class FrontPage
                 "items" => Waves::listingItemsNonInterruption()
             },
             {
-                "account" => "28c68c60:NxRoot",
-                "items" => NxRoots::listingItems()
+                "account" => "28c68c60:NxFeeder",
+                "items" => NxFeeders::listingItems()
             }
         ].sort_by{|packet|
             BankDerivedData::recoveredAverageHoursPerDay(packet["account"])
@@ -166,18 +164,16 @@ class FrontPage
 
         store = ItemStore.new()
 
-        lispositionedInOrder = Items::items()
+        head = Items::items()
             .select{|item| ListPos39::hasACurrentPosition(item) }
             .select{|item| DoNotShowUntil::isVisible(item) }
             .sort_by{|item| ListPos39::currentPositionOrNull(item) } # we sre not expecting nil here
 
-        head = lispositionedInOrder + FrontPage::prioritized()
+        items = NxBalls::activeItems() + head + FrontPage::prioritized() + FrontPage::today() + FrontPage::tail()
 
-        items = CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::activeItems() + Dispatch::dispatch(head, [], FrontPage::today(), FrontPage::tail()), "uuid")
+        items = Prefix::prefix(items[0]) + items
 
-        priorities_target_uuids = Items::mikuType("NxPriority").map{|item| item["targetuuid"]}.collect
-
-        items = items.select{|item| !priorities_target_uuids.include?(item["uuid"]) }
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
 
         if Config::isPrimaryInstance() then
             report = `#{Config::pathToGalaxy()}/DataBank/Palmer/binary/palmer print-dispatch-missing-report`.strip

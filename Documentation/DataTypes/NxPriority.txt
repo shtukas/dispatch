@@ -6,5 +6,3 @@ NxPriority:
     - datetime     :
     - description  : String
     - targetuuid   : null or String
-
-Some piorities are also delegates. When that happens they stand for the item they are targetting and, in particular, inherit their description. When a priority item is standing for a target the target is doNotShowedUntil 60 seconds. We just want to prevent the display at the next listing.

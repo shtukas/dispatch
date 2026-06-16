@@ -25,15 +25,8 @@ class PolyFunctions
             "number"      => "28c68c60:#{item["mikuType"]}"
         }
 
-        if item["mikuType"] == "NxEngineDelegate" then
-            target = Items::itemOrNull(item["targetuuid"])
-            if target then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-            end
-        end
-
         if item["mikuType"] == "NxTask" then
-            parent = Items::itemOrNull(item["parentuuid"])
+            parent = Items::itemOrNull(item["parenting-22"])
             if parent then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end
@@ -83,11 +76,8 @@ class PolyFunctions
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end
-        if item["mikuType"] == "NxRoot" then
-            return NxRoots::toString(item)
-        end
-        if item["mikuType"] == "NxEngineDelegate" then
-            return NxEngineDelegate::toString(item)
+        if item["mikuType"] == "NxFeeder" then
+            return NxFeeders::toString(item)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end

@@ -41,7 +41,7 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "NxRoot" then
+        if item["mikuType"] == "NxFeeder" then
             return
         end
 
@@ -61,10 +61,6 @@ class Fsck
         end
 
         if item["mikuType"] == "NxPriority" then
-            return
-        end
-
-        if item["mikuType"] == "NxEngineDelegate" then
             return
         end
 

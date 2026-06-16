@@ -366,7 +366,7 @@ class UxPayloads
             UxPayloads::editItemPayload(item)
         end
         if option.nil? or option == "make new (default)" then
-            Items::setAttribute(item["uuid"], "payload-37", UxPayloads::makeNewPayloadOrNull(item["uuid"]))
+            Items::setAttribute(item["uuid"], "payload-37", UxPayloads::makeNewPayloadOrNull())
         end
         if option == "delete existing payload" then
             Items::setAttribute(item["uuid"], "payload-37", nil)
