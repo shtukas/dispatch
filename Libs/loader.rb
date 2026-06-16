@@ -130,7 +130,7 @@ require_relative "Blades.rb"
 
 require_relative "CommonUtils.rb"
 require_relative "CommandsAndInterpreters.rb"
-require_relative "NxFeeders.rb"
+require_relative "NxFeeds.rb"
 
 require_relative "Dx8Units.rb"
 require_relative "Desktop"

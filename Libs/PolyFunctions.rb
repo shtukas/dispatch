@@ -76,8 +76,8 @@ class PolyFunctions
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end
-        if item["mikuType"] == "NxFeeder" then
-            return NxFeeders::toString(item)
+        if item["mikuType"] == "NxFeed" then
+            return NxFeeds::toString(item)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end

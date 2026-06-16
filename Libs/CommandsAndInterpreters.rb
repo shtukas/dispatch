@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | float | feed",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | feeds",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | today priorities",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | today priorities | numbers",
         ].join("\n")
     end
 
@@ -101,6 +101,14 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("numbers", input) then
+            FrontPage::tail_structure().each{|packet|
+                puts "#{packet["name"]}: #{packet["rt"]}"
+            }
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if Interpreting::match("today priorities", input) then
             NxOndates::selectAndMarkPrioritiesForToday()
             wave = Items::itemOrNull("0bcd9517-03ca-4a9a-bf72-59fe01f997ff")
@@ -171,7 +179,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("feed", input) then
-            item = NxFeeders::interactivelyIssueNewOrNull()
+            item = NxFeeds::interactivelyIssueNewOrNull()
             return  if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -237,7 +245,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            cliquename = NxFeeders::architectCliqueNameOrNull()
+            cliquename = NxFeeds::architectCliqueNameOrNull()
             return if cliquename.nil?
             Items::setAttribute(item["uuid"], "clique-13", cliquename)
             return
@@ -245,9 +253,9 @@ class CommandsAndInterpreters
 
         if Interpreting::match("feeds", input) then
             loop {
-                root = NxFeeders::interactivelySelectOneOrNull()
-                return if root.nil?
-                Parenting::dive(root)
+                feed = NxFeeds::interactivelySelectOneOrNull()
+                return if feed.nil?
+                Parenting::dive(feed)
             }
             return
         end
@@ -387,6 +395,7 @@ class CommandsAndInterpreters
             return if description == ""
             item = NxPriorities::issueNew(description)
             puts JSON.pretty_generate(item)
+            Donations::interactivelySetDonation(item)
             return
         end
 

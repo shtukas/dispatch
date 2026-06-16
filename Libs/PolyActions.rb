@@ -21,7 +21,7 @@ class PolyActions
             NxCounters::interactivelyIncrement(item)
             return
         end
-        if item["mikuType"] == "NxFeeder" then
+        if item["mikuType"] == "NxFeed" then
             Parenting::dive(item)
             return
         end
@@ -37,7 +37,7 @@ class PolyActions
     def self.done(item)
         PolyActions::stop(item)
 
-        if item["mikuType"] == "NxFeeder" then
+        if item["mikuType"] == "NxFeed" then
             return
         end
 
@@ -156,7 +156,9 @@ class PolyActions
         PolyActions::start(item)
         PolyActions::access(item)
         LucilleCore::pressEnterToContinue("Press [enter] to done: ")
-        PolyActions::done(item)
+        if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
+            PolyActions::destroy(item)
+        end
     end
 
     # PolyActions::destroy(item)
@@ -164,7 +166,7 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if item["mikuType"] == "NxFeeder" then
+        if item["mikuType"] == "NxFeed" then
             return if Parenting::getChildren(item["uuid"]).size > 0
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Items::deleteItem(item["uuid"])

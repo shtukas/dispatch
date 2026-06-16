@@ -115,25 +115,32 @@ class FrontPage
             .select{|item| FrontPage::isAccessible(item) }
     end
 
-    # FrontPage::tail()
-    def self.tail()
+    # FrontPage::tail_structure()
+    def self.tail_structure()
         [
             {
-                "account" => "28c68c60:BufferIn",
-                "items" => BufferIn::listingItems()
+                "name" => "BufferIn",
+                "lambda_items" => lambda { BufferIn::listingItems() },
+                "rt" => BankDerivedData::recoveredAverageHoursPerDay("28c68c60:BufferIn")
             },
             {
-                "account" => "28c68c60:Wave",
-                "items" => Waves::listingItemsNonInterruption()
+                "name" => "Wave",
+                "lambda_items" => lambda { Waves::listingItemsNonInterruption() },
+                "rt" => BankDerivedData::recoveredAverageHoursPerDay("28c68c60:Wave")
             },
             {
-                "account" => "28c68c60:NxFeeder",
-                "items" => NxFeeders::listingItems()
+                "name" => "NxFeed",
+                "lambda_items" => lambda { NxFeeds::listingItems() },
+                "rt" => BankDerivedData::recoveredAverageHoursPerDay("28c68c60:NxFeed")
             }
-        ].sort_by{|packet|
-            BankDerivedData::recoveredAverageHoursPerDay(packet["account"])
-        }
-            .map{|packet| packet["items"] }
+        ]
+        .sort_by{|packet| packet["rt"] }
+    end
+
+    # FrontPage::tail()
+    def self.tail()
+        FrontPage::tail_structure()
+            .map{|packet| packet["lambda_items"].call() }
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| FrontPage::isAccessible(item) }
@@ -169,7 +176,7 @@ class FrontPage
             .select{|item| DoNotShowUntil::isVisible(item) }
             .sort_by{|item| ListPos39::currentPositionOrNull(item) } # we sre not expecting nil here
 
-        items = NxBalls::activeItems() + head + FrontPage::prioritized() + FrontPage::today() + FrontPage::tail()
+        items = NxBalls::activeItems() + head + FrontPage::prioritized() + FrontPage::today() + NxFeeds::guardian_for_front_page() + FrontPage::tail()
 
         items = Prefix::prefix(items[0]) + items
 

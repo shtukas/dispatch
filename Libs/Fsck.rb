@@ -41,7 +41,7 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "NxFeeder" then
+        if item["mikuType"] == "NxFeed" then
             return
         end
 

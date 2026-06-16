@@ -1,5 +1,5 @@
 
-NxFeeder:
+NxFeed:
     - uuid         : String
-    - mikuType     : "NxFeeder"
+    - mikuType     : "NxFeed"
     - description  : String

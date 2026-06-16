@@ -22,7 +22,9 @@ class Parenting
             children = Parenting::getChildrenInOrder(parent["uuid"])
             store = ItemStore.new()
             puts ""
-            puts "-> #{PolyFunctions::toString(parent).green}"
+            puts "#{PolyFunctions::toString(parent).green}"
+            store.register(parent, FrontPage::canBeDefault(parent))
+            puts FrontPage::toString2(store, parent)
             children
                 .each{|item|
                     store.register(item, FrontPage::canBeDefault(item))
@@ -64,7 +66,7 @@ class Parenting
     # Parenting::interactivelyRecursivelySelectParentOrNull(context)
     def self.interactivelyRecursivelySelectParentOrNull(context)
         if context.nil? then
-            root = NxFeeders::interactivelySelectOneOrNull()
+            root = NxFeeds::interactivelySelectOneOrNull()
             return nil if root.nil?
             return Parenting::interactivelyRecursivelySelectParentOrNull(root)
         end
