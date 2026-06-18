@@ -140,6 +140,12 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            if item["uuid"] == Guardian::guardianFeederUuid() then
+                puts "You cannot dive into the Guardian (you can access it)"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+
             Parenting::dive(item)
             return
         end

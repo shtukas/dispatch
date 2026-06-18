@@ -19,7 +19,7 @@ class NxFloats
 
     # NxFloats::icon()
     def self.icon()
-        "🔺"
+        "🚁"
     end
 
     # NxFloats::toString(item)
