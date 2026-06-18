@@ -7,6 +7,7 @@ class FrontPage
     def self.canBeDefault(item)
         return false if TmpSkip1::isSkipped(item)
         return true  if NxBalls::itemIsRunning(item)
+        return false if item["mikuType"] == "NxFloat"
         true
     end
 
