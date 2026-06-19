@@ -94,8 +94,8 @@ class FrontPage
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             NxNotifications::listingItems(),
-            NxFloats::listingItems(),
             NxPriorities::listingItems(),
+            NxFloats::listingItems(),
             Waves::listingItemsInterruption(),
             NxCounters::listingItems(),
             NxOndates::todayPriorities()
@@ -110,6 +110,7 @@ class FrontPage
         [
             NxOndates::listingItems(),
             NxBackups::listingItems(),
+            Guardian::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) }

@@ -93,6 +93,7 @@ class Operations
     # Operations::expose(item)
     def self.expose(item)
         puts JSON.pretty_generate(item)
+        puts "rt: #{BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])}"
         LucilleCore::pressEnterToContinue()
     end
 
