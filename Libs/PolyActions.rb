@@ -18,7 +18,6 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
         if item["uuid"] == Guardian::guardianFeederUuid() then
-            Guardian::program()
             return
         end
         if item["mikuType"] == "NxCounter" then
