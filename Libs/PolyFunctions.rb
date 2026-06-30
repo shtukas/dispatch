@@ -25,6 +25,13 @@ class PolyFunctions
             "number"      => "28c68c60:#{item["mikuType"]}"
         }
 
+        if item["mikuType"] == "BufferInItem" then
+            accounts << {
+                "description" => "buffer in time tracking",
+                "number"      => BufferIn::timeTrackingAccount()
+            }
+        end
+
         if item["mikuType"] == "NxTask" then
             parent = Items::itemOrNull(item["parenting-22"])
             if parent then
@@ -52,8 +59,11 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end
-        if item["mikuType"] == "BufferIn" then
-            return BufferIn::toString(item)
+        if item["mikuType"] == "BufferInItem" then
+            return BufferIn::itemToString(item)
+        end
+        if item["mikuType"] == "BufferInDelegate" then
+            return BufferIn::delegateToString(item)
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)

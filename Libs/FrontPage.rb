@@ -123,7 +123,7 @@ class FrontPage
             {
                 "name" => "BufferIn",
                 "lambda_items" => lambda { BufferIn::listingItems() },
-                "rt" => BankDerivedData::recoveredAverageHoursPerDay("28c68c60:BufferIn")
+                "rt" => BankDerivedData::recoveredAverageHoursPerDay(BufferIn::timeTrackingAccount())
             },
             {
                 "name" => "Wave",

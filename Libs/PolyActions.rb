@@ -28,6 +28,10 @@ class PolyActions
             Parenting::dive(item)
             return
         end
+        if item["mikuType"] == "BufferInDelegate" then
+            Parenting::dive(item)
+            return
+        end
         UxPayloads::access(item["payload-37"])
     end
 
@@ -118,7 +122,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "BufferIn" then
+        if item["mikuType"] == "BufferInItem" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Items::deleteItem(item["uuid"])
             end
@@ -235,7 +239,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "BufferIn" then
+        if item["mikuType"] == "BufferInItem" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
             end

@@ -25,7 +25,11 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "BufferIn" then
+        if item["mikuType"] == "BufferInItem" then
+            return
+        end
+
+        if item["mikuType"] == "BufferInDelegate" then
             return
         end
 
