@@ -89,6 +89,9 @@ class PolyFunctions
         if item["mikuType"] == "NxFeed" then
             return NxFeeds::toString(item)
         end
+        if item["mikuType"] == "GuardianProject" then
+            return Guardian::projectToString(item)
+        end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end
 

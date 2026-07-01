@@ -7,6 +7,9 @@ class Parenting
 
     # Parenting::getChildren(parentuuid)
     def self.getChildren(parentuuid)
+        if parentuuid == Guardian::guardianFeederUuid() then
+            return Guardian::guardianProjects()
+        end
         Items::items().select{|item| item["parenting-22"] == parentuuid }
     end
 

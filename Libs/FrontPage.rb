@@ -184,13 +184,6 @@ class FrontPage
 
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
 
-        if Config::isPrimaryInstance() then
-            report = `#{Config::pathToGalaxy()}/DataBank/Palmer/binary/palmer print-dispatch-missing-report`.strip
-            if report != "" then
-                puts "palmer: ".green + report.red
-            end
-        end
-
         items.each{|item|
             d = FrontPage::printItem(store, item, swidth)
             sheight = sheight - d

@@ -18,6 +18,7 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
         if item["uuid"] == Guardian::guardianFeederUuid() then
+            Parenting::dive(item)
             return
         end
         if item["mikuType"] == "NxCounter" then
@@ -30,6 +31,17 @@ class PolyActions
         end
         if item["mikuType"] == "BufferInDelegate" then
             Parenting::dive(item)
+            return
+        end
+        if item["mikuType"] == "GuardianProject" then
+            if item["isFile"] then
+                system("open '#{item["location"]}'")
+            else
+                todolistFile = Guardian::identifyTodoFileInDirectory(item["location"])
+                if todolistFile.nil? then
+                    puts "I could not find a todo file in: #{item["location"]}"
+                end
+            end
             return
         end
         UxPayloads::access(item["payload-37"])
@@ -162,7 +174,14 @@ class PolyActions
 
         PolyActions::start(item)
         PolyActions::access(item)
-        LucilleCore::pressEnterToContinue("Press [enter] to done: ")
+
+        if item["mikuType"] == "Wave" then
+            if LucilleCore::askQuestionAnswerAsBoolean("done: '#{PolyFunctions::toString(item).green} ? '", true) then
+                PolyActions::done(item)
+            end
+            return
+        end
+
         if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
             PolyActions::destroy(item)
         end
