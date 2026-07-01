@@ -84,13 +84,7 @@ class FrontPage
 
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
-        # not needed at the moment
-    end
-
-    # FrontPage::prioritized()
-    def self.prioritized()
-        priorities = NxPriorities::listingItems()
-        [
+        items = [
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             NxNotifications::listingItems(),
@@ -98,54 +92,36 @@ class FrontPage
             NxFloats::listingItems(),
             Waves::listingItemsInterruption(),
             NxCounters::listingItems(),
-            NxOndates::todayPriorities()
-        ]
-            .flatten
-            .select{|item| DoNotShowUntil::isVisible(item) }
-            .select{|item| FrontPage::isAccessible(item) }
-    end
-
-    # FrontPage::today()
-    def self.today()
-        [
             NxOndates::listingItems(),
             NxBackups::listingItems(),
-            Guardian::listingItems()
+            Guardian::listingItems(),
+            (lambda {
+                structure = [
+                    {
+                        "account" => "Wave",
+                        "items" => Waves::listingItemsNonInterruption()
+                    },
+                    {
+                        "account" => "NxTask",
+                        "items" => NxTasks::listingItems()
+                    }
+                ]
+                .sort_by{|packet|
+                    BankDerivedData::recoveredAverageHoursPerDay(packet["account"])
+                }
+                .map{|packet|
+                    packet["items"]
+                }
+                .flatten
+            }).call()
         ]
             .flatten
-            .select{|item| DoNotShowUntil::isVisible(item) }
-            .select{|item| FrontPage::isAccessible(item) }
-    end
+            .select {|item| DoNotShowUntil::isVisible(item) }
+            .select {|item| FrontPage::isAccessible(item) }
 
-    # FrontPage::tail_structure()
-    def self.tail_structure()
-        [
-            {
-                "name" => "BufferIn",
-                "lambda_items" => lambda { BufferIn::listingItems() },
-                "rt" => BankDerivedData::recoveredAverageHoursPerDay(BufferIn::timeTrackingAccount())
-            },
-            {
-                "name" => "Wave",
-                "lambda_items" => lambda { Waves::listingItemsNonInterruption() },
-                "rt" => BankDerivedData::recoveredAverageHoursPerDay("28c68c60:Wave")
-            },
-            {
-                "name" => "NxFeed",
-                "lambda_items" => lambda { NxFeeds::listingItems() },
-                "rt" => BankDerivedData::recoveredAverageHoursPerDay("28c68c60:NxFeed")
-            }
-        ]
-        .sort_by{|packet| packet["rt"] }
-    end
-
-    # FrontPage::tail()
-    def self.tail()
-        FrontPage::tail_structure()
-            .map{|packet| packet["lambda_items"].call() }
-            .flatten
-            .select{|item| DoNotShowUntil::isVisible(item) }
-            .select{|item| FrontPage::isAccessible(item) }
+        is1, is2 = items.partition{|item| item["listing-pos-39"] and item["listing-pos-39"]["date"] == CommonUtils::today() }
+        is1 = is1.sort_by{|item| item["listing-pos-39"]["position"] }
+        is1 + is2
     end
 
     # FrontPage::displayListing(initialCodeTrace)
@@ -172,16 +148,7 @@ class FrontPage
         t1 = Time.new.to_f
 
         store = ItemStore.new()
-
-        head = Items::items()
-            .select{|item| ListPos39::hasACurrentPosition(item) }
-            .select{|item| DoNotShowUntil::isVisible(item) }
-            .sort_by{|item| ListPos39::currentPositionOrNull(item) } # we sre not expecting nil here
-
-        items = NxBalls::activeItems() + head + FrontPage::prioritized() + FrontPage::today() + NxFeeds::guardian_for_front_page() + FrontPage::tail()
-
-        items = Prefix::prefix(items[0]) + items
-
+        items = NxBalls::activeItems() + FrontPage::itemsForListingOrdered()
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
 
         items.each{|item|

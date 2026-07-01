@@ -17,20 +17,16 @@ class PolyActions
 
     # PolyActions::access(item)
     def self.access(item)
-        if item["uuid"] == Guardian::guardianFeederUuid() then
-            Parenting::dive(item)
+        if item["uuid"] == Guardian::rootuuid() then
+            Guardian::dive()
             return
         end
         if item["mikuType"] == "NxCounter" then
             NxCounters::interactivelyIncrement(item)
             return
         end
-        if item["mikuType"] == "NxFeed" then
-            Parenting::dive(item)
-            return
-        end
-        if item["mikuType"] == "BufferInDelegate" then
-            Parenting::dive(item)
+        if item["mikuType"] == "GuardianRoot" then
+            Guardian::dive()
             return
         end
         if item["mikuType"] == "GuardianProject" then
@@ -55,10 +51,6 @@ class PolyActions
     # PolyActions::done(item)
     def self.done(item)
         PolyActions::stop(item)
-
-        if item["mikuType"] == "NxFeed" then
-            return
-        end
 
         if item["mikuType"] == "NxCounter" then
             return
@@ -134,16 +126,17 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "BufferInItem" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Items::deleteItem(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxBackup" then
             puts "#{PolyFunctions::toString(item).green}"
             DoNotShowUntil::doNotShowUntil(item, Time.new.to_i + 86400 * item["period"])
+            return
+        end
+
+        if item["mikuType"] == "GuardianRoot" then
+            return
+        end
+
+        if item["mikuType"] == "GuardianProject" then
             return
         end
 
@@ -191,14 +184,6 @@ class PolyActions
     def self.destroy(item)
 
         NxBalls::stop(item)
-
-        if item["mikuType"] == "NxFeed" then
-            return if Parenting::getChildren(item["uuid"]).size > 0
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Items::deleteItem(item["uuid"])
-            end
-            return
-        end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
@@ -258,10 +243,11 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "BufferInItem" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-            end
+        if item["mikuType"] == "GuardianRoot" then
+            return
+        end
+
+        if item["mikuType"] == "GuardianProject" then
             return
         end
 

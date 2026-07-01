@@ -1,7 +1,7 @@
 class NxTasks
 
-    # NxTasks::interactivelyIssueNewOrNull(parent)
-    def self.interactivelyIssueNewOrNull(parent)
+    # NxTasks::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
         uuid = SecureRandom.uuid
@@ -11,7 +11,6 @@ class NxTasks
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "payload-37", payload)
-        Items::setAttribute(uuid, "parenting-22", parent["uuid"])
         Items::setAttribute(uuid, "mikuType", "NxTask")
         item = Items::itemOrNull(uuid)
         item
@@ -27,8 +26,53 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        parent = Items::itemOrNull(item["parenting-22"])
-        pa = "(#{parent["description"]})".yellow
-        "#{NxTasks::icon()} #{item["description"]} #{pa}"
+        "#{NxTasks::icon()} #{item["description"]}"
+    end
+
+    # NxTasks::itemsInOrder()
+    def self.itemsInOrder()
+        Items::mikuType("NxTask")
+            .sort_by{|item| item["global-pos-07"] || 0 }
+    end
+
+    # NxTasks::listingItems()
+    def self.listingItems()
+        NxTasks::itemsInOrder()
+            .first(10)
+    end
+
+    # NxTasks::determineNewPosition()
+    def self.determineNewPosition()
+        items = NxTasks::itemsInOrder()
+        loop {
+            if items.size == 0 then
+                return 1
+            end
+            if items.size < 10 then
+                return (items.map{|item| item["global-pos-07"] || 0 }.max + 1)
+            end
+            average_consecutive_difference = lambda {|numbers|
+                numbers.each_cons(2).sum { |a, b| b - a } / (numbers.size - 1).to_f
+            }
+            ten = items.take(10)
+            numbers = ten.map{|item| item["global-pos-07"] || 0 }
+            a = average_consecutive_difference.call(numbers)
+            if a < 0.25 then
+                items = items.drop(1)
+                next
+            end
+            s1 = numbers.min
+            s2 = numbers.max
+            return s1 + rand * (s2 - s1)
+        }
+    end
+
+    # NxTasks::markWithNewPosition(item)
+    def self.markWithNewPosition(item)
+        position = NxTasks::determineNewPosition()
+        puts "new position: #{position}".yellow
+        Items::setAttribute(item["uuid"], "global-pos-07", position)
+        item["global-pos-07"] = position
+        item
     end
 end

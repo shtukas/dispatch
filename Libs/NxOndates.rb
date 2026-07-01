@@ -50,19 +50,4 @@ class NxOndates
         Items::mikuType("NxOndate")
             .select{|item| item["date"] <= CommonUtils::today() }
     end
-
-    # NxOndates::todayPriorities()
-    def self.todayPriorities()
-        NxOndates::listingItems()
-            .select{|item| item["priority-48"] == CommonUtils::today() }
-    end
-
-    # NxOndates::selectAndMarkPrioritiesForToday()
-    def self.selectAndMarkPrioritiesForToday()
-        items = NxOndates::listingItems()
-        selected = CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
-        selected.each{|item|
-            Items::setAttribute(item["uuid"], "priority-48", CommonUtils::today())
-        }
-    end
 end

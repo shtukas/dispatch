@@ -1,5 +1,0 @@
-
-NxFeed:
-    - uuid         : String
-    - mikuType     : "NxFeed"
-    - description  : String

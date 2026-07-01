@@ -25,10 +25,6 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "BufferInItem" then
-            return
-        end
-
         if item["mikuType"] == "BufferInDelegate" then
             return
         end
@@ -45,18 +41,11 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "NxFeed" then
-            return
-        end
-
         if item["mikuType"] == "Anniversary" then
             return
         end
 
         if item["mikuType"] == "NxTask" then
-            if item["parenting-22"].nil? then
-                raise "item: #{item} is missing its parenting-22"
-            end
             return
         end
 

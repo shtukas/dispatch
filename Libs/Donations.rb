@@ -18,9 +18,14 @@ class Donations
         nil
     end
 
+    # Donations::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("feed", [Guardian::rootuuid()], lambda {|item| "GuardianRoot" })
+    end
+
     # Donations::interactivelySetDonation(item) # -> item
     def self.interactivelySetDonation(item)
-        target = NxFeeds::interactivelySelectOneOrNull()
+        target = Donations::interactivelySelectOneOrNull()
         return item if target.nil?
         Items::setAttribute(item["uuid"], "donation-14", target["uuid"])
         Items::itemOrNull(item["uuid"])

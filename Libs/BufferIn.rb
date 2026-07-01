@@ -10,8 +10,8 @@ class BufferIn
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "payload-37", UxPayloads::locationToPayload(filepath))
-        Items::setAttribute(uuid, "parenting-22", BufferIn::deleguateuuid())
-        Items::setAttribute(uuid, "mikuType", "BufferInItem")
+        Items::setAttribute(uuid, "global-pos-07", NxTasks::determineNewPosition())
+        Items::setAttribute(uuid, "mikuType", "NxTask")
         item = Items::itemOrNull(uuid)
         item
     end
@@ -26,33 +26,5 @@ class BufferIn
             BufferIn::issueNew(location)
             LucilleCore::removeFileSystemLocation(location)
         }
-    end
-
-    # BufferIn::itemToString(item)
-    def self.itemToString(item)
-        "🥐 #{item["description"]}"
-    end
-
-    # BufferIn::delegateToString(item)
-    def self.delegateToString(item)
-        "🐞 #{item["description"]}"
-    end
-
-    # BufferIn::deleguateuuid()
-    def self.deleguateuuid()
-        "101b6971-3582-4459-9882-cf9d2fa52503"
-    end
-
-    # BufferIn::timeTrackingAccount()
-    def self.timeTrackingAccount()
-        "95580b8d-b62f-4fa2-88ad-aefdc3ca450c"
-    end
-
-    # BufferIn::listingItems()
-    def self.listingItems()
-        if BankDerivedData::recoveredAverageHoursPerDay(BufferIn::timeTrackingAccount()) > 1 then
-            return []
-        end
-        Items::mikuType("BufferInDelegate").sort_by{|item| item["unixtime"] }
     end
 end

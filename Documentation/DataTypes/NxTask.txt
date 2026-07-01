@@ -6,4 +6,3 @@ NxTask:
     - datetime      :
     - description   : String
     - global-pos-07 : Float
-    - parenting-22  : uuid of the parent of the item

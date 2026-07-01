@@ -5,11 +5,11 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | :: * (prioritise) | dive * | move *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | float | feed",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | feeds",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | :: * (prioritise)",
+            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | float",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | today priorities | numbers",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | numbers",
         ].join("\n")
     end
 
@@ -109,18 +109,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("today priorities", input) then
-            NxOndates::selectAndMarkPrioritiesForToday()
-            wave = Items::itemOrNull("0bcd9517-03ca-4a9a-bf72-59fe01f997ff")
-            if wave.nil? then
-                puts "Please review [8f854be2]"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            PolyActions::done(wave)
-            return
-        end
-
         if Interpreting::match("transmute", input) then
             item = store.getDefault()
             return if item.nil?
@@ -133,14 +121,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmute::transmute(item)
-            return
-        end
-
-        if Interpreting::match("dive *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Parenting::dive(item)
             return
         end
 
@@ -178,31 +158,11 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("feed", input) then
-            item = NxFeeds::interactivelyIssueNewOrNull()
-            return  if item.nil?
-            puts JSON.pretty_generate(item)
-            return
-        end
-
         if Interpreting::match("todo", input) then
-            parent = Parenting::interactivelyRecursivelySelectParentOrNull(nil)
-            return if parent.nil?
-            item = NxTasks::interactivelyIssueNewOrNull(parent)
+            item = NxTasks::interactivelyIssueNewOrNull()
             return  if item.nil?
+            item = NxTasks::markWithNewPosition(item)
             puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("move *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-
-            parent = Parenting::interactivelyRecursivelySelectParentOrNull(nil)
-            return if parent.nil?
-
-            Items::setAttribute(item["uuid"], "parenting-22", parent["uuid"])
             return
         end
 
@@ -238,25 +198,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Donations::interactivelySetDonation(item)
-            return
-        end
-
-        if Interpreting::match("clique *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            cliquename = NxFeeds::architectCliqueNameOrNull()
-            return if cliquename.nil?
-            Items::setAttribute(item["uuid"], "clique-13", cliquename)
-            return
-        end
-
-        if Interpreting::match("feeds", input) then
-            loop {
-                feed = NxFeeds::interactivelySelectOneOrNull()
-                return if feed.nil?
-                Parenting::dive(feed)
-            }
             return
         end
 

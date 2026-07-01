@@ -4,9 +4,6 @@ class Transmute
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
-            parent = Parenting::interactivelyRecursivelySelectParentOrNull(nil)
-            return item if parent.nil?
-            Items::setAttribute(item["uuid"], "parenting-22", parent["uuid"])
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Items::itemOrNull(item["uuid"])
         end

@@ -1,7 +1,13 @@
 
 =begin
 
-This is a virtual object, not presence in the item store
+GuardianRoot (virtual object)
+{
+    "uuid"        : String
+    "mikuType"    : "GuardianRoot"
+}
+
+GuardianProject (virtual object)
 {
     "uuid"        : String
     "mikuType"    : "GuardianProject"
@@ -12,16 +18,29 @@ This is a virtual object, not presence in the item store
 =end
 
 class Guardian
-    # Guardian::guardianFeederUuid()
-    def self.guardianFeederUuid()
+
+    # Guardian::rootuuid()
+    def self.rootuuid()
         "085ca696dd8bd8db80a82160e88efcf35024eb01"
+    end
+
+    # Guardian::guardianRoot()
+    def self.guardianRoot()
+        {
+            "uuid"     => Guardian::rootuuid(),
+            "mikuType" => "GuardianRoot"
+        }
+    end
+
+    # Guardian::rootAsString()
+    def self.rootAsString()
+        "👩🏻‍💻 Guardian"
     end
 
     # Guardian::listingItems()
     def self.listingItems()
-        item = Items::itemOrNull("085ca696dd8bd8db80a82160e88efcf35024eb01")
-        return [] if NxFeeds::completionRatio(item) >= 1
-        [item]
+        return [] if BankDerivedData::recoveredAverageHoursPerDay(Guardian::rootuuid()) > 5
+        [Guardian::guardianRoot()]
     end
 
     # Guardian::guardianProjects()
@@ -50,6 +69,13 @@ class Guardian
 
     # Guardian::projectToString(item)
     def self.projectToString(item)
-        "👩🏻‍💻 #{item["description"]}"
+        "🔹 #{item["description"]}"
+    end
+
+    # Guardian::dive()
+    def self.dive()
+        Operations::program3(lambda {
+            Guardian::guardianProjects()
+        })
     end
 end

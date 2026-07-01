@@ -130,7 +130,6 @@ require_relative "Blades.rb"
 
 require_relative "CommonUtils.rb"
 require_relative "CommandsAndInterpreters.rb"
-require_relative "NxFeeds.rb"
 
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
@@ -166,8 +165,6 @@ require_relative "Operations.rb"
 
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
-require_relative "Parenting.rb"
-require_relative "Prefix.rb"
 
 require_relative "SectionsType0141.rb"
 require_relative "Search.rb"
