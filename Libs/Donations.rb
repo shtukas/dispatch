@@ -4,13 +4,16 @@ class Donations
     # Donations::suffix(item)
     def self.suffix(item)
         return "" if item["donation-14"].nil?
-        description = Donations::donationId_to_description_or_null(item["donation-14"])
+        description = Donations::donationIdToDescriptionOrNull(item["donation-14"])
         return "" if description.nil?
         " (d: #{description})".yellow
     end
 
-    # Donations::donationId_to_description_or_null(donationid)
-    def self.donationId_to_description_or_null(donationid)
+    # Donations::donationIdToDescriptionOrNull(donationid)
+    def self.donationIdToDescriptionOrNull(donationid)
+        if donationid == Guardian::rootuuid() then
+            return "guardian"
+        end
         target = PolyFunctions::uuid_to_item_or_null_cache_results(donationid)
         if target then
             return target["description"]
@@ -18,16 +21,16 @@ class Donations
         nil
     end
 
-    # Donations::interactivelySelectOneOrNull()
-    def self.interactivelySelectOneOrNull()
+    # Donations::interactivelySelectUuidOrNull()
+    def self.interactivelySelectUuidOrNull()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("feed", [Guardian::rootuuid()], lambda {|item| "GuardianRoot" })
     end
 
     # Donations::interactivelySetDonation(item) # -> item
     def self.interactivelySetDonation(item)
-        target = Donations::interactivelySelectOneOrNull()
-        return item if target.nil?
-        Items::setAttribute(item["uuid"], "donation-14", target["uuid"])
+        uuid = Donations::interactivelySelectUuidOrNull()
+        return item if uuid.nil?
+        Items::setAttribute(item["uuid"], "donation-14", uuid)
         Items::itemOrNull(item["uuid"])
     end
 end
