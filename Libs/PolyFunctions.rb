@@ -13,6 +13,11 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
+        accounts << {
+            "description" => item["mikuType"],
+            "number"      => item["mikuType"]
+        }
+
         if item["donation-14"] then
             target = Items::itemOrNull(item["donation-14"])
             if target then
@@ -20,10 +25,12 @@ class PolyFunctions
             end
         end
 
-        accounts << {
-            "description" => item["mikuType"],
-            "number"      => item["mikuType"]
-        }
+        if item["mikuType"] == "GuardianProject" then
+            accounts << {
+                "description" => "GuardianRoot",
+                "number"      => Guardian::rootuuid()
+            }
+        end
 
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then

@@ -175,6 +175,7 @@ require_relative "Transmute.rb"
 require_relative "UxPayloads.rb"
 
 require_relative "ValueCache.rb"
+require_relative "VirtualItems.rb"
 
 require_relative "Waves.rb"
 

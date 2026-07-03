@@ -40,7 +40,8 @@ class Guardian
     # Guardian::listingItems()
     def self.listingItems()
         return [] if BankDerivedData::recoveredAverageHoursPerDay(Guardian::rootuuid()) > 5
-        [Guardian::guardianRoot()]
+        Guardian::ensureProjectsInCache()
+        Guardian::guardianProjects() + [Guardian::guardianRoot()]
     end
 
     # Guardian::guardianProjects()
@@ -58,6 +59,15 @@ class Guardian
                     "isFile" => File.file?(location)
                 }
             }
+    end
+
+    # Guardian::ensureProjectsInCache()
+    def self.ensureProjectsInCache()
+        Guardian::guardianProjects().each{|project|
+            s = VirtualItems::getOrNull(project["uuid"])
+            next if s
+            VirtualItems::commit(project)
+        }
     end
 
     # Guardian::identifyTodoFileInDirectory(parent)
