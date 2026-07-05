@@ -13,11 +13,6 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        accounts << {
-            "description" => item["mikuType"],
-            "number"      => item["mikuType"]
-        }
-
         if item["parentuuid"] then
             target = Items::itemOrNull(item["parentuuid"])
             if target then
@@ -38,6 +33,21 @@ class PolyFunctions
                 "number"      => Guardian::rootuuid()
             }
         end
+
+        if item["mikuType"] == "NxTask" and item["parentuuid"].nil? then
+            accounts << {
+                "description" => "infinity tasks feeder",
+                "number"      => "NxTask-infinity-cf342eb89122"
+            }
+        end
+
+        if item["mikuType"] == "Wave" and !item["interruption"] then
+            accounts << {
+                "description" => "non interruption waves",
+                "number"      => "wave-non-interruption-732e5459e9a2"
+            }
+        end
+
 
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then

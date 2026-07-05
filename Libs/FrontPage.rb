@@ -93,12 +93,12 @@ class FrontPage
             {
                 "account" => "Wave",
                 "items" => lambda { Waves::listingItemsNonInterruption() },
-                "ratio" => BankDerivedData::recoveredAverageHoursPerDay("Wave").to_f/2
+                "ratio" => BankDerivedData::recoveredAverageHoursPerDay("wave-non-interruption-732e5459e9a2").to_f/2
             },
             {
                 "account" => "NxTask",
                 "items" => lambda { NxTasks::listingItems() },
-                "ratio" => BankDerivedData::recoveredAverageHoursPerDay("NxTask").to_f/1
+                "ratio" => BankDerivedData::recoveredAverageHoursPerDay("NxTask-infinity-cf342eb89122").to_f/1
             }
         ]
         .sort_by{|packet|
