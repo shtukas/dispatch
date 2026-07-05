@@ -80,6 +80,21 @@ class Hierarchy
         directive
     end
 
+    # Hierarchy::reviewParentChildrenOrderingDirective(parent)
+    def self.reviewParentChildrenOrderingDirective(parent)
+        directive = XCache::getOrNull("5f7d92de-4254-4777-a02f-3887207a57d8:#{parent["uuid"]}")
+        if directive then
+            puts "directive: #{directive}"
+            if LucilleCore::askQuestionAnswerAsBoolean("update ? ") then
+                directive = Hierarchy::makeNewOrderingDirective(parent)
+                XCache::set("5f7d92de-4254-4777-a02f-3887207a57d8:#{parent["uuid"]}", JSON.generate(directive))
+            end
+        else
+            directive = Hierarchy::makeNewOrderingDirective(parent)
+            XCache::set("5f7d92de-4254-4777-a02f-3887207a57d8:#{parent["uuid"]}", JSON.generate(directive))
+        end
+    end
+
     # Hierarchy::distributionSuffix(item)
     def self.distributionSuffix(item)
         ratio = XCache::getOrNull("ceb929a4-605c-407c-9986-b44b835ac4df:#{item["uuid"]}")
@@ -94,7 +109,8 @@ class Hierarchy
         puts "create the children"
         text = CommonUtils::editTextSynchronously("").strip
         return if text == ""
-        text.lines.each{|line|
+        text.lines.map{|line| line.strip }.each{|line|
+            next if line == ""
             child = NxTasks::interactivelyIssueNewLine(line)
             Items::setAttribute(child["uuid"], "parentuuid", parent["uuid"])
             Items::setAttribute(child["uuid"], "global-pos-07", GlobalPositioning::last_position() + 1)
