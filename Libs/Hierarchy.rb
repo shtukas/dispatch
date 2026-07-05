@@ -18,9 +18,9 @@ class Hierarchy
     # Hierarchy::allChildrenOrderingTypes()
     def self.allChildrenOrderingTypes()
         [
-            "ordered-by-rt",
             "ordered-by-gps-strict-sequence",
             "ordered-by-gps-(1/2^n)-sequence",
+            "ordered-by-rt",
             "distribution"
         ]
     end
@@ -103,6 +103,14 @@ class Hierarchy
         " (#{percentage} %)".green
     end
 
+    # Hierarchy::orderingDirectiveSuffix(item)
+    def self.orderingDirectiveSuffix(item)
+        directive = XCache::getOrNull("5f7d92de-4254-4777-a02f-3887207a57d8:#{item["uuid"]}")
+        return "" if directive.nil?
+        directive = JSON.parse(directive)
+        " (#{directive["type"]})".green
+    end
+
     # Hierarchy::architectPrelude(parent)
     def self.architectPrelude(parent)
         # This function creates some children and set an ordering directive
@@ -115,6 +123,6 @@ class Hierarchy
             Items::setAttribute(child["uuid"], "parentuuid", parent["uuid"])
             Items::setAttribute(child["uuid"], "global-pos-07", GlobalPositioning::last_position() + 1)
         }
-        Hierarchy::retrieveOrArchitechParentChildrenOrderingDirective(parent)
+        Hierarchy::reviewParentChildrenOrderingDirective(parent)
     end
 end

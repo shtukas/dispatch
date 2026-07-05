@@ -20,7 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}#{Hierarchy::distributionSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}#{Hierarchy::distributionSuffix(item)}#{Hierarchy::orderingDirectiveSuffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -42,7 +42,7 @@ class FrontPage
         store.register(item, FrontPage::canBeDefault(item))
         height = 0
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}#{Hierarchy::distributionSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}#{Hierarchy::distributionSuffix(item)}#{Hierarchy::orderingDirectiveSuffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
