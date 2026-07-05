@@ -11,7 +11,7 @@ class Prefix
     # Prefix::apply_order(ordering_directive, children)
     def self.apply_order(ordering_directive, children)
         if ordering_directive["type"] == "distribution" then
-            return children
+            c1 = children
                     .map{|child|
                         {
                             "child" => child,
@@ -23,6 +23,10 @@ class Prefix
                         BankDerivedData::recoveredAverageHoursPerDay(packet["child"]["uuid"])/packet["ratio"].to_f
                     }
                     .map{|packet| packet["child"] }
+            c2 = children
+                    .select{|child| XCache::getOrNull("ceb929a4-605c-407c-9986-b44b835ac4df:#{child["uuid"]}").nil? }
+                    .sort_by {|child| child["global-pos-07"] || 0 }
+            return c1 + c2
         end
         if ordering_directive["type"] == "ordered-by-rt" then
             return children.sort_by{|child|
