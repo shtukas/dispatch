@@ -55,12 +55,13 @@ class Prefix
         raise "(error: 305438a2) I do not know how to apply ordering_directive: #{ordering_directive}"
     end
 
-    # Prefix::prefix(item) -> array[children] + [item]
-    def self.prefix(item)
-        return [] if item.nil?
-        children = Hierarchy::children(item["uuid"])
-        return [item] if children.empty?
-        ordering_directive = Hierarchy::retrieveOrArchitechParentChildrenOrderingDirective(item)
-        Prefix::apply_order(ordering_directive, children) + [item]
+    # Prefix::prefix(items) -> [children of first item recursively] + [item]
+    def self.prefix(items)
+        return [] if items.empty?
+        children = Hierarchy::children(items[0]["uuid"])
+        return items if children.empty?
+        ordering_directive = Hierarchy::retrieveOrArchitechParentChildrenOrderingDirective(items[0])
+        items = Prefix::apply_order(ordering_directive, children) + items
+        Prefix::prefix(items)
     end
 end

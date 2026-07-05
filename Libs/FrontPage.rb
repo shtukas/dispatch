@@ -172,7 +172,7 @@ class FrontPage
 
         store = ItemStore.new()
         items = FrontPage::itemsForListingOrdered()
-        items = Prefix::prefix(items.first) + items.drop(1)
+        items = Prefix::prefix(items)
         items = NxBalls::activeItems() + items
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
 
