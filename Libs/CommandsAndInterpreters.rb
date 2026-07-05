@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | :: * (prioritise)",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | :: * (prioritise) | prelude *",
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | float",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -313,6 +313,14 @@ class CommandsAndInterpreters
             puts "adding time for '#{PolyFunctions::toString(item).green}'"
             timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
             PolyActions::addTimeToItem(item, timeInHours*3600)
+        end
+
+        if Interpreting::match("prelude *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Hierarchy::architectPrelude(item)
+            return
         end
 
         if Interpreting::match("access", input) then

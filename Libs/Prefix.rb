@@ -24,6 +24,30 @@ class Prefix
                     }
                     .map{|packet| packet["child"] }
         end
+        if ordering_directive["type"] == "ordered-by-rt" then
+            return children.sort_by{|child|
+                BankDerivedData::recoveredAverageHoursPerDay(child["uuid"])
+            }
+        end
+        if ordering_directive["type"] == "ordered-by-gps-strict-sequence" then
+            return children.sort_by{|child|
+                child["global-pos-07"] || 0
+            }
+        end
+        if ordering_directive["type"] == "ordered-by-gps-(1/2^n)-sequence" then
+            children
+                .sort_by{|child| child["global-pos-07"] || 0 }
+                .map.with_index{|child, i|
+                    {
+                        "child" => child,
+                        "multiplier" => 1 - 1.to_f/(2 ** i)
+                    }
+                }
+                .sort_by{|packet|
+                    puts packet
+                    packet["multiplier"] * BankDerivedData::recoveredAverageHoursPerDay(packet["child"]["uuid"])
+                }
+        end
         raise "(error: 305438a2) I do not know how to apply ordering_directive: #{ordering_directive}"
     end
 

@@ -87,4 +87,18 @@ class Hierarchy
         percentage = ratio.to_f * 100
         " (#{percentage} %)".green
     end
+
+    # Hierarchy::architectPrelude(parent)
+    def self.architectPrelude(parent)
+        # This function creates some children and set an ordering directive
+        puts "create the children"
+        text = CommonUtils::editTextSynchronously("").strip
+        return if text == ""
+        text.lines.each{|line|
+            child = NxTasks::interactivelyIssueNewLine(line)
+            Items::setAttribute(child["uuid"], "parentuuid", parent["uuid"])
+            Items::setAttribute(child["uuid"], "global-pos-07", GlobalPositioning::last_position() + 1)
+        }
+        Hierarchy::retrieveOrArchitechParentChildrenOrderingDirective(parent)
+    end
 end

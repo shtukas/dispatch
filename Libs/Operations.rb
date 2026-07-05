@@ -94,6 +94,7 @@ class Operations
     def self.expose(item)
         puts JSON.pretty_generate(item)
         puts "rt: #{BankDerivedData::recoveredAverageHoursPerDay(item["uuid"])}"
+        puts "parent children ordering: #{XCache::getOrNull("5f7d92de-4254-4777-a02f-3887207a57d8:#{item["uuid"]}")}"
         LucilleCore::pressEnterToContinue()
     end
 
