@@ -18,6 +18,13 @@ class PolyFunctions
             "number"      => item["mikuType"]
         }
 
+        if item["parentuuid"] then
+            target = Items::itemOrNull(item["parentuuid"])
+            if target then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+            end
+        end
+
         if item["donation-14"] then
             target = Items::itemOrNull(item["donation-14"])
             if target then

@@ -1,11 +1,16 @@
 class Search
 
+    # Search::searchableItems()
+    def self.searchableItems()
+        Items::items() + Guardian::guardianProjects() + [Guardian::guardianRoot()]
+    end
+
     # Search::run()
     def self.run()
         loop {
             fragment = LucilleCore::askQuestionAnswerAsString("search fragment (empty to abort) : ")
             break if fragment == ""
-            selected = Items::items()
+            selected = Search::searchableItems()
                             .select{|item| item["mikuType"] != "NxDeleted" }
                             .select{|item| item["description"] and item["description"].downcase.include?(fragment.downcase) }
             if selected.empty? then
@@ -13,7 +18,7 @@ class Search
                 LucilleCore::pressEnterToContinue()
                 next
             end
-            lx = lambda { Items::items()
+            lx = lambda { Search::searchableItems()
                         .select{|item| item["mikuType"] != "NxDeleted" }
                         .select{|item| item["description"] and item["description"].downcase.include?(fragment.downcase) }
                         .sort{|i1, i2| i1["unixtime"] <=> i2["unixtime"] } }

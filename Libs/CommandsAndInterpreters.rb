@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | float",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | numbers",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | structure",
         ].join("\n")
     end
 
@@ -98,14 +98,6 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Operations::dismiss(item)
-            return
-        end
-
-        if Interpreting::match("numbers", input) then
-            FrontPage::tail_structure().each{|packet|
-                puts "#{packet["name"]}: #{packet["rt"]}"
-            }
-            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -208,6 +200,13 @@ class CommandsAndInterpreters
             UxPayloads::payloadProgram(item)
             return
         end
+
+        if Interpreting::match("structure", input) then
+            puts JSON.pretty_generate(FrontPage::structure())
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
 
         if Interpreting::match("fsck", input) then
             Fsck::fsckAll()

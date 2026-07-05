@@ -20,7 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}#{Hierarchy::distributionSuffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -42,7 +42,7 @@ class FrontPage
         store.register(item, FrontPage::canBeDefault(item))
         height = 0
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}#{Hierarchy::distributionSuffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -82,8 +82,48 @@ class FrontPage
         true
     end
 
+    # FrontPage::structure()
+    def self.structure()
+        structure = [
+            {
+                "account" => "Guardian",
+                "items" => lambda { [Guardian::guardianRoot()] },
+                "ratio" => BankDerivedData::recoveredAverageHoursPerDay(Guardian::rootuuid()).to_f/5
+            },
+            {
+                "account" => "Wave",
+                "items" => lambda { Waves::listingItemsNonInterruption() },
+                "ratio" => BankDerivedData::recoveredAverageHoursPerDay("Wave").to_f/2
+            },
+            {
+                "account" => "NxTask",
+                "items" => lambda { NxTasks::listingItems() },
+                "ratio" => BankDerivedData::recoveredAverageHoursPerDay("NxTask").to_f/1
+            }
+        ]
+        .sort_by{|packet|
+            packet["ratio"]
+        }
+    end
+
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
+        account_to_metric = lambda { |account|
+            if account == "Guardian" then
+                expectation = 5
+                return BankDerivedData::recoveredAverageHoursPerDay(Guardian::rootuuid()).to_f/expectation
+            end
+            if account == "Wave" then
+                expectation = 2
+                return BankDerivedData::recoveredAverageHoursPerDay("Wave").to_f/expectation
+            end
+            if account == "NxTask" then
+                expectation = 1
+                return BankDerivedData::recoveredAverageHoursPerDay("NxTask").to_f/expectation
+            end
+            raise "(error: 4776aceb)"
+        }
+
         items = [
             Anniversaries::listingItems(),
             Desktop::listingItems(),
@@ -94,33 +134,16 @@ class FrontPage
             NxCounters::listingItems(),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
-            Guardian::listingItems(),
-            (lambda {
-                structure = [
-                    {
-                        "account" => "Wave",
-                        "items" => Waves::listingItemsNonInterruption()
-                    },
-                    {
-                        "account" => "NxTask",
-                        "items" => NxTasks::listingItems()
-                    }
-                ]
-                .sort_by{|packet|
-                    BankDerivedData::recoveredAverageHoursPerDay(packet["account"])
-                }
-                .map{|packet|
-                    packet["items"]
-                }
+            FrontPage::structure()
+                .map{|packet| packet["items"].call() }
                 .flatten
-            }).call()
         ]
             .flatten
             .select {|item| DoNotShowUntil::isVisible(item) }
             .select {|item| FrontPage::isAccessible(item) }
 
-        is1, is2 = items.partition{|item| item["listing-pos-39"] and item["listing-pos-39"]["date"] == CommonUtils::today() }
-        is1 = is1.sort_by{|item| item["listing-pos-39"]["position"] }
+        is1, is2 = items.partition{|item| item["listpos39"] and item["listpos39"]["date"] == CommonUtils::today() }
+        is1 = is1.sort_by{|item| item["listpos39"]["position"] }
         is1 + is2
     end
 
@@ -148,7 +171,9 @@ class FrontPage
         t1 = Time.new.to_f
 
         store = ItemStore.new()
-        items = NxBalls::activeItems() + FrontPage::itemsForListingOrdered()
+        items = FrontPage::itemsForListingOrdered()
+        items = Prefix::prefix(items.first) + items.drop(1)
+        items = NxBalls::activeItems() + items
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
 
         items.each{|item|

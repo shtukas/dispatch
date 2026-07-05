@@ -27,8 +27,10 @@ class Guardian
     # Guardian::guardianRoot()
     def self.guardianRoot()
         {
-            "uuid"     => Guardian::rootuuid(),
-            "mikuType" => "GuardianRoot"
+            "uuid"        => Guardian::rootuuid(),
+            "mikuType"    => "GuardianRoot",
+            "unixtime"    => Time.new.to_i,
+            "description" => "Guardian"
         }
     end
 
@@ -41,7 +43,7 @@ class Guardian
     def self.listingItems()
         return [] if BankDerivedData::recoveredAverageHoursPerDay(Guardian::rootuuid()) > 5
         Guardian::ensureProjectsInCache()
-        Guardian::guardianProjects() + [Guardian::guardianRoot()]
+        [Guardian::guardianRoot()]
     end
 
     # Guardian::guardianProjects()
@@ -54,6 +56,7 @@ class Guardian
                 {
                     "uuid" => uuid,
                     "mikuType" => "GuardianProject",
+                    "unixtime" => File.mtime(location).to_i,
                     "description" => File.basename(location),
                     "location" => location,
                     "isFile" => File.file?(location)

@@ -12,7 +12,8 @@ Cross types conventions (all optional):
     - payload-37            : null or UxPayload
     - donation-14           : null or String # bank account to donate to
     - global-pos-07         : global positioning, Real [1]
-    - listing-pos-39        : ListPos39 # listing positioning, Real
+    - listpos39             : ListPos39 # listing positioning, Real
+    - parentuuid            : String
 
 [1] We use that one for every situation where an order is expected 
 
