@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | float",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | structure",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | numbers | guardian",
         ].join("\n")
     end
 
@@ -201,12 +201,16 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("structure", input) then
+        if Interpreting::match("numbers", input) then
             puts JSON.pretty_generate(FrontPage::structure())
             LucilleCore::pressEnterToContinue()
             return
         end
 
+        if Interpreting::match("guardian", input) then
+            NxBalls::start(Guardian::guardianRootItem())
+            return
+        end
 
         if Interpreting::match("fsck", input) then
             Fsck::fsckAll()

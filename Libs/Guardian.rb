@@ -24,8 +24,8 @@ class Guardian
         "085ca696dd8bd8db80a82160e88efcf35024eb01"
     end
 
-    # Guardian::guardianRoot()
-    def self.guardianRoot()
+    # Guardian::guardianRootItem()
+    def self.guardianRootItem()
         {
             "uuid"        => Guardian::rootuuid(),
             "mikuType"    => "GuardianRoot",
@@ -42,8 +42,7 @@ class Guardian
     # Guardian::listingItems()
     def self.listingItems()
         return [] if BankDerivedData::recoveredAverageHoursPerDay(Guardian::rootuuid()) > 5
-        Guardian::ensureProjectsInCache()
-        [Guardian::guardianRoot()]
+        [Guardian::guardianRootItem()]
     end
 
     # Guardian::guardianProjects()
@@ -64,8 +63,9 @@ class Guardian
             }
     end
 
-    # Guardian::ensureProjectsInCache()
-    def self.ensureProjectsInCache()
+    # Guardian::ensureItemsInCache()
+    def self.ensureItemsInCache()
+        VirtualItems::commit(Guardian::guardianRootItem())
         Guardian::guardianProjects().each{|project|
             s = VirtualItems::getOrNull(project["uuid"])
             next if s

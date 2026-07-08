@@ -87,7 +87,7 @@ class FrontPage
         structure = [
             {
                 "account" => "Guardian",
-                "items" => lambda { [Guardian::guardianRoot()] },
+                "items" => lambda { [Guardian::guardianRootItem()] },
                 "ratio" => BankDerivedData::recoveredAverageHoursPerDay(Guardian::rootuuid()).to_f/5
             },
             {
@@ -123,6 +123,8 @@ class FrontPage
             end
             raise "(error: 4776aceb)"
         }
+
+        Guardian::ensureItemsInCache()
 
         items = [
             Anniversaries::listingItems(),
