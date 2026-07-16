@@ -11,7 +11,9 @@ class Donations
 
     # Donations::interactivelySelectUuidOrNull()
     def self.interactivelySelectUuidOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("root", Items::mikuType("NxRoot"), lambda {|item| PolyFunctions::toString(item) })
+        target = LucilleCore::selectEntityFromListOfEntitiesOrNull("root", Items::mikuType("NxRoot"), lambda {|item| PolyFunctions::toString(item) })
+        return nil if target.nil?
+        target["uuid"]
     end
 
     # Donations::interactivelySetDonation(item) # -> item
