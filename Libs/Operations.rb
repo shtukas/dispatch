@@ -34,7 +34,10 @@ class Operations
             elements
                 .each{|item|
                     store.register(item, FrontPage::canBeDefault(item))
-                    puts FrontPage::toString2(store, item)
+                    lines = FrontPage::toString2(store, item)
+                    lines.each{|line|
+                        puts line
+                    }
                 }
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

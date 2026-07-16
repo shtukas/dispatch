@@ -71,11 +71,17 @@ class Hierarchy
             store = ItemStore.new()
             puts ""
             store.register(parent, false)
-            puts FrontPage::toString2(store, parent)
+            lines = FrontPage::toString2(store, parent)
+            lines.each{|line|
+                puts line
+            }
             children
                 .each{|child|
                     store.register(child, FrontPage::canBeDefault(child))
-                    puts FrontPage::toString2(store, child)
+                    lines = FrontPage::toString2(store, child)
+                    lines.each{|line|
+                        puts line
+                    }
                 }
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

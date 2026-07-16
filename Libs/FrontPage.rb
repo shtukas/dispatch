@@ -19,29 +19,9 @@ class FrontPage
     # FrontPage::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
-        storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}#{OrderingTypes::orderingDirectiveSuffix(item)}"
-        if TmpSkip1::isSkipped(item) then
-            line = line.yellow
-        end
-        if !DoNotShowUntil::isVisible(item) then
-            line = line.yellow
-        end
-        if NxBalls::itemIsActive(item) then
-            line = line.green
-        end
-        if NxBalls::itemIsRunning(item) then
-            line = line.green
-        end
-        line
-    end
-
-    # FrontPage::printItem(store, item, screen_width)
-    def self.printItem(store, item, screen_width)
-        return 0 if item.nil?
         store.register(item, FrontPage::canBeDefault(item))
-        height = 0
         storePrefix = store ? "(#{store.prefixString()})" : ""
+        lines = []
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}#{OrderingTypes::orderingDirectiveSuffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -55,9 +35,16 @@ class FrontPage
         if NxBalls::itemIsRunning(item) then
             line = line.green
         end
-        puts line
-        height = height + (line.size/screen_width + 1)
-        height
+        lines << line
+
+        afters = Items::mikuType("NxAfter")
+                    .select{|x| x["targetuuid"] == item["uuid"] }
+        afters.each{|after|
+            line = "         ➤ #{after["description"]}"
+            lines << line
+        }
+
+        lines
     end
 
     # -----------------------------------------
@@ -117,9 +104,6 @@ class FrontPage
 
         NxNotifications::pickup()
 
-        sheight = CommonUtils::screenHeight() - 5
-        swidth = CommonUtils::screenWidth()
-
         if Config::isPrimaryInstance() then
             if (Time.new.to_i - XCache::getOrDefaultValue("e1450d85-3f2b-4c3c-9c57-5e034361e8d6", "0").to_i) > 86400 then
                 Operations::globalMaintenance()
@@ -140,9 +124,10 @@ class FrontPage
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
 
         items.each{|item|
-            d = FrontPage::printItem(store, item, swidth)
-            sheight = sheight - d
-            break if sheight <= 0
+            lines = FrontPage::toString2(store, item)
+            lines.each{|line|
+                puts line
+            }
         }
 
         t2 = Time.new.to_f

@@ -58,11 +58,9 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxPriority" then
-            if item["targetuuid"] then
-                target = Items::itemOrNull(item["targetuuid"])
-                PolyActions::done(target)
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
+                PolyActions::destroy(item, true)
             end
-            Items::deleteItem(item["uuid"])
             return
         end
 
@@ -89,7 +87,14 @@ class PolyActions
 
         if item["mikuType"] == "NxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Items::deleteItem(item["uuid"])
+                PolyActions::destroy(item, true)
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxBefore" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
+                PolyActions::destroy(item, true)
             end
             return
         end
@@ -103,7 +108,7 @@ class PolyActions
             end
             if option == "destroy" then
                 NxBalls::stop(item)
-                PolyActions::destroy(item)
+                PolyActions::destroy(item, true)
             end
             return
         end
@@ -117,7 +122,7 @@ class PolyActions
             end
             if option == "destroy" then
                 NxBalls::stop(item)
-                PolyActions::destroy(item)
+                PolyActions::destroy(item, true)
             end
             return
         end
@@ -172,14 +177,21 @@ class PolyActions
         end
 
         if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
-            PolyActions::destroy(item)
+            PolyActions::destroy(item, true)
         end
     end
 
-    # PolyActions::destroy(item)
-    def self.destroy(item)
+    # PolyActions::destroy(item, already_confirmed = false)
+    def self.destroy(item, already_confirmed = false)
 
         NxBalls::stop(item)
+
+        befores = Items::mikuType("NxBefore").select{|x| x["targetuuid"] == item["uuid"] }
+        if befores.size > 0 then
+            puts "item has befores, cannot be destroyed right now"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
 
         if Hierarchy::children(item["uuid"]).size > 0 then
             puts "item has children, cannot be destroyed right now"
@@ -187,47 +199,67 @@ class PolyActions
             return
         end
 
+        afters = Items::mikuType("NxAfter")
+                .select{|x| x["targetuuid"] == item["uuid"] }
+        if afters.size > 0 then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}', and promoting #{afters.size} afters ? ", true) then
+                afters.each{|after|
+                    # Basically we want the after to get all the properties of the item
+                    # except the description that we get from the after itself
+                    itemx = item.clone()
+                    itemx["uuid"] = after["uuid"]
+                    itemx["description"] = after["description"]
+                    Items::commitItem(itemx) # this way the after has been updated, including taking the MikuType of the item
+                }
+                Items::deleteItem(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxOndate" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
+            if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Items::deleteItem(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxFloat" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
+            if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Items::deleteItem(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "Anniversary" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+            if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "Wave" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+            if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteItem(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxBefore" then
+            if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Items::deleteItem(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxPriority" then
-            if item["targetuuid"] then
-                target = Items::itemOrNull(item["targetuuid"])
-                if target then
-                    PolyActions::destroy(target)
-                end
+            if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
+                Items::deleteItem(item["uuid"])
             end
-            Items::deleteItem(item["uuid"])
             return
         end
 
         if item["mikuType"] == "NxBackup" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+            if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
             end
             return
@@ -239,7 +271,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+            if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
             end
             return

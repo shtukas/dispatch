@@ -1,0 +1,16 @@
+
+NxBefore:
+    - uuid        : String
+    - mikuType    : "NxBefore"
+    - unixtime    :
+    - datetime    :
+    - description : String
+    - targetuuid  : String
+
+NxAfter:
+    - uuid        : String
+    - mikuType    : "NxAfter"
+    - unixtime    :
+    - datetime    :
+    - description : String
+    - targetuuid  : String

@@ -60,9 +60,15 @@ class Prefix
     # Prefix::prefix(items) -> [children of first item recursively] + [item]
     def self.prefix(items)
         return [] if items.empty?
-        children = Hierarchy::children(items[0]["uuid"])
+        firstItem = items[0]
+        befores = Items::mikuType("NxBefore")
+                    .select{|item| item["targetuuid"] == firstItem["uuid"] }
+        if befores.size > 0 then
+            return Prefix::prefix(befores + items)
+        end
+        children = Hierarchy::children(firstItem["uuid"])
         return items if children.empty?
-        children = Prefix::apply_children_ordering1(items[0], children)
+        children = Prefix::apply_children_ordering1(firstItem, children)
         Prefix::prefix(children.take(6) + items)
     end
 end

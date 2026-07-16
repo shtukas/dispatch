@@ -65,6 +65,14 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "NxBefore" then
+            return
+        end
+
+        if item["mikuType"] == "NxAfter" then
+            return
+        end
+
         raise "I do not know how to fsck mikutype: #{item["mikuType"]}"
     end
 
