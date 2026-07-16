@@ -6,30 +6,34 @@ class Hierarchy
         Items::items()
     end
 
-    # Hierarchy::children(parentuuid)
-    def self.children(parentuuid)
+    # Hierarchy::children(item)
+    def self.children(item)
 
-        if parentuuid == "2a749cd4-a815-4e05-b7df-b0e468b60bdd" then
+        if item["uuid"] == "2a749cd4-a815-4e05-b7df-b0e468b60bdd" then
             # waves
             return Waves::listingItemsNonInterruption()
         end
 
-        if parentuuid == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
+        if item["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
             # guardian open cycles
             return GuardianOpenCycles::items()
         end
 
-        if parentuuid == "92cd40f9-2001-48fc-9e2b-51da20202049" then
+        if item["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then
             # infinity
             return NxTasks::listingItems()
         end
 
-        if parentuuid == "ba965060-6358-40e9-b276-67dfe8ac63df" then
+        if item["uuid"] == "ba965060-6358-40e9-b276-67dfe8ac63df" then
             # trading
             return []
         end
 
-        Hierarchy::itemsForChildrenExtractions().select{|item| item["parentuuid"] == parentuuid }
+        if item["mikuType"] == "GuardianProject" then
+            return GuardianOpenCycles::children(item)
+        end
+
+        Hierarchy::itemsForChildrenExtractions().select{|x| x["parentuuid"] == item["uuid"] }
     end
 
     # Hierarchy::dive(parent)
@@ -67,7 +71,7 @@ class Hierarchy
         end
 
         loop {
-            children = Hierarchy::children(parent["uuid"])
+            children = Hierarchy::children(parent)
             store = ItemStore.new()
             puts ""
             store.register(parent, false)

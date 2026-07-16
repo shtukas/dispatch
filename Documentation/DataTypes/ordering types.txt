@@ -1,4 +1,0 @@
-"ordered-by-rt",
-"ordered-by-gps-strict-sequence",
-"ordered-by-gps-(1/2^n)-sequence",
-"distribution"

@@ -193,7 +193,7 @@ class PolyActions
             return
         end
 
-        if Hierarchy::children(item["uuid"]).size > 0 then
+        if Hierarchy::children(item).size > 0 then
             puts "item has children, cannot be destroyed right now"
             LucilleCore::pressEnterToContinue()
             return

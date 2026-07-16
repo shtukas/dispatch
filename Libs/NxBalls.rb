@@ -129,7 +129,7 @@ class NxBalls
                     if ix then
                         return ix
                     end
-                    ix = VirtualItems::getOrNull(itemuuid)
+                    ix = ItemsInXCache::getOrNull(itemuuid)
                     if ix then
                         return ix
                     end

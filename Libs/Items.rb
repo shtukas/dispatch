@@ -50,24 +50,16 @@ class Items
     # Items::itemOrNull(uuid)
     def self.itemOrNull(uuid)
         # We now have virtual items, so we try that first
-        s = VirtualItems::getOrNull(uuid)
-        if s then
-            s["isVirtual"] =  true
-            return s
-        end
-
+        item = ItemsInXCache::getOrNull(uuid)
+        return item if item
         Items::ensureItems()
         $InMemoryItemsF6F6ECA5.select{|i| i["uuid"] == uuid }.first
     end
 
     # Items::commitItem(item)
     def self.commitItem(item)
-        # We now have virtual items, so we try that first
-        if item["isVirtual"] then
-            VirtualItems::commit(item)
-            return item
-        end
-
+        ItemsInXCache::commit(item)
+        return if item[":virtual:"]
         Fsck::fsckItemOrError(item, false)
         filepath = "#{Items::itemsRepository()}/#{item["uuid"]}.json"
         File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(item)) }

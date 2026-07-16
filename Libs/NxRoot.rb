@@ -22,13 +22,21 @@ class NxRoots
         "🏰"
     end
 
+    # NxRoots::ratio(item)
+    def self.ratio(item)
+        dailyExpectation = item["weeklyExpectation"].to_f/5
+        BankDerivedData::recoveredAverageHoursPerDay(item["uuid"]).to_f/dailyExpectation
+    end
+
     # NxRoots::toString(item)
     def self.toString(item)
-        "#{NxRoots::icon()} #{item["description"]} (#{item["weeklyExpectation"].to_s.yellow})"
+        dailyExpectation = item["weeklyExpectation"].to_f/5
+        "#{NxRoots::icon()} #{item["description"]} (#{(NxRoots::ratio(item) * 100).round(1)} % of #{dailyExpectation.to_s.yellow} daily, #{item["weeklyExpectation"].to_s.yellow} weekly)"
     end
 
     # NxRoots::listingItems()
     def self.listingItems()
         Items::mikuType("NxRoot")
+            .sort_by{|item| NxRoots::ratio(item) }
     end
 end

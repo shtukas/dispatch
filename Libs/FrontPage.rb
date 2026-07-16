@@ -22,7 +22,7 @@ class FrontPage
         store.register(item, FrontPage::canBeDefault(item))
         storePrefix = store ? "(#{store.prefixString()})" : ""
         lines = []
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}#{OrderingTypes::orderingDirectiveSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -71,10 +71,6 @@ class FrontPage
 
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
-        GuardianOpenCycles::ensureItemsInCache()
-
-        guardian_on = BankDerivedData::recoveredAverageHoursPerDay("fd608ab9-c3d7-4970-a464-9a736159855b") < 3 ? [Items::itemOrNull("fd608ab9-c3d7-4970-a464-9a736159855b")] : []
-
         items = [
             Anniversaries::listingItems(),
             Desktop::listingItems(),
@@ -85,7 +81,6 @@ class FrontPage
             NxCounters::listingItems(),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
-            guardian_on,
             NxRoots::listingItems(),
         ]
             .flatten

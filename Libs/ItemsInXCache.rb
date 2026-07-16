@@ -1,15 +1,15 @@
 
 # encoding: UTF-8
 
-class VirtualItems
+class ItemsInXCache
 
-    # VirtualItems::commit(item)
+    # ItemsInXCache::commit(item)
     def self.commit(item)
         key = "5224e064-4ddc-4bfc-a34b-0693942bc1ce:#{item["uuid"]}"
         XCache::set(key, JSON.generate(item))
     end
 
-    # VirtualItems::getOrNull(uuid)
+    # ItemsInXCache::getOrNull(uuid)
     def self.getOrNull(uuid)
         key = "5224e064-4ddc-4bfc-a34b-0693942bc1ce:#{uuid}"
         item = XCache::getOrNull(key)

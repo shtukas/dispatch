@@ -150,6 +150,7 @@ require_relative "Hierarchy.rb"
 require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 require_relative "Items.rb"
+require_relative "ItemsInXCache.rb"
 
 require_relative "ListPos39.rb"
 
@@ -165,7 +166,6 @@ require_relative "NxFloats.rb"
 require_relative "NxRoot.rb"
 
 require_relative "Operations.rb"
-require_relative "OrderingTypes.rb"
 
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
@@ -180,7 +180,6 @@ require_relative "Transmute.rb"
 require_relative "UxPayloads.rb"
 
 require_relative "ValueCache.rb"
-require_relative "VirtualItems.rb"
 
 require_relative "Waves.rb"
 
