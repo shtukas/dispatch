@@ -1,31 +1,8 @@
 
-=begin
+class Guardian
 
-GuardianProject (virtual object)
-{
-    "uuid"        : String
-    "mikuType"    : "GuardianProject"
-    "description" : String
-    "location"    : String
-    ":virtual:"   : true
-}
-
-todo items
-{
-    - uuid          : String
-    - mikuType      : "NxTask"
-    - unixtime      :
-    - datetime      :
-    - description   : String
-    - global-pos-07 : Float
-}
-
-=end
-
-class GuardianOpenCycles
-
-    # GuardianOpenCycles::children(project)
-    def self.children(project)
+    # Guardian::project_children_core(project)
+    def self.project_children_core(project)
         location = project["location"]
         if File.file?(location) then
             uuid = Digest::SHA1.hexdigest("395c2cc3-bc22-4f6b-b04f-c775262dafc4:#{location}")
@@ -34,7 +11,10 @@ class GuardianOpenCycles
                 "mikuType"    => "NxTask",
                 "description" => File.basename(location),
                 ":virtual:"   => true,
-                "parentuuid"  => project["uuid"]
+                "parentuuid"  => project["uuid"],
+                "guardian-project-element" => {
+                    "todo-filepath" => location
+                }
             }]
         else
             return LucilleCore::locationsAtFolder(location)
@@ -52,7 +32,10 @@ class GuardianOpenCycles
                                         "mikuType"    => "NxTask",
                                         "description" => description,
                                         ":virtual:"   => true,
-                                        "parentuuid"  => project["uuid"]
+                                        "parentuuid"  => project["uuid"],
+                                        "guardian-project-element" => {
+                                            "todo-filepath" => filepath
+                                        }
                                     }
                                 }
                     else
@@ -64,29 +47,46 @@ class GuardianOpenCycles
         end
     end
 
-    # GuardianOpenCycles::items()
-    def self.items()
+    # Guardian::project_children(project)
+    def self.project_children(project)
+        items = Guardian::project_children_core(project)
+        items.map{|item|
+            x = Items::itemOrNull(item["uuid"])
+            x ? x : item
+        }
+        .select {|item| DoNotShowUntil::isVisible(item) }
+    end
+
+    # Guardian::projects()
+    def self.projects()
         items = LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/Open Cycles/2026-03-31 Guardian")
             .map{|location|
                 uuid = Digest::SHA1.hexdigest("1d7bb7a1-a35a-4b39-b7bd-0087bfe4a476:#{location}")
                 filename = File.basename(location)
                 description = filename[11, filename.size()].strip
                 {
-                    "uuid"        => uuid,
-                    "mikuType"    => "GuardianProject",
-                    "description" => File.basename(location),
-                    "location"    => location,
-                    ":virtual:"   => true
+                    "uuid"             => uuid,
+                    "mikuType"         => "NxTask",
+                    "description"      => File.basename(location),
+                    "location"         => location,
+                    "guardian-project" => true,
+                    "parentuuid"       => "3fc52f5b-706b-47ae-a540-eefc72e47b0b", # guardian open cycles
                 }
             }
-        items.each{|item|
-            ItemsInXCache::commit(item)
+        items.map{|item|
+            x = Items::itemOrNull(item["uuid"])
+            x ? x : item
         }
-        items
+        .select {|item| DoNotShowUntil::isVisible(item) }
     end
 
-    # GuardianOpenCycles::projectToString(item)
+    # Guardian::projectToString(item)
     def self.projectToString(item)
         "🐠 #{item["description"]}"
+    end
+
+    # Guardian::projectElementToString(item)
+    def self.projectElementToString(item)
+        "🔺 #{item["description"]}"
     end
 end

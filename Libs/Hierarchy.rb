@@ -16,7 +16,7 @@ class Hierarchy
 
         if item["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
             # guardian open cycles
-            return GuardianOpenCycles::items()
+            return Guardian::projects()
         end
 
         if item["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then
@@ -27,10 +27,6 @@ class Hierarchy
         if item["uuid"] == "ba965060-6358-40e9-b276-67dfe8ac63df" then
             # trading
             return []
-        end
-
-        if item["mikuType"] == "GuardianProject" then
-            return GuardianOpenCycles::children(item)
         end
 
         Hierarchy::itemsForChildrenExtractions().select{|x| x["parentuuid"] == item["uuid"] }
@@ -50,7 +46,7 @@ class Hierarchy
         if parent["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
             # root: guardian open cycles
             Operations::program3(lambda { 
-                [parent] + GuardianOpenCycles::items()
+                [parent] + Guardian::projects()
             })
             return
         end
@@ -71,7 +67,7 @@ class Hierarchy
         end
 
         loop {
-            children = Hierarchy::children(parent)
+            children = Hierarchy::children(parent).sort_by{|item| item["global-pos-07"] || 0 }
             store = ItemStore.new()
             puts ""
             store.register(parent, false)

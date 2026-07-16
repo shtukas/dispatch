@@ -38,6 +38,12 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
+        if item["guardian-project"] then
+            return Guardian::projectToString(item)
+        end
+        if item["guardian-project-element"] then
+            return Guardian::projectElementToString(item)
+        end
         "#{NxTasks::icon()} #{item["description"]}"
     end
 

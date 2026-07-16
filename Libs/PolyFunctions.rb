@@ -48,13 +48,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "GuardianProject" then
-            accounts << {
-                "description" => "root: guardian open cycles",
-                "number"      => "3fc52f5b-706b-47ae-a540-eefc72e47b0b"
-            }
-        end
-
         if item["mikuType"] == "NxTask" and item["parentuuid"].nil? then
             accounts << {
                 "description" => "root: infinity",
@@ -109,8 +102,8 @@ class PolyFunctions
         if item["mikuType"] == "NxBefore" then
             return "✨ #{item["description"]}"
         end
-        if item["mikuType"] == "GuardianProject" then
-            return GuardianOpenCycles::projectToString(item)
+        if item["mikuType"] == "NxAfter" then
+            return "➤ #{item["description"]}"
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end

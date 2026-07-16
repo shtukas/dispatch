@@ -143,14 +143,13 @@ require_relative "FrontPage.rb"
 
 require_relative "Galaxy.rb"
 require_relative "GlobalPositioning.rb"
-require_relative "GuardianOpenCycles.rb"
+require_relative "Guardian.rb"
 
 require_relative "Hierarchy.rb"
 
 require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 require_relative "Items.rb"
-require_relative "ItemsInXCache.rb"
 
 require_relative "ListPos39.rb"
 

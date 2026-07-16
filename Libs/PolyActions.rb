@@ -21,15 +21,9 @@ class PolyActions
             NxCounters::interactivelyIncrement(item)
             return
         end
-        if item["mikuType"] == "GuardianProject" then
-            if item["isFile"] then
-                system("open '#{item["location"]}'")
-            else
-                todolistFile = GuardianOpenCycles::identifyTodoFileInDirectory(item["location"])
-                if todolistFile.nil? then
-                    puts "I could not find a todo file in: #{item["location"]}"
-                end
-            end
+        if item["guardian-project"] then
+            system("open '#{item["location"]}'")
+            LucilleCore::pressEnterToContinue()
             return
         end
         if item["mikuType"] == "NxRoot" then
@@ -99,6 +93,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxAfter" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
+                PolyActions::destroy(item, true)
+            end
+            return
+        end
+
         if item["mikuType"] == "NxOndate" then
             puts "#{PolyFunctions::toString(item).green}"
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss", "destroy"])
@@ -130,10 +131,6 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             puts "#{PolyFunctions::toString(item).green}"
             DoNotShowUntil::doNotShowUntil(item, Time.new.to_i + 86400 * item["period"])
-            return
-        end
-
-        if item["mikuType"] == "GuardianProject" then
             return
         end
 
@@ -251,6 +248,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxAfter" then
+            if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
+                Items::deleteItem(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxPriority" then
             if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Items::deleteItem(item["uuid"])
@@ -272,12 +276,13 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                if item["guardian-project-element"] then
+                    system("open '#{item["guardian-project-element"]["todo-filepath"]}'")
+                    LucilleCore::pressEnterToContinue()
+                    return
+                end
                 Items::deleteItem(item["uuid"])
             end
-            return
-        end
-
-        if item["mikuType"] == "GuardianProject" then
             return
         end
 

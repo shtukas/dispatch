@@ -20,7 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         store.register(item, FrontPage::canBeDefault(item))
-        storePrefix = store ? "(#{store.prefixString()})" : ""
+        storePrefix = "(#{store.prefixString()})"
         lines = []
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
@@ -40,7 +40,9 @@ class FrontPage
         afters = Items::mikuType("NxAfter")
                     .select{|x| x["targetuuid"] == item["uuid"] }
         afters.each{|after|
-            line = "         ➤ #{after["description"]}"
+            store.register(after, false)
+            storePrefix = "(#{store.prefixString()})"
+            line = "#{storePrefix}    ➤ #{after["description"]}"
             lines << line
         }
 

@@ -2,7 +2,7 @@ class Search
 
     # Search::searchableItems()
     def self.searchableItems()
-        Items::items() + GuardianOpenCycles::items()
+        Items::items()
     end
 
     # Search::run()

@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | :: * (prioritise) | before * | after *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | :: * (prioritise) | before * | after * | focus *",
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | float",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -248,6 +248,26 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("sort *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            items = Hierarchy::children(item).sort_by{|item| item["global-pos-07"] || 0 }
+            selected = CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
+            selected.reverse.each{|item|
+                GlobalPositioning::insert_first(item)
+            }
+            return
+        end
+
+        if Interpreting::match("focus *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            GlobalPositioning::insert_first(item)
+            return
+        end
+
         if Interpreting::match("counter", input) then
             item = NxCounters::interactivelyIssueNewOrNull()
             puts JSON.pretty_generate(item)
@@ -337,6 +357,13 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+
+            if item["guardian-project-element"] then
+                system("open '#{item["guardian-project-element"]["todo-filepath"]}'")
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             uuid = SecureRandom.uuid
