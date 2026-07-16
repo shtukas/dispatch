@@ -17,27 +17,23 @@ class PolyActions
 
     # PolyActions::access(item)
     def self.access(item)
-        if item["uuid"] == Guardian::rootuuid() then
-            Guardian::dive()
-            return
-        end
         if item["mikuType"] == "NxCounter" then
             NxCounters::interactivelyIncrement(item)
-            return
-        end
-        if item["mikuType"] == "GuardianRoot" then
-            Guardian::dive()
             return
         end
         if item["mikuType"] == "GuardianProject" then
             if item["isFile"] then
                 system("open '#{item["location"]}'")
             else
-                todolistFile = Guardian::identifyTodoFileInDirectory(item["location"])
+                todolistFile = GuardianOpenCycles::identifyTodoFileInDirectory(item["location"])
                 if todolistFile.nil? then
                     puts "I could not find a todo file in: #{item["location"]}"
                 end
             end
+            return
+        end
+        if item["mikuType"] == "NxRoot" then
+            Hierarchy::dive(item)
             return
         end
         UxPayloads::access(item["payload-37"])
@@ -132,11 +128,11 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "GuardianRoot" then
+        if item["mikuType"] == "GuardianProject" then
             return
         end
 
-        if item["mikuType"] == "GuardianProject" then
+        if item["mikuType"] == "NxRoot" then
             return
         end
 
@@ -147,8 +143,8 @@ class PolyActions
     # PolyActions::doubleDots(item)
     def self.doubleDots(item)
 
-        if NxBalls::itemIsPaused(item) then
-            NxBalls::pursue(item)
+        if item["mikuType"] == "NxRoot" then
+            PolyActions::access(item)
             return
         end
 
@@ -184,6 +180,12 @@ class PolyActions
     def self.destroy(item)
 
         NxBalls::stop(item)
+
+        if Hierarchy::children(item["uuid"]).size > 0 then
+            puts "item has children, cannot be destroyed right now"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
@@ -243,11 +245,11 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "GuardianRoot" then
+        if item["mikuType"] == "GuardianProject" then
             return
         end
 
-        if item["mikuType"] == "GuardianProject" then
+        if item["mikuType"] == "NxRoot" then
             return
         end
 

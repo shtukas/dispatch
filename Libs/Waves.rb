@@ -83,16 +83,11 @@ class Waves
             .sort_by{|item| item["lastDoneUnixtime"] }
     end
 
-    # Waves::nonInterruptionWaves()
-    def self.nonInterruptionWaves()
+    # Waves::listingItemsNonInterruption()
+    def self.listingItemsNonInterruption()
         Items::mikuType("Wave")
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| !item["interruption"] }
-    end
-
-    # Waves::listingItemsNonInterruption()
-    def self.listingItemsNonInterruption()
-        items = Waves::nonInterruptionWaves()
             .sort_by{|item| item["lastDoneUnixtime"] }
     end
 

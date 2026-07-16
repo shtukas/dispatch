@@ -25,6 +25,10 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "NxRoot" then
+            return
+        end
+
         if item["mikuType"] == "BufferInDelegate" then
             return
         end

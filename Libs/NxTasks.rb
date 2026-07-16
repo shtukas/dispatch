@@ -50,6 +50,7 @@ class NxTasks
     # NxTasks::listingItems()
     def self.listingItems()
         NxTasks::itemsInOrder()
+            .select{|item| DoNotShowUntil::isVisible(item) }
             .first(10)
     end
 

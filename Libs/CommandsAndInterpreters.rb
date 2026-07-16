@@ -5,11 +5,11 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | :: * (prioritise) | prelude * | ordering *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | :: * (prioritise)",
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | float",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance | numbers | guardian",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance",
         ].join("\n")
     end
 
@@ -201,17 +201,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("numbers", input) then
-            puts JSON.pretty_generate(FrontPage::structure())
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("guardian", input) then
-            NxBalls::start(Guardian::guardianRootItem())
-            return
-        end
-
         if Interpreting::match("fsck", input) then
             Fsck::fsckAll()
             LucilleCore::pressEnterToContinue()
@@ -317,22 +306,6 @@ class CommandsAndInterpreters
             puts "adding time for '#{PolyFunctions::toString(item).green}'"
             timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
             PolyActions::addTimeToItem(item, timeInHours*3600)
-        end
-
-        if Interpreting::match("prelude *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Hierarchy::architectPrelude(item)
-            return
-        end
-
-        if Interpreting::match("ordering *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Hierarchy::reviewParentChildrenOrderingDirective(item)
-            return
         end
 
         if Interpreting::match("access", input) then

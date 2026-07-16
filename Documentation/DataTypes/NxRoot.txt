@@ -1,0 +1,9 @@
+
+NxRoot:
+    - uuid              : String
+    - mikuType          : "NxRoot"
+    - unixtime          :
+    - datetime          :
+    - description       : String
+    - orderingType      : null or OrderingType
+    - weeklyExpectation : Float

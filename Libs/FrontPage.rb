@@ -20,7 +20,7 @@ class FrontPage
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}#{Hierarchy::distributionSuffix(item)}#{Hierarchy::orderingDirectiveSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}#{OrderingTypes::orderingDirectiveSuffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -42,7 +42,7 @@ class FrontPage
         store.register(item, FrontPage::canBeDefault(item))
         height = 0
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}#{Hierarchy::distributionSuffix(item)}#{Hierarchy::orderingDirectiveSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}#{OrderingTypes::orderingDirectiveSuffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -82,49 +82,11 @@ class FrontPage
         true
     end
 
-    # FrontPage::structure()
-    def self.structure()
-        structure = [
-            {
-                "account" => "Guardian",
-                "items" => lambda { [Guardian::guardianRootItem()] },
-                "ratio" => BankDerivedData::recoveredAverageHoursPerDay(Guardian::rootuuid()).to_f/5
-            },
-            {
-                "account" => "Wave",
-                "items" => lambda { Waves::listingItemsNonInterruption() },
-                "ratio" => BankDerivedData::recoveredAverageHoursPerDay("wave-non-interruption-732e5459e9a2").to_f/2
-            },
-            {
-                "account" => "NxTask",
-                "items" => lambda { NxTasks::listingItems() },
-                "ratio" => BankDerivedData::recoveredAverageHoursPerDay("NxTask-infinity-cf342eb89122").to_f/1
-            }
-        ]
-        .sort_by{|packet|
-            packet["ratio"]
-        }
-    end
-
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
-        account_to_metric = lambda { |account|
-            if account == "Guardian" then
-                expectation = 5
-                return BankDerivedData::recoveredAverageHoursPerDay(Guardian::rootuuid()).to_f/expectation
-            end
-            if account == "Wave" then
-                expectation = 2
-                return BankDerivedData::recoveredAverageHoursPerDay("Wave").to_f/expectation
-            end
-            if account == "NxTask" then
-                expectation = 1
-                return BankDerivedData::recoveredAverageHoursPerDay("NxTask").to_f/expectation
-            end
-            raise "(error: 4776aceb)"
-        }
+        GuardianOpenCycles::ensureItemsInCache()
 
-        Guardian::ensureItemsInCache()
+        guardian_on = BankDerivedData::recoveredAverageHoursPerDay("fd608ab9-c3d7-4970-a464-9a736159855b") < 3 ? [Items::itemOrNull("fd608ab9-c3d7-4970-a464-9a736159855b")] : []
 
         items = [
             Anniversaries::listingItems(),
@@ -136,9 +98,8 @@ class FrontPage
             NxCounters::listingItems(),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
-            FrontPage::structure()
-                .map{|packet| packet["items"].call() }
-                .flatten
+            guardian_on,
+            NxRoots::listingItems(),
         ]
             .flatten
             .select {|item| DoNotShowUntil::isVisible(item) }

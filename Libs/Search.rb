@@ -2,7 +2,7 @@ class Search
 
     # Search::searchableItems()
     def self.searchableItems()
-        Items::items() + Guardian::guardianProjects() + [Guardian::guardianRootItem()]
+        Items::items() + GuardianOpenCycles::items()
     end
 
     # Search::run()

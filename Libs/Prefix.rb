@@ -1,16 +1,9 @@
 
 class Prefix
 
-    # Prefix::function1(rt, ratio)
-    def self.function1(rt, ratio)
-        return nil if ratio.nil?
-        return nil if ratio == 0
-        rt/ratio
-    end
-
-    # Prefix::apply_order(ordering_directive, children)
-    def self.apply_order(ordering_directive, children)
-        if ordering_directive["type"] == "distribution" then
+    # Prefix::apply_children_ordering2(ordering_type, children)
+    def self.apply_children_ordering2(ordering_type, children)
+        if ordering_type == "distribution" then
             c1 = children
                     .map{|child|
                         {
@@ -28,17 +21,15 @@ class Prefix
                     .sort_by {|child| child["global-pos-07"] || 0 }
             return c1 + c2
         end
-        if ordering_directive["type"] == "ordered-by-rt" then
+        if ordering_type == "ordered-by-rt" then
             return children.sort_by{|child|
                 BankDerivedData::recoveredAverageHoursPerDay(child["uuid"])
             }
         end
-        if ordering_directive["type"] == "ordered-by-gps-strict-sequence" then
-            return children.sort_by{|child|
-                child["global-pos-07"] || 0
-            }
+        if ordering_type == "ordered-by-gps-strict-sequence" then
+            return children.sort_by{|child| child["global-pos-07"] || 0 }
         end
-        if ordering_directive["type"] == "ordered-by-gps-(1/2^n)-sequence" then
+        if ordering_type == "ordered-by-gps-(1/2^n)-sequence" then
             children
                 .sort_by{|child| child["global-pos-07"] || 0 }
                 .map.with_index{|child, i|
@@ -52,7 +43,18 @@ class Prefix
                     packet["multiplier"] * BankDerivedData::recoveredAverageHoursPerDay(packet["child"]["uuid"])
                 }
         end
-        raise "(error: 305438a2) I do not know how to apply ordering_directive: #{ordering_directive}"
+        if ordering_type == "indetermined" then
+            return children
+        end
+        raise "(error: 305438a2) I do not know how to apply ordering_type: #{ordering_type}"
+    end
+
+    # Prefix::apply_children_ordering1(parent, children)
+    def self.apply_children_ordering1(parent, children)
+        if parent["mikuType"] == "NxRoot" then
+            return Prefix::apply_children_ordering2(parent["orderingType"], children)
+        end
+        children
     end
 
     # Prefix::prefix(items) -> [children of first item recursively] + [item]
@@ -60,8 +62,7 @@ class Prefix
         return [] if items.empty?
         children = Hierarchy::children(items[0]["uuid"])
         return items if children.empty?
-        ordering_directive = Hierarchy::retrieveOrArchitechParentChildrenOrderingDirective(items[0])
-        items = Prefix::apply_order(ordering_directive, children) + items
-        Prefix::prefix(items)
+        children = Prefix::apply_children_ordering1(items[0], children)
+        Prefix::prefix(children.take(6) + items)
     end
 end

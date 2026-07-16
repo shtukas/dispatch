@@ -8,121 +8,89 @@ class Hierarchy
 
     # Hierarchy::children(parentuuid)
     def self.children(parentuuid)
-        if parentuuid == "085ca696dd8bd8db80a82160e88efcf35024eb01" then
-            # guardian
-            return Guardian::guardianProjects()
+
+        if parentuuid == "2a749cd4-a815-4e05-b7df-b0e468b60bdd" then
+            # waves
+            return Waves::listingItemsNonInterruption()
         end
+
+        if parentuuid == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
+            # guardian open cycles
+            return GuardianOpenCycles::items()
+        end
+
+        if parentuuid == "92cd40f9-2001-48fc-9e2b-51da20202049" then
+            # infinity
+            return NxTasks::listingItems()
+        end
+
+        if parentuuid == "ba965060-6358-40e9-b276-67dfe8ac63df" then
+            # trading
+            return []
+        end
+
         Hierarchy::itemsForChildrenExtractions().select{|item| item["parentuuid"] == parentuuid }
     end
 
-    # Hierarchy::allChildrenOrderingTypes()
-    def self.allChildrenOrderingTypes()
-        [
-            "ordered-by-gps-strict-sequence",
-            "ordered-by-gps-(1/2^n)-sequence",
-            "ordered-by-rt",
-            "distribution"
-        ]
-    end
+    # Hierarchy::dive(parent)
+    def self.dive(parent)
+        if parent["uuid"] == "2a749cd4-a815-4e05-b7df-b0e468b60bdd" then
+            # root: waves
+            Operations::program3(lambda { 
+                w1, w2 = Items::mikuType("Wave").partition{|item| DoNotShowUntil::isVisible(item) }
+                [parent] + w2 + w1 # we put the done ones first
+            })
+            return
+        end
 
-    # Hierarchy::interactivelySelectListingType()
-    def self.interactivelySelectListingType()
-        LucilleCore::selectEntityFromListOfEntities_EnsureChoice("listing style", Hierarchy::allChildrenOrderingTypes())
-    end
+        if parent["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
+            # root: guardian open cycles
+            Operations::program3(lambda { 
+                [parent] + GuardianOpenCycles::items()
+            })
+            return
+        end
 
-    # Hierarchy::mark_children_with_distribution_rations(parent)
-    def self.mark_children_with_distribution_rations(parent)
+        if parent["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then
+            # root: infinity
+            Operations::program3(lambda { 
+                [parent] + NxTasks::listingItems()
+            })
+            return
+        end
+
+        if parent["uuid"] == "ba965060-6358-40e9-b276-67dfe8ac63df" then
+            # root: trading
+            puts "We are not diving root:trading, please find the todo file"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         loop {
             children = Hierarchy::children(parent["uuid"])
-            child = LucilleCore::selectEntityFromListOfEntitiesOrNull("child", children, lambda {|child| "#{child["description"]}:#{Hierarchy::distributionSuffix(child)}" })
-            return if child.nil?
-            ratio = LucilleCore::askQuestionAnswerAsString("ratio: ").to_f
-            next if ratio == 0
-            XCache::set("ceb929a4-605c-407c-9986-b44b835ac4df:#{child["uuid"]}", ratio)
-        }
-    end
+            store = ItemStore.new()
+            puts ""
+            store.register(parent, false)
+            puts FrontPage::toString2(store, parent)
+            children
+                .each{|child|
+                    store.register(child, FrontPage::canBeDefault(child))
+                    puts FrontPage::toString2(store, child)
+                }
+            puts ""
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
 
-    # Hierarchy::makeNewOrderingDirective(parent)
-    def self.makeNewOrderingDirective(parent)
-        puts "Let's make a children ordering directive for #{PolyFunctions::toString(parent).green}"
-        type = Hierarchy::interactivelySelectListingType()
-        if type == "ordered-by-rt" then
-            return {
-                "type" => "ordered-by-rt"
-            }
-        end
-        if type == "ordered-by-gps-strict-sequence" then
-            return {
-                "type" => "ordered-by-gps-strict-sequence"
-            }
-        end
-        if type == "ordered-by-gps-strict-sequence" then
-            return {
-                "type" => "ordered-by-gps-(1/2^n)-sequence"
-            }
-        end
-        if type == "distribution" then
-            Hierarchy::mark_children_with_distribution_rations(parent)
-            return {
-                "type" => "distribution"
-            }
-        end
-    end
-
-    # Hierarchy::retrieveOrArchitechParentChildrenOrderingDirective(parent)
-    def self.retrieveOrArchitechParentChildrenOrderingDirective(parent)
-        directive = XCache::getOrNull("5f7d92de-4254-4777-a02f-3887207a57d8:#{parent["uuid"]}")
-        if directive then
-            return JSON.parse(directive)
-        end
-        directive = Hierarchy::makeNewOrderingDirective(parent)
-        XCache::set("5f7d92de-4254-4777-a02f-3887207a57d8:#{parent["uuid"]}", JSON.generate(directive))
-        directive
-    end
-
-    # Hierarchy::reviewParentChildrenOrderingDirective(parent)
-    def self.reviewParentChildrenOrderingDirective(parent)
-        directive = XCache::getOrNull("5f7d92de-4254-4777-a02f-3887207a57d8:#{parent["uuid"]}")
-        if directive then
-            puts "directive: #{directive}"
-            if LucilleCore::askQuestionAnswerAsBoolean("update ? ") then
-                directive = Hierarchy::makeNewOrderingDirective(parent)
-                XCache::set("5f7d92de-4254-4777-a02f-3887207a57d8:#{parent["uuid"]}", JSON.generate(directive))
+            if input == "todo" or input == "new" then
+                task = NxTasks::interactivelyIssueNewOrNull()
+                Items::setAttribute(task["uuid"], "parentuuid", parent["uuid"])
+                next
             end
-        else
-            directive = Hierarchy::makeNewOrderingDirective(parent)
-            XCache::set("5f7d92de-4254-4777-a02f-3887207a57d8:#{parent["uuid"]}", JSON.generate(directive))
-        end
-    end
 
-    # Hierarchy::distributionSuffix(item)
-    def self.distributionSuffix(item)
-        ratio = XCache::getOrNull("ceb929a4-605c-407c-9986-b44b835ac4df:#{item["uuid"]}")
-        return "" if ratio.nil?
-        percentage = ratio.to_f * 100
-        " (#{percentage} %)".green
-    end
-
-    # Hierarchy::orderingDirectiveSuffix(item)
-    def self.orderingDirectiveSuffix(item)
-        directive = XCache::getOrNull("5f7d92de-4254-4777-a02f-3887207a57d8:#{item["uuid"]}")
-        return "" if directive.nil?
-        directive = JSON.parse(directive)
-        " (#{directive["type"]})".green
-    end
-
-    # Hierarchy::architectPrelude(parent)
-    def self.architectPrelude(parent)
-        # This function creates some children and set an ordering directive
-        puts "create the children"
-        text = CommonUtils::editTextSynchronously("").strip
-        return if text == ""
-        text.lines.map{|line| line.strip }.each{|line|
-            next if line == ""
-            child = NxTasks::interactivelyIssueNewLine(line)
-            Items::setAttribute(child["uuid"], "parentuuid", parent["uuid"])
-            Items::setAttribute(child["uuid"], "global-pos-07", GlobalPositioning::last_position() + 1)
+            CommandsAndInterpreters::interpreter(input, store)
         }
-        Hierarchy::reviewParentChildrenOrderingDirective(parent)
+
+        raise "(error: b326de46) I do not know how to dive item: #{parent}"
     end
 end
