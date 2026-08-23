@@ -25,6 +25,16 @@ class Operations
         end
     end
 
+    # Operations::program(item)
+    def self.program(item)
+        if item["mikuType"] == "Wave" then
+            Waves::program(item)
+            return
+        end
+        puts "Using default program for #{item["mikuType"]} (Operations::editItem)"
+        Operations::editItem(item)
+    end
+
     # Operations::program3(lx)
     def self.program3(lx)
         loop {

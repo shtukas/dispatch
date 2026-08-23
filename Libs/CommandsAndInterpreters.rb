@@ -6,10 +6,10 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | :: * (prioritise) | before * | after * | focus *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | float",
+            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | float | priority | priorities",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | fsck-force | global-maintenance",
+            "misc          : search | commands | fsck | fsck-force | global-maintenance | display <uuid>",
         ].join("\n")
     end
 
@@ -91,6 +91,14 @@ class CommandsAndInterpreters
             pitem = NxPriorities::prioritise(item)
             puts JSON.pretty_generate(pitem)
             GlobalPositioning::insert_last(pitem)
+            return
+        end
+
+        if Interpreting::match("display *", input) then
+            _, uuid = Interpreting::tokenizer(input)
+            item = Items::itemOrNull(uuid)
+            puts JSON.pretty_generate(item)
+            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -190,6 +198,14 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Donations::interactivelySetDonation(item)
+            return
+        end
+
+        if Interpreting::match("program *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Operations::program(item)
             return
         end
 
@@ -357,13 +373,6 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-
-            if item["guardian-project-element"] then
-                system("open '#{item["guardian-project-element"]["todo-filepath"]}'")
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             return if description == ""
             uuid = SecureRandom.uuid
@@ -392,6 +401,19 @@ class CommandsAndInterpreters
             item = NxPriorities::issueNew(description)
             puts JSON.pretty_generate(item)
             Donations::interactivelySetDonation(item)
+            return
+        end
+
+        if Interpreting::match("priorities", input) then
+            text = CommonUtils::editTextSynchronously("").strip
+            return if text == ""
+            text.lines
+                .map{|line| line.strip }
+                .reverse.each{|line|
+                    item = NxPriorities::issueNew(line)
+                    puts JSON.pretty_generate(item)
+                    Donations::interactivelySetDonation(item)
+                }
             return
         end
 

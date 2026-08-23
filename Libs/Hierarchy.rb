@@ -16,12 +16,19 @@ class Hierarchy
 
         if item["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
             # guardian open cycles
-            return Guardian::projects()
+            return Guardian::projects().sort_by{|item| item["global-pos-07"] || 0 }
         end
 
         if item["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then
             # infinity
-            return NxTasks::listingItems()
+            # We put in infinity the items that declare themselves in infinity and
+            # those which are orphans
+            return [
+                Hierarchy::itemsForChildrenExtractions().select{|x| x["parentuuid"] == item["uuid"] },
+                Hierarchy::itemsForChildrenExtractions().select{|x| x["parentuuid"].nil? },
+            ]
+                .flatten
+                .sort_by{|item| item["global-pos-07"] || 0 }
         end
 
         if item["uuid"] == "ba965060-6358-40e9-b276-67dfe8ac63df" then
@@ -29,7 +36,13 @@ class Hierarchy
             return []
         end
 
-        Hierarchy::itemsForChildrenExtractions().select{|x| x["parentuuid"] == item["uuid"] }
+        if item["guardian-project"] then
+            return Guardian::project_children(item)
+        end
+
+        Hierarchy::itemsForChildrenExtractions()
+            .select{|x| x["parentuuid"] == item["uuid"] }
+            .sort_by{|item| item["global-pos-07"] || 0 }
     end
 
     # Hierarchy::dive(parent)

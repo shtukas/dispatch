@@ -3,6 +3,8 @@
 
 $InMemoryItemsF6F6ECA5 = nil
 
+$ShouldDoFsckAtSave1429JG = true
+
 class Items
 
     # Items::itemsRepository()
@@ -55,7 +57,9 @@ class Items
 
     # Items::commitItem(item)
     def self.commitItem(item)
-        Fsck::fsckItemOrError(item, false)
+        if $ShouldDoFsckAtSave1429JG then
+            Fsck::fsckItemOrError(item, false)
+        end
         filepath = "#{Items::itemsRepository()}/#{item["uuid"]}.json"
         File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(item)) }
         if $InMemoryItemsF6F6ECA5 then

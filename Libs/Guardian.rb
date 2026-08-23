@@ -52,7 +52,12 @@ class Guardian
         items = Guardian::project_children_core(project)
         items.map{|item|
             x = Items::itemOrNull(item["uuid"])
-            x ? x : item
+            if x then
+                x
+            else
+                Items::commitItem(item)
+                item
+            end
         }
         .select {|item| DoNotShowUntil::isVisible(item) }
     end
@@ -75,7 +80,12 @@ class Guardian
             }
         items.map{|item|
             x = Items::itemOrNull(item["uuid"])
-            x ? x : item
+            if x then
+                x
+            else
+                Items::commitItem(item)
+                item
+            end
         }
         .select {|item| DoNotShowUntil::isVisible(item) }
     end

@@ -99,4 +99,28 @@ class Waves
         puts "do not show until #{Time.at(unixtime)}".yellow
         DoNotShowUntil::doNotShowUntil(wave, unixtime)
     end
+
+    # Waves::program(item)
+    def self.program(item)
+        loop {
+            item = Items::itemOrNull(item["uuid"])
+            return if item.nil?
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["edit description", "edit payload", "update wave pattern", "edit json"])
+            return if option.nil?
+            if option == "edit description" then
+                PolyActions::editDescription(item)
+            end
+            if option == "edit payload" then
+                UxPayloads::editItemPayload(item)
+            end
+            if option == "update wave pattern" then
+                nx46 = Nx46::interactivelyMakeNewOrNull()
+                next if nx46.nil?
+                Items::setAttribute(item["uuid"], "nx46", nx46)
+            end
+            if option == "edit json" then
+                Operations::editItemJson(item)
+            end
+        }
+    end
 end

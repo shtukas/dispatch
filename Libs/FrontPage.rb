@@ -118,6 +118,7 @@ class FrontPage
         items = FrontPage::itemsForListingOrdered()
         items = Prefix::prefix(items)
         items = NxBalls::activeItems() + items
+        items = Prefix::prefix(items)
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
 
         items.each{|item|
