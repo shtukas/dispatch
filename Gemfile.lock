@@ -3,9 +3,9 @@ GEM
   specs:
     colorize (0.8.1)
     date (3.3.3)
-    mini_portile2 (2.8.8)
-    sqlite3 (1.6.2)
-      mini_portile2 (~> 2.8.0)
+    sqlite3 (2.9.5-arm64-darwin)
+    sqlite3 (2.9.5-x86_64-darwin)
+    sqlite3 (2.9.5-x86_64-linux-gnu)
 
 PLATFORMS
   arm64-darwin-22
@@ -14,6 +14,7 @@ PLATFORMS
   arm64-darwin-25
   x86_64-darwin-22
   x86_64-darwin-23
+  x86_64-linux
 
 DEPENDENCIES
   colorize
