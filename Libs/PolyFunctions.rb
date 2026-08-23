@@ -13,13 +13,6 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["uuid"] == "fd608ab9-c3d7-4970-a464-9a736159855b" then
-            accounts << {
-                "description" => "root: guardian open cycles",
-                "number"      => "3fc52f5b-706b-47ae-a540-eefc72e47b0b"
-            }
-        end
-
         if item["parentuuid"] then
             target = Items::itemOrNull(item["parentuuid"])
             if target then

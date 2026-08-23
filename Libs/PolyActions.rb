@@ -26,6 +26,10 @@ class PolyActions
             LucilleCore::pressEnterToContinue()
             return
         end
+        if item["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
+            NxRoots::dive_guardian()
+            return
+        end
         if item["mikuType"] == "NxRoot" then
             Hierarchy::dive(item)
             return

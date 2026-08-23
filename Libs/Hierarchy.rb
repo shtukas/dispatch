@@ -14,11 +14,6 @@ class Hierarchy
             return Waves::listingItemsNonInterruption()
         end
 
-        if item["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
-            # guardian open cycles
-            return Guardian::projects().sort_by{|item| item["global-pos-07"] || 0 }
-        end
-
         if item["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then
             # infinity
             # We put in infinity the items that declare themselves in infinity and
@@ -57,10 +52,7 @@ class Hierarchy
         end
 
         if parent["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
-            # root: guardian open cycles
-            Operations::program3(lambda { 
-                [parent] + Guardian::projects()
-            })
+            NxRoots::dive_guardian()
             return
         end
 

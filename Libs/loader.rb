@@ -162,7 +162,7 @@ require_relative "NxBackups.rb"
 require_relative "NxCounters.rb"
 require_relative "NxPriorities.rb"
 require_relative "NxFloats.rb"
-require_relative "NxRoot.rb"
+require_relative "NxRoots.rb"
 
 require_relative "Operations.rb"
 
