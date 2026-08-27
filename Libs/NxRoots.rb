@@ -47,11 +47,13 @@ class NxRoots
             children = Hierarchy::children(root)
             store = ItemStore.new()
             puts ""
-            store.register(root, false)
+            lines = FrontPage::toString2(store, root, false)
+            lines.each{|line|
+                puts line
+            }
             children
                 .each{|item|
-                    store.register(item, FrontPage::canBeDefault(item))
-                    lines = FrontPage::toString2(store, item)
+                    lines = FrontPage::toString2(store, item, FrontPage::canBeDefault(item))
                     lines.each{|line|
                         puts line
                     }

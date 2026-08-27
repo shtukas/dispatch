@@ -31,8 +31,18 @@ class Hierarchy
             return []
         end
 
-        if item["guardian-project"] then
-            return Guardian::project_children(item)
+        if item["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
+            items = Hierarchy::itemsForChildrenExtractions().select{|x| x["parentuuid"] == item["uuid"] }
+
+            items_with_order, items_without_order = items.partition{|item| item["global-pos-07"]  }
+
+            i1 = items_with_order.sort_by{|item| item["global-pos-07"] }
+
+            items_non_projects, items_projects = items_without_order.partition{|item| !item["guardian-project"] }
+
+            items_projects = items_projects.sort_by{|item| item["description"] }
+
+            return i1 + items_non_projects + items_projects
         end
 
         Hierarchy::itemsForChildrenExtractions()
@@ -75,15 +85,13 @@ class Hierarchy
             children = Hierarchy::children(parent).sort_by{|item| item["global-pos-07"] || 0 }
             store = ItemStore.new()
             puts ""
-            store.register(parent, false)
-            lines = FrontPage::toString2(store, parent)
+            lines = FrontPage::toString2(store, parent, false)
             lines.each{|line|
                 puts line
             }
             children
                 .each{|child|
-                    store.register(child, FrontPage::canBeDefault(child))
-                    lines = FrontPage::toString2(store, child)
+                    lines = FrontPage::toString2(store, child, FrontPage::canBeDefault(child))
                     lines.each{|line|
                         puts line
                     }

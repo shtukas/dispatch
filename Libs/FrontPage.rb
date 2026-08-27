@@ -16,10 +16,10 @@ class FrontPage
         item["interruption"]
     end
 
-    # FrontPage::toString2(store, item)
-    def self.toString2(store, item)
+    # FrontPage::toString2(store, item, canBeDefault)
+    def self.toString2(store, item, canBeDefault)
         return nil if item.nil?
-        store.register(item, FrontPage::canBeDefault(item))
+        store.register(item, canBeDefault)
         storePrefix = "(#{store.prefixString()})"
         lines = []
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
@@ -122,7 +122,7 @@ class FrontPage
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
 
         items.each{|item|
-            lines = FrontPage::toString2(store, item)
+            lines = FrontPage::toString2(store, item, FrontPage::canBeDefault(item))
             lines.each{|line|
                 puts line
             }

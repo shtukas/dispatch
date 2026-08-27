@@ -43,8 +43,7 @@ class Operations
             puts ""
             elements
                 .each{|item|
-                    store.register(item, FrontPage::canBeDefault(item))
-                    lines = FrontPage::toString2(store, item)
+                    lines = FrontPage::toString2(store, item, FrontPage::canBeDefault(item))
                     lines.each{|line|
                         puts line
                     }

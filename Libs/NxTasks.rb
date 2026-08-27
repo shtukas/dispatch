@@ -41,9 +41,6 @@ class NxTasks
         if item["guardian-project"] then
             return Guardian::projectToString(item)
         end
-        if item["guardian-project-element"] then
-            return Guardian::projectElementToString(item)
-        end
         "#{NxTasks::icon()} #{item["description"]}"
     end
 

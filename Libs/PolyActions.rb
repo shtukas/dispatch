@@ -280,11 +280,6 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                if item["guardian-project-element"] then
-                    system("open '#{item["guardian-project-element"]["todo-filepath"]}'")
-                    LucilleCore::pressEnterToContinue()
-                    return
-                end
                 Items::deleteItem(item["uuid"])
             end
             return
