@@ -31,11 +31,6 @@ class Guardian
 
     # Guardian::projectToString(item)
     def self.projectToString(item)
-        "🐠 #{item["description"]}"
-    end
-
-    # Guardian::projectElementToString(item)
-    def self.projectElementToString(item)
-        "🔺 #{item["description"]}"
+        "🐠 #{item["description"]} (#{item["global-pos-07"].to_s.green})"
     end
 end

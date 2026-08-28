@@ -41,7 +41,7 @@ class NxTasks
         if item["guardian-project"] then
             return Guardian::projectToString(item)
         end
-        "#{NxTasks::icon()} #{item["description"]}"
+        "#{NxTasks::icon()} #{item["description"]} (#{item["global-pos-07"].to_s.green})"
     end
 
     # NxTasks::itemsInOrder()
