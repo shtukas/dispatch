@@ -62,6 +62,7 @@ class Hierarchy
         end
 
         if parent["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
+            # root: guardian
             NxRoots::dive_guardian()
             return
         end

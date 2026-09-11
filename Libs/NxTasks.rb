@@ -53,8 +53,17 @@ class NxTasks
     # NxTasks::listingItems()
     def self.listingItems()
         NxTasks::itemsInOrder()
-            .select{|item| DoNotShowUntil::isVisible(item) }
-            .first(10)
+            .reduce([]){|collection, item|
+                if collection.size >= 10 then
+                    collection
+                else
+                    if DoNotShowUntil::isVisible(item) then
+                        collection + [item]
+                    else
+                        collection
+                    end
+                end
+            }
     end
 
     # NxTasks::determineNewPosition()
