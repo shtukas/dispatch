@@ -40,6 +40,11 @@ class NxRoots
             .sort_by{|item| NxRoots::ratio(item) }
     end
 
+    # NxRoots::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("root", Items::mikuType("NxRoot"), lambda{|item| PolyFunctions::toString(item) })
+    end
+
     # NxRoots::decideNewElementPositionOrNull(parent)
     def self.decideNewElementPositionOrNull(parent)
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("position", ["first", "after n", "last"])
@@ -62,10 +67,7 @@ class NxRoots
                 end
                 item
             }
-            tail = children.drop(n-2)
-            if tail.size < 2 then
-                return nil
-            end
+            tail = children.drop(n-1)
             position = 0.5 * (tail[0]["global-pos-07"] + tail[1]["global-pos-07"])
             puts "decided position: #{position}".green
             return position
@@ -93,7 +95,7 @@ class NxRoots
                         puts line
                     }
                 }
-            puts "todo | new"
+            puts "todo | new | pile"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -111,6 +113,19 @@ class NxRoots
                 selected = CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
                     GlobalPositioning::insert_first(item)
+                }
+                next
+            end
+
+            if input == "pile" then
+                text = CommonUtils::editTextSynchronously("").strip
+                if text == "" then
+                    next
+                end
+                text.lines.map {|line| line.strip }.reverse.each{|description|
+                    task = NxTasks::interactivelyIssueNewLine(description)
+                    Items::setAttribute(task["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
+                    Items::setAttribute(task["uuid"], "parentuuid", root["uuid"])
                 }
                 next
             end

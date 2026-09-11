@@ -10,7 +10,7 @@ class GlobalPositioning
         ([1] + Items::items().map{|item| item["global-pos-07"] || 0 }).max
     end
 
-    # GlobalPositioning::insert_first(item)
+    # GlobalPositioning::insert_first(item) # -> Item
     def self.insert_first(item)
         Items::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
         Items::itemOrNull(item["uuid"])

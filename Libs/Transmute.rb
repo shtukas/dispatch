@@ -4,6 +4,11 @@ class Transmute
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
+            root = NxRoots::interactivelySelectOneOrNull()
+            return if root.nil?
+            Items::setAttribute(item["uuid"], "parentuuid", root["uuid"])
+            position = NxRoots::decideNewElementPositionOrNull(root) || 0
+            Items::setAttribute(item["uuid"], "global-pos-07", position)
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Items::itemOrNull(item["uuid"])
         end
