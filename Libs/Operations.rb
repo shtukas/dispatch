@@ -60,6 +60,16 @@ class Operations
     def self.globalMaintenance()
         puts "Running global maintenance".yellow
         Bank::maintenance()
+
+        Items::items().each{|item|
+            if item["parentuuid"] then
+                if Items::itemOrNull(item["parentuuid"]).nil? then
+                    puts "setting parentuuid to null for item uuid: #{item["uuid"]}"
+                    Items::setAttribute(item["uuid"], "parentuuid", nil)
+                end
+            end
+        }
+
     end
 
     # Operations::interactivelyGetLinesUsingTextEditor()
