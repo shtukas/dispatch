@@ -70,6 +70,14 @@ class Operations
             end
         }
 
+        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/Open Cycles/2026-03-31 Guardian").each{|location|
+            filename = File.basename(location)
+            description = filename
+            next if NxDirectories::getDirectoryByDescriptionOrNull(description)
+            puts "creating new guardian directory: #{description}"
+            item = NxDirectories::issueNew(description)
+            Items::setAttribute(item["uuid"], "parentuuid", "3fc52f5b-706b-47ae-a540-eefc72e47b0b") # guardian
+        }
     end
 
     # Operations::interactivelyGetLinesUsingTextEditor()

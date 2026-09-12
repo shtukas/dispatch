@@ -69,6 +69,10 @@ class Fsck
             return
         end
 
+        if item["mikuType"] == "NxDirectory" then
+            return
+        end
+
         if item["mikuType"] == "NxAfter" then
             return
         end

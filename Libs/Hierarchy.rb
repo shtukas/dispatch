@@ -1,53 +1,40 @@
 
 class Hierarchy
 
-    # Hierarchy::itemsForChildrenExtractions()
-    def self.itemsForChildrenExtractions()
-        Items::items()
-    end
+    # Hierarchy::children(parent)
+    def self.children(parent)
 
-    # Hierarchy::children(item)
-    def self.children(item)
-
-        if item["uuid"] == "2a749cd4-a815-4e05-b7df-b0e468b60bdd" then
+        if parent["uuid"] == "2a749cd4-a815-4e05-b7df-b0e468b60bdd" then
             # waves
             return Waves::listingItemsNonInterruption()
         end
 
-        if item["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then
+        if parent["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then
             # infinity
             # We put in infinity the items that declare themselves in infinity and
             # those which are orphans
             return [
-                Hierarchy::itemsForChildrenExtractions().select{|x| x["parentuuid"] == item["uuid"] },
-                Hierarchy::itemsForChildrenExtractions().select{|x| x["parentuuid"].nil? },
+                Items::items().select{|x| x["parentuuid"] == parent["uuid"] },
+                Items::items().select{|x| x["parentuuid"].nil? },
             ]
                 .flatten
                 .sort_by{|item| item["global-pos-07"] || 0 }
         end
 
-        if item["uuid"] == "ba965060-6358-40e9-b276-67dfe8ac63df" then
-            # trading
-            return []
+        items = Items::items()
+            .select{|x| x["parentuuid"] == parent["uuid"] }
+
+        i1, i2 = items.partition{|item| item["global-pos-07"] }
+        i1.sort_by{|item| item["global-pos-07"] } + i2
+    end
+
+    # Hierarchy::childrenForDive(parent)
+    def self.childrenForDive(parent)
+        if parent["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then
+            # root: infinity
+            return NxTasks::itemsInOrder().first(30)
         end
-
-        if item["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
-            items = Hierarchy::itemsForChildrenExtractions().select{|x| x["parentuuid"] == item["uuid"] }
-
-            items_with_order, items_without_order = items.partition{|item| item["global-pos-07"]  }
-
-            i1 = items_with_order.sort_by{|item| item["global-pos-07"] }
-
-            items_non_projects, items_projects = items_without_order.partition{|item| !item["guardian-project"] }
-
-            items_projects = items_projects.sort_by{|item| item["description"] }
-
-            return i1 + items_non_projects + items_projects
-        end
-
-        Hierarchy::itemsForChildrenExtractions()
-            .select{|x| x["parentuuid"] == item["uuid"] }
-            .sort_by{|item| item["global-pos-07"] || 0 }
+        Hierarchy::children(parent)
     end
 
     # Hierarchy::dive(parent)
@@ -61,35 +48,14 @@ class Hierarchy
             return
         end
 
-        if parent["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
-            # root: guardian
-            NxRoots::dive_guardian()
-            return
-        end
-
-        if parent["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then
-            # root: infinity
-            Operations::program3(lambda { 
-                [parent] + NxTasks::listingItems()
-            })
-            return
-        end
-
-        if parent["uuid"] == "ba965060-6358-40e9-b276-67dfe8ac63df" then
-            # root: trading
-            puts "We are not diving root:trading, please find the todo file"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         loop {
-            children = Hierarchy::children(parent).sort_by{|item| item["global-pos-07"] || 0 }
             store = ItemStore.new()
             puts ""
             lines = FrontPage::toString2(store, parent, false)
             lines.each{|line|
                 puts line
             }
+            children = Hierarchy::childrenForDive(parent)
             children
                 .each{|child|
                     lines = FrontPage::toString2(store, child, FrontPage::canBeDefault(child))
@@ -97,7 +63,7 @@ class Hierarchy
                         puts line
                     }
                 }
-            puts ""
+            puts "todo | new | pile | sort"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -105,6 +71,28 @@ class Hierarchy
             if input == "todo" or input == "new" then
                 task = NxTasks::interactivelyIssueNewOrNull()
                 Items::setAttribute(task["uuid"], "parentuuid", parent["uuid"])
+                next
+            end
+
+            if input == "sort" then
+                items = children.sort_by{|item| item["global-pos-07"] || 0 }
+                selected = CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
+                selected.reverse.each{|item|
+                    GlobalPositioning::insert_first(item)
+                }
+                next
+            end
+
+            if input == "pile" then
+                text = CommonUtils::editTextSynchronously("").strip
+                if text == "" then
+                    next
+                end
+                text.lines.map {|line| line.strip }.reverse.each{|description|
+                    task = NxTasks::interactivelyIssueNewLine(description)
+                    Items::setAttribute(task["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
+                    Items::setAttribute(task["uuid"], "parentuuid", parent["uuid"])
+                }
                 next
             end
 

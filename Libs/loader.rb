@@ -143,7 +143,6 @@ require_relative "FrontPage.rb"
 
 require_relative "Galaxy.rb"
 require_relative "GlobalPositioning.rb"
-require_relative "Guardian.rb"
 
 require_relative "Hierarchy.rb"
 
@@ -163,6 +162,7 @@ require_relative "NxCounters.rb"
 require_relative "NxPriorities.rb"
 require_relative "NxFloats.rb"
 require_relative "NxRoots.rb"
+require_relative "NxDirectories.rb"
 
 require_relative "Operations.rb"
 

@@ -38,9 +38,6 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        if item["guardian-project"] then
-            return Guardian::projectToString(item)
-        end
         "#{NxTasks::icon()} #{item["description"]} (#{item["global-pos-07"].to_s.green})"
     end
 
@@ -54,7 +51,7 @@ class NxTasks
     def self.listingItems()
         NxTasks::itemsInOrder()
             .reduce([]){|collection, item|
-                if collection.size >= 10 then
+                if collection.size >= 20 then
                     collection
                 else
                     if DoNotShowUntil::isVisible(item) then
