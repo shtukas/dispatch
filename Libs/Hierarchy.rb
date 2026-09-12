@@ -32,7 +32,7 @@ class Hierarchy
     def self.childrenForDive(parent)
         if parent["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then
             # root: infinity
-            return NxTasks::itemsInOrder().first(30)
+            return Hierarchy::children(parent).first(30)
         end
         Hierarchy::children(parent)
     end
