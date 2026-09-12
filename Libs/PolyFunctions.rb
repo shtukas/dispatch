@@ -100,13 +100,4 @@ class PolyFunctions
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end
-
-    # PolyFunctions::uuid_to_item_or_null_cache_results(uuid)
-    def self.uuid_to_item_or_null_cache_results(uuid)
-        packet = XCache::getOrNull("00cc1ac4-1a63-437a-802b-8bcadbdb0fb4:#{uuid}")
-        return JSON.parse(packet)[0] if packet
-        item = Items::itemOrNull(uuid)
-        XCache::set("00cc1ac4-1a63-437a-802b-8bcadbdb0fb4:#{uuid}", JSON.generate([item]))
-        item
-    end
 end
