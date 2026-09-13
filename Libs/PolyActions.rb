@@ -21,11 +21,6 @@ class PolyActions
             NxCounters::interactivelyIncrement(item)
             return
         end
-        if item["guardian-project"] then
-            system("open '#{item["location"]}'")
-            LucilleCore::pressEnterToContinue()
-            return
-        end
         if item["mikuType"] == "NxRoot" then
             Hierarchy::dive(item)
             return
