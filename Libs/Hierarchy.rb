@@ -56,14 +56,13 @@ class Hierarchy
                 puts line
             }
             children = Hierarchy::childrenInOrderForDive(parent)
-            children
-                .each{|child|
-                    lines = FrontPage::toString2(store, child, FrontPage::canBeDefault(child))
-                    lines.each{|line|
-                        puts line
-                    }
+            children.each{|child|
+                lines = FrontPage::toString2(store, child, FrontPage::canBeDefault(child))
+                lines.each{|line|
+                    puts line
                 }
-            puts "todo | new | pile | sort"
+            }
+            puts "todo | new | pile | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -94,6 +93,21 @@ class Hierarchy
                     task = NxTasks::interactivelyIssueNewLine(description)
                     Items::setAttribute(task["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
                     Items::setAttribute(task["uuid"], "parentuuid", parent["uuid"])
+                }
+                next
+            end
+
+            if input == "move" then
+                # For move we select some elements (non directories) from the kids and then
+                # we select a directory, and we move the element into the directory
+                tasks = children.select{|child| child["mikuType"] == "NxTask" }
+                selected = CommonUtils::selectZeroOrMore(tasks, lambda {|item| PolyFunctions::toString(item) })
+                next if selected.size == 0
+                directories = children.select{|child| child["mikuType"] == "NxDirectory" }
+                directory = LucilleCore::selectEntityFromListOfEntitiesOrNull("selection", directories, lambda {|item| PolyFunctions::toString(item) })
+                next if directory.nil?
+                selected.each{|item|
+                    Items::setAttribute(item["uuid"], "parentuuid", directory["uuid"])
                 }
                 next
             end
