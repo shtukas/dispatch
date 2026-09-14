@@ -18,12 +18,12 @@ class Prefix
                 children = children.select{|item| Items::itemOrNull(item["uuid"]) }
                 return children
             end
-            children = Hierarchy::children(parent)
+            children = Hierarchy::childrenInOrder(parent)
             children = children.take(100)
             XCache::set("dbde5dbd6ccc:#{CommonUtils::today()}", JSON.generate(children))
             return children
         end
-        Hierarchy::children(parent)
+        Hierarchy::childrenInOrder(parent)
     end
 
     # Prefix::prefix(items) -> [children of first item recursively] + [item]

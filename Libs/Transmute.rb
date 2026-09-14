@@ -14,18 +14,18 @@ class Transmute
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
             root = NxRoots::interactivelySelectOneOrNull()
             return if root.nil?
-            position = NxRoots::decideNewElementPositionOrNull(root) || 0
+            position = GlobalPositioning::decideNewElementPositionInParent(root) || 0
             Items::setAttribute(item["uuid"], "global-pos-07", position)
-            Items::setAttribute(item["uuid"], "parentuuid", root["uuid"]) # this should come after NxRoots::decideNewElementPositionOrNull
+            Items::setAttribute(item["uuid"], "parentuuid", root["uuid"]) # this should come after GlobalPositioning::decideNewElementPositionInParent
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Items::itemOrNull(item["uuid"])
         end
         if item["mikuType"] == "NxPriority" and targetType == "NxTask" then
             root = NxRoots::interactivelySelectOneOrNull()
             return if root.nil?
-            position = NxRoots::decideNewElementPositionOrNull(root) || 0
+            position = GlobalPositioning::decideNewElementPositionInParent(root) || 0
             Items::setAttribute(item["uuid"], "global-pos-07", position)
-            Items::setAttribute(item["uuid"], "parentuuid", root["uuid"]) # this should come after NxRoots::decideNewElementPositionOrNull
+            Items::setAttribute(item["uuid"], "parentuuid", root["uuid"]) # this should come after GlobalPositioning::decideNewElementPositionInParent
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Items::itemOrNull(item["uuid"])
         end

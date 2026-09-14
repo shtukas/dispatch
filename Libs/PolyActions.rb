@@ -213,7 +213,7 @@ class PolyActions
             return
         end
 
-        if Hierarchy::children(item).size > 0 then
+        if Hierarchy::childrenInOrder(item).size > 0 then
             puts "item has children, cannot be destroyed right now"
             LucilleCore::pressEnterToContinue()
             return
@@ -237,7 +237,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxDirectory" then
-            children = Hierarchy::children(item)
+            children = Hierarchy::childrenInOrder(item)
             if children.size > 0 then
                 puts "You cannot destroy a non empty directory. Children size: #{children.size}"
                 LucilleCore::pressEnterToContinue()
@@ -318,7 +318,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxRoot" then
-            children = Hierarchy::children(item)
+            children = Hierarchy::childrenInOrder(item)
             if children.size > 0 then
                 puts "You cannot destroy a non empty root. Children size: #{children.size}"
                 LucilleCore::pressEnterToContinue()

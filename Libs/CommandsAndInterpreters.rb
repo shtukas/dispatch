@@ -268,7 +268,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            items = Hierarchy::children(item).sort_by{|item| item["global-pos-07"] || 0 }
+            items = Hierarchy::childrenInOrder(item).sort_by{|item| item["global-pos-07"] || 0 }
             selected = CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
             selected.reverse.each{|item|
                 GlobalPositioning::insert_first(item)

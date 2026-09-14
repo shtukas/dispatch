@@ -144,16 +144,6 @@ class FrontPage
 
     # FrontPage::main()
     def self.main()
-        # The in memory items should be updated during activity, but we load from disk every 2 mins 
-        # to pick up changes from other instances
-        Thread.new {
-            sleep 300
-            loop {
-                Items::loadItemsFromDiskToMemory()
-                sleep 300
-            }
-        }
-
         initialCodeTrace = CommonUtils::catalystTraceCode()
         loop {
             FrontPage::preliminaries(initialCodeTrace)

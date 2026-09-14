@@ -1,8 +1,8 @@
 
 class Hierarchy
 
-    # Hierarchy::children(parent)
-    def self.children(parent)
+    # Hierarchy::childrenInOrder(parent)
+    def self.childrenInOrder(parent)
 
         if parent["uuid"] == "2a749cd4-a815-4e05-b7df-b0e468b60bdd" then
             # waves
@@ -28,13 +28,13 @@ class Hierarchy
         i1.sort_by{|item| item["global-pos-07"] } + i2
     end
 
-    # Hierarchy::childrenForDive(parent)
-    def self.childrenForDive(parent)
+    # Hierarchy::childrenInOrderForDive(parent)
+    def self.childrenInOrderForDive(parent)
         if parent["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then
             # root: infinity
-            return Hierarchy::children(parent).first(30)
+            return Hierarchy::childrenInOrder(parent).first(30)
         end
-        Hierarchy::children(parent)
+        Hierarchy::childrenInOrder(parent)
     end
 
     # Hierarchy::dive(parent)
@@ -55,7 +55,7 @@ class Hierarchy
             lines.each{|line|
                 puts line
             }
-            children = Hierarchy::childrenForDive(parent)
+            children = Hierarchy::childrenInOrderForDive(parent)
             children
                 .each{|child|
                     lines = FrontPage::toString2(store, child, FrontPage::canBeDefault(child))
@@ -69,8 +69,10 @@ class Hierarchy
             return if input == ""
 
             if input == "todo" or input == "new" then
+                position = GlobalPositioning::decideNewElementPositionInParent(parent)
                 task = NxTasks::interactivelyIssueNewOrNull()
                 Items::setAttribute(task["uuid"], "parentuuid", parent["uuid"])
+                Items::setAttribute(task["uuid"], "global-pos-07", position)
                 next
             end
 
