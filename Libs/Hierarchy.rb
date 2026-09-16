@@ -103,11 +103,10 @@ class Hierarchy
                 tasks = children.select{|child| child["mikuType"] == "NxTask" }
                 selected = CommonUtils::selectZeroOrMore(tasks, lambda {|item| PolyFunctions::toString(item) })
                 next if selected.size == 0
-                directories = children.select{|child| child["mikuType"] == "NxDirectory" }
-                directory = LucilleCore::selectEntityFromListOfEntitiesOrNull("selection", directories, lambda {|item| PolyFunctions::toString(item) })
-                next if directory.nil?
+                move_target = Hierarchy::selectParentOrNull(parent)
+                next if move_target.nil?
                 selected.each{|item|
-                    Items::setAttribute(item["uuid"], "parentuuid", directory["uuid"])
+                    Items::setAttribute(item["uuid"], "parentuuid", move_target["uuid"])
                 }
                 next
             end
@@ -116,5 +115,28 @@ class Hierarchy
         }
 
         raise "(error: b326de46) I do not know how to dive item: #{parent}"
+    end
+
+    # Hierarchy::selectParentOrNull(context)
+    def self.selectParentOrNull(context)
+        #puts "context: #{context}"
+        if context.nil? then
+            root = NxRoots::interactivelySelectOneOrNull()
+            if root.nil? then
+                return nil
+            else
+                return Hierarchy::selectParentOrNull(root)
+            end
+        end
+        children_directories = Hierarchy::childrenInOrder(context).select{|child| child["mikuType"] == "NxDirectory" }
+        choice = LucilleCore::selectEntityFromListOfEntitiesOrNull("selection", [context] + children_directories, lambda {|item| PolyFunctions::toString(item) })
+        if choice.nil? then
+            return Hierarchy::selectParentOrNull(nil)
+        end
+        if choice["uuid"] == context["uuid"] then
+            return choice
+        else
+            return Hierarchy::selectParentOrNull(choice)
+        end
     end
 end
