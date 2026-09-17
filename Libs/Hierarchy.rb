@@ -34,6 +34,10 @@ class Hierarchy
             # root: infinity
             return Hierarchy::childrenInOrder(parent).first(30)
         end
+        if parent["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
+            # root: guardian
+            return Hierarchy::childrenInOrder(parent).select{|item| !item["gh-34"] }
+        end
         Hierarchy::childrenInOrder(parent)
     end
 
@@ -108,6 +112,12 @@ class Hierarchy
                 selected.each{|item|
                     Items::setAttribute(item["uuid"], "parentuuid", move_target["uuid"])
                 }
+                next
+            end
+
+            if input == "guardian-hide" then
+                item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", children, lambda {|item| PolyFunctions::toString(item) })
+                Items::setAttribute(item["uuid"], "gh-34", true)
                 next
             end
 

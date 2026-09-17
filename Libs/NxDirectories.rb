@@ -36,7 +36,8 @@ class NxDirectories
 
     # NxDirectories::toString(item)
     def self.toString(item)
-        "#{NxDirectories::icon()} #{item["description"]}"
+        itemcount = 0
+        "#{NxDirectories::icon()} #{item["description"]} (#{itemcount})"
     end
 
     # NxDirectories::getDirectoryByDescriptionOrNull(description)

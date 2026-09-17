@@ -22,6 +22,7 @@ class FrontPage
         store.register(item, canBeDefault)
         storePrefix = "(#{store.prefixString()})"
         lines = []
+
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -37,12 +38,21 @@ class FrontPage
         end
         lines << line
 
+        befores = Items::mikuType("NxBefore")
+                    .select{|x| x["targetuuid"] == item["uuid"] }
+        befores.each{|before|
+            store.register(before, false)
+            storePrefix = "(#{store.prefixString()})"
+            line = "#{storePrefix}    ➤ (before) #{before["description"]}"
+            lines << line
+        }
+
         afters = Items::mikuType("NxAfter")
                     .select{|x| x["targetuuid"] == item["uuid"] }
         afters.each{|after|
             store.register(after, false)
             storePrefix = "(#{store.prefixString()})"
-            line = "#{storePrefix}    ➤ #{after["description"]}"
+            line = "#{storePrefix}    ➤ (after) #{after["description"]}"
             lines << line
         }
 
