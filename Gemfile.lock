@@ -3,9 +3,9 @@ GEM
   specs:
     colorize (0.8.1)
     date (3.3.3)
-    sqlite3 (2.9.5-arm64-darwin)
-    sqlite3 (2.9.5-x86_64-darwin)
-    sqlite3 (2.9.5-x86_64-linux-gnu)
+    sqlite3 (2.9.6-arm64-darwin)
+    sqlite3 (2.9.6-x86_64-darwin)
+    sqlite3 (2.9.6-x86_64-linux-gnu)
 
 PLATFORMS
   arm64-darwin-22
