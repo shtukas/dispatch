@@ -93,6 +93,7 @@ class FrontPage
             NxCounters::listingItems(),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
+            NxFeeders::listingItems(),
             NxRoots::listingItems(),
         ]
             .flatten

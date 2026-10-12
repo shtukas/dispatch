@@ -163,6 +163,7 @@ require_relative "NxPriorities.rb"
 require_relative "NxFloats.rb"
 require_relative "NxRoots.rb"
 require_relative "NxDirectories.rb"
+require_relative "NxFeeders.rb"
 
 require_relative "Operations.rb"
 

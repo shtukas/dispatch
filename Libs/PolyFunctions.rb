@@ -34,6 +34,13 @@ class PolyFunctions
             end
         end
 
+        if item["mikuType"] == "NxFeeder" then
+            accounts << {
+                "description" => "NxFeeder",
+                "number"      => "NxFeeder-7c67-4c82-b17d-51ed175f7569"
+            }
+        end
+
         if item["mikuType"] == "Wave" and !item["interruption"] then
             accounts << {
                 "description" => "root: waves",
@@ -91,6 +98,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
+        end
+        if item["mikuType"] == "NxFeeder" then
+            return NxFeeders::toString(item)
         end
         if item["mikuType"] == "NxRoot" then
             return NxRoots::toString(item)

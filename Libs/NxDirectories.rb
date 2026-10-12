@@ -34,10 +34,24 @@ class NxDirectories
         "📂"
     end
 
+    # NxDirectories::childrenCountForDisplay(parent)
+    def self.childrenCountForDisplay(parent)
+        data = XCache::getOrNull("8101b709-f7a5-4d05-a1f3-2c537eb5ee76:#{parent["uuid"]}")
+        if data then
+            data = JSON.parse(data)
+            if (Time.new.to_i - data["unixtime"]) < 86400 then
+                return data["count"]
+            end
+        end
+        count = Hierarchy::childrenInOrder(parent).size
+        data = { "count" => count, "unixtime" => Time.new.to_i }
+        XCache::set("8101b709-f7a5-4d05-a1f3-2c537eb5ee76:#{parent["uuid"]}", JSON.generate(data))
+        count
+    end
+
     # NxDirectories::toString(item)
     def self.toString(item)
-        itemcount = 0
-        "#{NxDirectories::icon()} #{item["description"]} (#{itemcount})"
+        "#{NxDirectories::icon()} #{item["description"]} (#{NxDirectories::childrenCountForDisplay(item)})"
     end
 
     # NxDirectories::getDirectoryByDescriptionOrNull(description)
