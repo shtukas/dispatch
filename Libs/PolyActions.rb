@@ -257,8 +257,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxFeeder" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
-                PolyActions::destroy(item, true)
+            if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
+                Items::deleteItem(item["uuid"])
             end
             return
         end

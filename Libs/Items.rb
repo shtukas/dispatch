@@ -2,8 +2,31 @@
 # encoding: UTF-8
 
 $InMemoryItemsF6F6ECA5 = nil
-
 $ShouldDoFsckAtSave1429JG = true
+
+class Tokens
+
+    # Tokens::tokenFromCache()
+    def self.tokenFromCache()
+        XCache::getOrNull("86830e2d-b7b9-4391-933f-7a212af8ead3") || SecureRandom.hex
+    end
+
+    # Tokens::tokenFromSharedSpace()
+    def self.tokenFromSharedSpace()
+        LucilleCore::locationsAtFolder("#{Config::pathToDataRepository()}/items-cache-integrity-token-0731")
+            .map{|filepath| File.basename(filepath) }
+            .join(":")
+    end
+
+    # Tokens::updateTokens()
+    def self.updateTokens()
+        LucilleCore::locationsAtFolder("#{Config::pathToDataRepository()}/items-cache-integrity-token-0731")
+            .each{|filepath| LucilleCore::removeFileSystemLocation(filepath) }
+        token = SecureRandom.hex
+        XCache::set("86830e2d-b7b9-4391-933f-7a212af8ead3", token)
+        FileUtils.touch("#{Config::pathToDataRepository()}/items-cache-integrity-token-0731/#{token}")
+    end
+end
 
 class Items
 
@@ -31,9 +54,16 @@ class Items
 
     # Items::ensureItems()
     def self.ensureItems()
-        # This function just ensures that 
         if $InMemoryItemsF6F6ECA5.nil? then
             Items::loadItemsFromDiskToMemory()
+            return
+        end
+        tokenFromSharedSpace = Tokens::tokenFromSharedSpace()
+        if Tokens::tokenFromCache() != tokenFromSharedSpace then
+            puts "reloading items from disk due to token mismatch".yellow
+            XCache::set("86830e2d-b7b9-4391-933f-7a212af8ead3", tokenFromSharedSpace)
+            Items::loadItemsFromDiskToMemory()
+            return
         end
     end
 
@@ -64,6 +94,7 @@ class Items
         File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(item)) }
         if $InMemoryItemsF6F6ECA5 then
             $InMemoryItemsF6F6ECA5 = $InMemoryItemsF6F6ECA5.reject{|i| i["uuid"] == item["uuid"] } + [item]
+            Tokens::updateTokens()
         end
         item
     end
