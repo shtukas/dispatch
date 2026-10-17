@@ -116,6 +116,8 @@ class FrontPage
             end
         end
 
+        GuDependabotAlerts::process()
+
         system('clear')
 
         puts ""
