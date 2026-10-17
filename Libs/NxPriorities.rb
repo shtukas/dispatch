@@ -30,6 +30,19 @@ class NxPriorities
         item
     end
 
+    # NxPriorities::issuePriorityWithUrl(uuid, url)
+    def self.issuePriorityWithUrl(uuid, url)
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", url)
+        Items::setAttribute(uuid, "payload-37", UxPayloads::urlToPayload(url))
+        Items::setAttribute(uuid, "mikuType", "NxPriority")
+        item = Items::itemOrNull(uuid)
+        item = GlobalPositioning::insert_first(item)
+        item
+    end
+
     # NxPriorities::itemHasPriorityDelegate(item)
     def self.itemHasPriorityDelegate(item)
         Items::mikuType("NxPriority")

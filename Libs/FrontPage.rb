@@ -62,14 +62,6 @@ class FrontPage
     # -----------------------------------------
     # Ops
 
-    # FrontPage::preliminaries(initialCodeTrace)
-    def self.preliminaries(initialCodeTrace)
-        if CommonUtils::catalystTraceCode() != initialCodeTrace then
-            puts "Code change detected"
-            exit
-        end
-    end
-
     # FrontPage::isAccessible(item)
     def self.isAccessible(item)
         if item["payload-37"] and item["payload-37"]["mikuType"] == "Dx8Unit" then
@@ -107,6 +99,11 @@ class FrontPage
 
     # FrontPage::displayListing(initialCodeTrace)
     def self.displayListing(initialCodeTrace)
+
+        if CommonUtils::catalystTraceCode() != initialCodeTrace then
+            puts "Code change detected"
+            exit
+        end
 
         BufferIn::import()
 
@@ -157,7 +154,6 @@ class FrontPage
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
         loop {
-            FrontPage::preliminaries(initialCodeTrace)
             FrontPage::displayListing(initialCodeTrace)
         }
     end

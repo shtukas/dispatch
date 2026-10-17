@@ -37,6 +37,15 @@ class UxPayloads
         }
     end
 
+    # UxPayloads::urlToPayload(url)
+    def self.urlToPayload(url)
+        return {
+            "uuid"     => SecureRandom.uuid,
+            "mikuType" => "URL",
+            "url"      => url
+        }
+    end
+
     # UxPayloads::makeNewPayloadOrNull()
     def self.makeNewPayloadOrNull()
         type = UxPayloads::interactivelySelectTypeOrNull()
@@ -74,11 +83,7 @@ class UxPayloads
         if type == "url" then
             url = LucilleCore::askQuestionAnswerAsString("url (empty to abort): ")
             return nil if url == ""
-            return {
-                "uuid"     => SecureRandom.uuid,
-                "mikuType" => "URL",
-                "url"      => url
-            }
+            return UxPayloads::urlToPayload(url)
         end
         if type == "unique-string" then
             uniquestring = LucilleCore::askQuestionAnswerAsString("unique-string (empty to abort): ")
