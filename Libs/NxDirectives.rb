@@ -1,6 +1,6 @@
-class NxFloats
+class NxDirectives
 
-    # NxFloats::interactivelyIssueNewOrNull()
+    # NxDirectives::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
@@ -9,7 +9,7 @@ class NxFloats
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "mikuType", "NxFloat")
+        Items::setAttribute(uuid, "mikuType", "NxDirective")
         item = Items::itemOrNull(uuid)
         item
     end
@@ -17,18 +17,18 @@ class NxFloats
     # ----------------------
     # Data
 
-    # NxFloats::icon()
+    # NxDirectives::icon()
     def self.icon()
-        "🪼"
+        "📍"
     end
 
-    # NxFloats::toString(item)
+    # NxDirectives::toString(item)
     def self.toString(item)
-        "#{NxFloats::icon()} #{item["description"]}"
+        "#{NxDirectives::icon()} #{item["description"]}"
     end
 
-    # NxFloats::listingItems()
+    # NxDirectives::listingItems()
     def self.listingItems()
-        Items::mikuType("NxFloat")
+        Items::mikuType("NxDirective")
     end
 end

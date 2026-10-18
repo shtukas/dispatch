@@ -5,9 +5,9 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | :: * (prioritise) | before * | after * | focus *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | float | priority | priorities | feed item",
-            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | :: * (prioritise) | before * | after * | focus *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | directive | priority | priorities | feed item",
+            "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | directives",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | global-maintenance | display <uuid>",
         ].join("\n")
@@ -151,10 +151,17 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("float", input) then
-            item = NxFloats::interactivelyIssueNewOrNull()
+        if Interpreting::match("directive", input) then
+            item = NxDirectives::interactivelyIssueNewOrNull()
             return  if item.nil?
             puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("directives", input) then
+            Operations::program3(lambda {
+                Items::mikuType("NxDirective")
+            })
             return
         end
 
@@ -334,11 +341,11 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("skip * hours", input) then
-            _, d, _ = Interpreting::tokenizer(input)
+        if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
-            Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
+            puts "skipping '#{PolyFunctions::toString(item)}' for 2 hours".yellow
+            Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
             return
         end
 

@@ -7,7 +7,6 @@ class FrontPage
     def self.canBeDefault(item)
         return false if TmpSkip1::isSkipped(item)
         return true  if NxBalls::itemIsRunning(item)
-        return false if item["mikuType"] == "NxFloat"
         true
     end
 
@@ -76,14 +75,15 @@ class FrontPage
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
         items = [
+            NxDirectives::listingItems(),
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             NxNotifications::listingItems(),
             NxPriorities::listingItems(),
-            NxFloats::listingItems(),
             Waves::listingItemsInterruption(),
             NxCounters::listingItems(),
             NxOndates::listingItems(),
+            Waves::listingItemsNonInterruptionTop().take(10),
             NxBackups::listingItems(),
             NxFeeders::listingItems(),
             NxRoots::listingItems(),

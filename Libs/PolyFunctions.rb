@@ -55,6 +55,11 @@ class PolyFunctions
             }
         end
 
+        accounts << {
+            "description" => item["mikuType"],
+            "number"      => "4108c8db-b84a-49b6-9bec-7dcbeb33c956:#{item["mikuType"]}"
+        }
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -84,8 +89,8 @@ class PolyFunctions
         if item["mikuType"] == "NxNotification" then
             return NxNotifications::toString(item)
         end
-        if item["mikuType"] == "NxFloat" then
-            return NxFloats::toString(item)
+        if item["mikuType"] == "NxDirective" then
+            return NxDirectives::toString(item)
         end
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)

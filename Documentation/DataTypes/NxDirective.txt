@@ -1,7 +1,7 @@
 
-NxFloat:
+NxDirective:
     - uuid         : String
-    - mikuType     : "NxFloat"
+    - mikuType     : "NxDirective"
     - unixtime     :
     - datetime     :
     - description  : String

@@ -21,7 +21,7 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "NxFloat" then
+        if item["mikuType"] == "NxDirective" then
             return
         end
 

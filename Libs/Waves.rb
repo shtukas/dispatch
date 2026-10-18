@@ -91,6 +91,15 @@ class Waves
             .sort_by{|item| item["lastDoneUnixtime"] }
     end
 
+    # Waves::listingItemsNonInterruptionTop()
+    def self.listingItemsNonInterruptionTop()
+        return [] if BankDerivedData::recoveredAverageHoursPerDay("4108c8db-b84a-49b6-9bec-7dcbeb33c956:Wave") > 2
+        Items::mikuType("Wave")
+            .select{|item| DoNotShowUntil::isVisible(item) }
+            .select{|item| !item["interruption"] }
+            .sort_by{|item| item["lastDoneUnixtime"] }
+    end
+
     # Waves::performDone(wave)
     def self.performDone(wave)
         Items::setAttribute(wave["uuid"], "lastDoneUnixtime", Time.new.to_i)

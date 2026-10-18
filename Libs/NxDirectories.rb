@@ -56,6 +56,6 @@ class NxDirectories
 
     # NxDirectories::getDirectoryByDescriptionOrNull(description)
     def self.getDirectoryByDescriptionOrNull(description)
-        Items::mikuType("NxFloat").select{|item| item["description"] == description }
+        Items::mikuType("NxDirective").select{|item| item["description"] == description }
     end
 end

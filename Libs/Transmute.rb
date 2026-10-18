@@ -3,8 +3,8 @@ class Transmute
 
     # Transmute::transmuteTo(item, targetType) # updated item
     def self.transmuteTo(item, targetType)
-        if item["mikuType"] == "NxOndate" and targetType == "NxFloat" then
-            Items::setAttribute(item["uuid"], "mikuType", "NxFloat")
+        if item["mikuType"] == "NxOndate" and targetType == "NxDirective" then
+            Items::setAttribute(item["uuid"], "mikuType", "NxDirective")
             return Items::itemOrNull(item["uuid"])
         end
         if item["mikuType"] == "NxOndate" and targetType == "NxPriority" then
@@ -54,7 +54,7 @@ class Transmute
     # Transmute::transmute(item)
     def self.transmute(item)
         mapping = {
-            "NxOndate" => ["NxFloat","NxPriority","NxTask"],
+            "NxOndate" => ["NxDirective","NxPriority","NxTask"],
             "NxTask"   => ["NxDirectory"],
             "NxPriority"   => ["NxTask"],
         }
