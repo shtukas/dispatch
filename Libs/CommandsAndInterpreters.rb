@@ -6,7 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | :: * (prioritise) | before * | after * | focus *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | directive | priority | priorities | feed item",
+            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | directive | priority | priorities | feed item | netflix",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | directives",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | global-maintenance | display <uuid>",
@@ -232,6 +232,13 @@ class CommandsAndInterpreters
 
         if Interpreting::match("feed item", input) then
             item = NxFeeders::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("netflix", input) then
+            item = NxFeeders::netflix()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return

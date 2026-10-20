@@ -19,6 +19,25 @@ class NxFeeders
         item
     end
 
+    # NxFeeders::netflix()
+    def self.netflix()
+        name1 = LucilleCore::askQuestionAnswerAsString("name: ")
+        return nil if name1 == ""
+        description = "netflix: #{name1}"
+        payload = UxPayloads::makeNewPayloadOrNull()
+        donationuuid = NxRoots::infinityuuid()
+        uuid = SecureRandom.uuid
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "payload-37", payload)
+        Items::setAttribute(uuid, "donation-14", donationuuid)
+        Items::setAttribute(uuid, "mikuType", "NxFeeder")
+        item = Items::itemOrNull(uuid)
+        item
+    end
+
     # ----------------------
     # Data
 

@@ -51,7 +51,7 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" and item["parentuuid"].nil? then
             accounts << {
                 "description" => "root: infinity",
-                "number"      => "92cd40f9-2001-48fc-9e2b-51da20202049"
+                "number"      => NxRoots::infinityuuid()
             }
         end
 

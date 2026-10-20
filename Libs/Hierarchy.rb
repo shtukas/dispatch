@@ -9,7 +9,7 @@ class Hierarchy
             return Waves::listingItemsNonInterruption()
         end
 
-        if parent["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then
+        if parent["uuid"] == NxRoots::infinityuuid() then
             # infinity
             # We put in infinity the items that declare themselves in infinity and
             # those which are orphans
@@ -30,7 +30,7 @@ class Hierarchy
 
     # Hierarchy::childrenInOrderForDive(parent)
     def self.childrenInOrderForDive(parent)
-        if parent["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then
+        if parent["uuid"] == NxRoots::infinityuuid() then
             # root: infinity
             return Hierarchy::childrenInOrder(parent).first(30)
         end

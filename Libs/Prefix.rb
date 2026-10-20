@@ -3,7 +3,7 @@ class Prefix
 
     # Prefix::selection(parent, children)
     def self.selection(parent, children)
-        if parent["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then # infinity
+        if parent["uuid"] == NxRoots::infinityuuid() then # infinity
             return children.take(6)
         end
         children
@@ -11,7 +11,7 @@ class Prefix
 
     # Prefix::decide_children(parent)
     def self.decide_children(parent)
-        if parent["uuid"] == "92cd40f9-2001-48fc-9e2b-51da20202049" then # infinity
+        if parent["uuid"] == NxRoots::infinityuuid() then # infinity
             children = XCache::getOrNull("dbde5dbd6ccc:#{CommonUtils::today()}")
             if children then
                 children = JSON.parse(children)
