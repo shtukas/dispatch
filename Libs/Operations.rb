@@ -76,7 +76,7 @@ class Operations
             next if NxDirectories::getDirectoryByDescriptionOrNull(description)
             puts "creating new guardian directory: #{description}"
             item = NxDirectories::issueNew(description)
-            Items::setAttribute(item["uuid"], "parentuuid", "3fc52f5b-706b-47ae-a540-eefc72e47b0b") # guardian
+            Items::setAttribute(item["uuid"], "parentuuid", NxRoots::guardianuuid()) # guardian
         }
     end
 

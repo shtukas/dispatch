@@ -27,11 +27,16 @@ class Donations
         target["uuid"]
     end
 
+    # Donations::setDonation(item, targetuuid) # -> item
+    def self.setDonation(item, targetuuid)
+        Items::setAttribute(item["uuid"], "donation-14", targetuuid)
+        Items::itemOrNull(item["uuid"])
+    end
+
     # Donations::interactivelySetDonation(item) # -> item
     def self.interactivelySetDonation(item)
-        uuid = Donations::interactivelySelectUuidOrNull()
-        return item if uuid.nil?
-        Items::setAttribute(item["uuid"], "donation-14", uuid)
-        Items::itemOrNull(item["uuid"])
+        targetuuid = Donations::interactivelySelectUuidOrNull()
+        return item if targetuuid.nil?
+        Donations::setDonation(item, targetuuid)
     end
 end
