@@ -4,23 +4,31 @@ class Prefix
     # Prefix::selection(parent, children)
     def self.selection(parent, children)
         if parent["uuid"] == NxRoots::infinityuuid() then # infinity
-            return children.take(6)
+            return children.reduce([]) {|selection, item|
+                if selection.size >= 6 then
+                    selection
+                else
+                    if DoNotShowUntil::isVisible(item) then
+                        selection + [item]
+                    else
+                        selection
+                    end
+                end
+            }
         end
-        children
+        children.select {|item| DoNotShowUntil::isVisible(item) }
     end
 
     # Prefix::decide_children(parent)
     def self.decide_children(parent)
         if parent["uuid"] == NxRoots::infinityuuid() then # infinity
-            children = XCache::getOrNull("dbde5dbd6ccc:#{CommonUtils::today()}")
-            if children then
-                children = JSON.parse(children)
-                children = children.select{|item| Items::itemOrNull(item["uuid"]) }
-                return children
+            childrenuuids = XCache::getOrNull("faaf1f9a-600c-44fd-b938-2ce573d20ff0:#{CommonUtils::today()}")
+            if childrenuuids then
+                return JSON.parse(childrenuuids).map{|uuid| Items::itemOrNull(uuid) }.compact
             end
             children = Hierarchy::childrenInOrder(parent)
-            children = children.take(100)
-            XCache::set("dbde5dbd6ccc:#{CommonUtils::today()}", JSON.generate(children))
+            childrenuuids = children.take(100).map{|item| item["uuid"] }
+            XCache::set("faaf1f9a-600c-44fd-b938-2ce573d20ff0:#{CommonUtils::today()}", JSON.generate(childrenuuids))
             return children
         end
         Hierarchy::childrenInOrder(parent)
@@ -37,7 +45,6 @@ class Prefix
             return Prefix::prefix(befores + items)
         end
         children = Prefix::decide_children(firstItem)
-                    .select {|item| DoNotShowUntil::isVisible(item) }
         return items if children.empty?
         Prefix::prefix(Prefix::selection(firstItem, children) + items)
     end

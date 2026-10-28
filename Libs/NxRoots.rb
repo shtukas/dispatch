@@ -27,6 +27,11 @@ class NxRoots
         "92cd40f9-2001-48fc-9e2b-51da20202049"
     end
 
+    # NxRoots::guardianuuid()
+    def self.guardianuuid()
+        "3fc52f5b-706b-47ae-a540-eefc72e47b0b"
+    end
+
     # NxRoots::ratio(item)
     def self.ratio(item)
         dailyExpectation = item["weeklyExpectation"].to_f/5

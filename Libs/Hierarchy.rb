@@ -34,7 +34,7 @@ class Hierarchy
             # root: infinity
             return Hierarchy::childrenInOrder(parent).first(30)
         end
-        if parent["uuid"] == "3fc52f5b-706b-47ae-a540-eefc72e47b0b" then
+        if parent["uuid"] == NxRoots::guardianuuid() then
             # root: guardian
             return Hierarchy::childrenInOrder(parent).select{|item| !item["gh-34"] }
         end
