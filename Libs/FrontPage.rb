@@ -83,7 +83,7 @@ class FrontPage
             Waves::listingItemsInterruption(),
             NxCounters::listingItems(),
             NxOndates::listingItems(),
-            Waves::listingItemsNonInterruptionTop().take(10),
+            Waves::listingItemsNonInterruptionTop(),
             NxBackups::listingItems(),
             NxFeeders::listingItems(),
             NxRoots::listingItems(),
