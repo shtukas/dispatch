@@ -39,6 +39,8 @@ class PolyActions
 
     # PolyActions::done(item)
     def self.done(item)
+        XCache::set("9775d010-30b7-4f5f-9c62-18d258f6de01", "non-wave")
+
         PolyActions::stop(item)
 
         if item["mikuType"] == "NxCounter" then
@@ -75,6 +77,7 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             Waves::performDone(item)
+            XCache::set("9775d010-30b7-4f5f-9c62-18d258f6de01", "wave")
             return
         end
 

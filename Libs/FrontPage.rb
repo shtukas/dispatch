@@ -72,18 +72,27 @@ class FrontPage
         true
     end
 
-    # FrontPage::itemsForListingOrdered()
-    def self.itemsForListingOrdered()
-        items = [
+    # FrontPage::preambule()
+    def self.preambule()
+        [
             NxDirectives::listingItems(),
+            Waves::listingItemsInterruption(),
+            NxPriorities::listingItems(),
+        ]
+            .flatten
+            .select {|item| DoNotShowUntil::isVisible(item) }
+            .select {|item| FrontPage::isAccessible(item) }
+    end
+
+
+    # FrontPage::nonWaveListing()
+    def self.nonWaveListing()
+        [
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             NxNotifications::listingItems(),
-            NxPriorities::listingItems(),
-            Waves::listingItemsInterruption(),
             NxCounters::listingItems(),
             NxOndates::listingItems(),
-            Waves::listingItemsNonInterruptionTop(),
             NxBackups::listingItems(),
             NxFeeders::listingItems(),
             NxRoots::listingItems(),
@@ -91,7 +100,37 @@ class FrontPage
             .flatten
             .select {|item| DoNotShowUntil::isVisible(item) }
             .select {|item| FrontPage::isAccessible(item) }
+    end
 
+    # FrontPage::waveListing()
+    def self.waveListing()
+        Items::mikuType("Wave")
+            .select{|item| DoNotShowUntil::isVisible(item) }
+            .select{|item| !item["interruption"] }
+            .sort_by{|item| item["lastDoneUnixtime"] }
+            .select {|item| FrontPage::isAccessible(item) }
+    end
+
+    # FrontPage::lastOperation() # "wave" | "not-wave"
+    def self.lastOperation()
+        XCache::getOrNull("9775d010-30b7-4f5f-9c62-18d258f6de01") || "wave"
+    end
+
+    # FrontPage::zipping(head, array1, array2)
+    def self.zipping(head, array1, array2)
+        return head if (array1.empty? and array2.empty?)
+        FrontPage::zipping(head + array1.take(1) + array2.take(1), array1.drop(1), array2.drop(1))
+    end
+
+    # FrontPage::itemsForListingOrdered()
+    def self.itemsForListingOrdered()
+        head = FrontPage::preambule()
+        items1 = FrontPage::nonWaveListing()
+        items2 = FrontPage::waveListing()
+        items = FrontPage::zipping(head, items2, items1)
+        if FrontPage::lastOperation() == "wave" then
+            items = FrontPage::zipping(head, items1, items2)
+        end
         is1, is2 = items.partition{|item| item["listpos39"] and item["listpos39"]["date"] == CommonUtils::today() }
         is1 = is1.sort_by{|item| item["listpos39"]["position"] }
         is1 + is2
@@ -130,6 +169,8 @@ class FrontPage
         items = NxBalls::activeItems() + items
         items = Prefix::prefix(items)
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
+
+        items = items.take(CommonUtils::screenHeight()-3)
 
         items.each{|item|
             lines = FrontPage::toString2(store, item, FrontPage::canBeDefault(item))

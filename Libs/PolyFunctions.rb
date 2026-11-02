@@ -41,13 +41,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "Wave" and !item["interruption"] then
-            accounts << {
-                "description" => "root: waves",
-                "number"      => "2a749cd4-a815-4e05-b7df-b0e468b60bdd" 
-            }
-        end
-
         if item["mikuType"] == "NxTask" and item["parentuuid"].nil? then
             accounts << {
                 "description" => "root: infinity",

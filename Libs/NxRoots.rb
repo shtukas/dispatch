@@ -47,7 +47,12 @@ class NxRoots
     # NxRoots::listingItems()
     def self.listingItems()
         Items::mikuType("NxRoot")
+            .select{|item| NxRoots::ratio(item) < 1 }
             .sort_by{|item| NxRoots::ratio(item) }
+            .map{|root|
+                Hierarchy::childrenInOrderForFrontpage(root) + [root]
+            }
+            .flatten
     end
 
     # NxRoots::interactivelySelectOneOrNull()

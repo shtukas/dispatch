@@ -3,12 +3,6 @@ class Hierarchy
 
     # Hierarchy::childrenInOrder(parent)
     def self.childrenInOrder(parent)
-
-        if parent["uuid"] == "2a749cd4-a815-4e05-b7df-b0e468b60bdd" then
-            # waves
-            return Waves::listingItemsNonInterruption()
-        end
-
         if parent["uuid"] == NxRoots::infinityuuid() then
             # infinity
             # We put in infinity the items that declare themselves in infinity and
@@ -41,17 +35,21 @@ class Hierarchy
         Hierarchy::childrenInOrder(parent)
     end
 
+    # Hierarchy::childrenInOrderForFrontpage(parent)
+    def self.childrenInOrderForFrontpage(parent)
+        if parent["uuid"] == NxRoots::infinityuuid() then
+            # root: infinity
+            return Hierarchy::childrenInOrder(parent).first(30)
+        end
+        if parent["uuid"] == NxRoots::guardianuuid() then
+            # root: guardian
+            return Hierarchy::childrenInOrder(parent).select{|item| !item["gh-34"] }
+        end
+        Hierarchy::childrenInOrder(parent)
+    end
+
     # Hierarchy::dive(parent)
     def self.dive(parent)
-        if parent["uuid"] == "2a749cd4-a815-4e05-b7df-b0e468b60bdd" then
-            # root: waves
-            Operations::program3(lambda { 
-                w1, w2 = Items::mikuType("Wave").partition{|item| DoNotShowUntil::isVisible(item) }
-                [parent] + w2 + w1 # we put the done ones first
-            })
-            return
-        end
-
         loop {
             store = ItemStore.new()
             puts ""
