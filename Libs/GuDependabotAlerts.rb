@@ -5,7 +5,9 @@ class GuDependabotAlerts
 
     # GuDependabotAlerts::getData()
     def self.getData()
-        IO.read("#{Config::userHomeDirectory()}/Galaxy/Software-Guardian/vulnerability-monitor/11-results.jsonlines.txt")
+        result_filepath = "#{Config::userHomeDirectory()}/Galaxy/Software-Guardian/vulnerability-monitor/11-results.jsonlines.txt"
+        return [] if !File.exist?(result_filepath)
+        IO.read(result_filepath)
                         .strip
                         .lines
                         .map{|line| JSON.parse(line.strip) }
