@@ -70,7 +70,7 @@ class Operations
             end
         }
 
-        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/Open Cycles/2026-03-31 Guardian").each{|location|
+        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/Open Cycles Guardian").each{|location|
             filename = File.basename(location)
             description = filename
             next if NxDirectories::getDirectoryByDescriptionOrNull(description)
