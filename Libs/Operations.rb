@@ -146,4 +146,48 @@ class Operations
         puts "dot not show until: #{Time.at(unixtime).to_s}".yellow
         DoNotShowUntil::doNotShowUntil(item, unixtime)
     end
+
+    # Operations::privateGardenManagement()
+    def self.privateGardenManagement()
+
+        # Extraction of images from the repository to the desktop
+        if Config::instanceId() == "Lucille24-pascal" then
+            exec_path = "#{XCache::getOrNull("cac5c562-cb8c-417c-97dc-f470961cfb1d")}/todo-to-desktop-feed.rb"
+            if !File.exist?(exec_path) then
+                puts "[ce68bd33] Cannot recover the path to Private Garden"
+                exit
+            end
+            system("ruby '#{exec_path}'")
+        end
+
+        # Processing of the private-garden-destruction directory
+        destruction_directory = "#{ENV["HOME"]}/Desktop/private-garden-destruction"
+        if !File.exist?(destruction_directory) then
+            puts "[076f806c] Cannot see private-garden-destruction on the Desktop"
+            exit
+        end
+        filepaths = LucilleCore::locationsAtFolder(destruction_directory)
+        filepaths.each{|filepath|
+            filename = File.basename(filepath)
+            puts "destroying '#{filename}' from the wallpapers"
+            # example private-garden-100-LUGHEAD.png
+            dir1 = filename[15, 3] # directory name inside Desktop-Pictures-Repository, that we extract from the private garden feeder image
+            puts "dir1: '#{dir1}'"
+            filename1 = filename[19, filename.size] # filename inside Desktop-Pictures-Repository
+            puts "filename1: '#{filename1}'"
+            filepath_in_wallpapers = "/Users/pascal/Galaxy/DataHub/Desktop-Pictures-Repository/#{dir1}/#{filename1}"
+            puts "filepath_in_wallpapers: '#{filepath_in_wallpapers}'"
+            if File.exist?(filepath_in_wallpapers) then
+                puts "deleting: '#{filepath_in_wallpapers}'"
+                FileUtils.rm(filepath_in_wallpapers)
+            else
+                puts "I reconstructed this file '#{filepath_in_wallpapers}', but can't see it at destination"
+                puts "skipping removal"
+                LucilleCore::pressEnterToContinue()
+            end
+            puts "deleting: '#{filepath}'"
+            FileUtils.rm(filepath)
+            exit
+        }
+    end
 end

@@ -158,14 +158,7 @@ class FrontPage
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
         loop {
-            if Config::instanceId() == "Lucille24-pascal" then
-                exec_path = "#{XCache::getOrNull("cac5c562-cb8c-417c-97dc-f470961cfb1d")}/processor.rb"
-                if !File.exist?(exec_path) then
-                    puts "[ce68bd33] Cannot recover the path to Private Garden"
-                    exit
-                end
-                system("ruby '#{exec_path}'")
-            end
+            Operations::privateGardenManagement()
             FrontPage::displayListing(initialCodeTrace)
         }
     end
