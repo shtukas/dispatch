@@ -188,7 +188,6 @@ class Operations
             end
             puts "deleting: '#{filepath}'"
             FileUtils.rm(filepath)
-            exit
         }
     end
 end
