@@ -27,8 +27,8 @@ class Config
         JSON.parse(IO.read(filepath))["instanceId"]
     end
 
-    # Config::isPrimaryInstance()
-    def self.isPrimaryInstance()
-        Config::instanceId().start_with?("Lucille26")
+    # Config::isAlexandra()
+    def self.isAlexandra()
+        Config::instanceId().start_with?("Lucille24-pascal")
     end
 end

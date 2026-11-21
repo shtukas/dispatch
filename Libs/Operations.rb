@@ -149,6 +149,7 @@ class Operations
 
     # Operations::privateGardenManagement()
     def self.privateGardenManagement()
+        return if !Config::isAlexandra()
 
         # Extraction of images from the repository to the desktop
         if Config::instanceId() == "Lucille24-pascal" then

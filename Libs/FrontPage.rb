@@ -109,7 +109,7 @@ class FrontPage
 
         NxNotifications::pickup()
 
-        if Config::isPrimaryInstance() then
+        if Config::isAlexandra() then
             if (Time.new.to_i - XCache::getOrDefaultValue("e1450d85-3f2b-4c3c-9c57-5e034361e8d6", "0").to_i) > 86400 then
                 Operations::globalMaintenance()
                 XCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d6", Time.new.to_i)
