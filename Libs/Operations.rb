@@ -70,14 +70,16 @@ class Operations
             end
         }
 
-        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/Open Cycles Guardian").each{|location|
-            filename = File.basename(location)
-            description = filename
-            next if NxDirectories::getDirectoryByDescriptionOrNull(description)
-            puts "creating new guardian directory: #{description}"
-            item = NxDirectories::issueNew(description)
-            Items::setAttribute(item["uuid"], "parentuuid", NxRoots::guardianuuid()) # guardian
-        }
+        if Config::instanceId() == "Lucille26" then
+            LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/Open Cycles").each{|location|
+                filename = File.basename(location)
+                description = filename
+                next if NxDirectories::getDirectoryByDescriptionOrNull(description)
+                puts "creating new guardian directory: #{description}"
+                item = NxDirectories::issueNew(description)
+                Items::setAttribute(item["uuid"], "parentuuid", NxRoots::guardianuuid()) # guardian
+            }
+        end
     end
 
     # Operations::interactivelyGetLinesUsingTextEditor()
