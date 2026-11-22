@@ -4,6 +4,7 @@ class NxTasks
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
+        domain = Domains::decideDomain()
         uuid = SecureRandom.uuid
         payload = UxPayloads::makeNewPayloadOrNull()
         Items::init(uuid)
@@ -11,18 +12,24 @@ class NxTasks
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "payload-37", payload)
+        Items::setAttribute(uuid, "domain", domain)
         Items::setAttribute(uuid, "mikuType", "NxTask")
         item = Items::itemOrNull(uuid)
         item
     end
 
-    # NxTasks::interactivelyIssueNewLine(description)
-    def self.interactivelyIssueNewLine(description)
+    # NxTasks::interactivelyIssueNewLine(description, domain)
+    def self.interactivelyIssueNewLine(description, domain)
+        if domain.nil? then
+            puts "[cc6737bf] You are trying to create new task '#{description}' with null domain"
+            exit
+        end
         uuid = SecureRandom.uuid
         Items::init(uuid)
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "domain", domain)
         Items::setAttribute(uuid, "mikuType", "NxTask")
         item = Items::itemOrNull(uuid)
         item
@@ -49,7 +56,10 @@ class NxTasks
 
     # NxTasks::listingItems()
     def self.listingItems()
+        domain = Domains::domainUsingTheInstanceId()
+
         NxTasks::itemsInOrder()
+            .select{|item| item["domain"] == domain }
             .reduce([]){|collection, item|
                 if collection.size >= 20 then
                     collection

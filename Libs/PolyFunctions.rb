@@ -34,20 +34,6 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxFeeder" then
-            accounts << {
-                "description" => "NxFeeder",
-                "number"      => "NxFeeder-7c67-4c82-b17d-51ed175f7569"
-            }
-        end
-
-        if item["mikuType"] == "NxTask" and item["parentuuid"].nil? then
-            accounts << {
-                "description" => "root: infinity",
-                "number"      => NxRoots::infinityuuid()
-            }
-        end
-
         accounts << {
             "description" => item["mikuType"],
             "number"      => "4108c8db-b84a-49b6-9bec-7dcbeb33c956:#{item["mikuType"]}"
@@ -91,17 +77,8 @@ class PolyFunctions
         if item["mikuType"] == "NxPriority" then
             return NxPriorities::toString(item)
         end
-        if item["mikuType"] == "NxDirectory" then
-            return NxDirectories::toString(item)
-        end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
-        end
-        if item["mikuType"] == "NxFeeder" then
-            return NxFeeders::toString(item)
-        end
-        if item["mikuType"] == "NxRoot" then
-            return NxRoots::toString(item)
         end
         if item["mikuType"] == "NxBefore" then
             return "✨ #{item["description"]}"

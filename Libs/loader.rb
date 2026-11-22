@@ -134,7 +134,7 @@ require_relative "CommandsAndInterpreters.rb"
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DoNotShowUntil.rb"
-require_relative "Donations.rb"
+require_relative "Domains.rb"
 
 require_relative "Elizabeth.rb"
 
@@ -144,8 +144,6 @@ require_relative "FrontPage.rb"
 require_relative "Galaxy.rb"
 require_relative "GlobalPositioning.rb"
 require_relative "GuDependabotAlerts"
-
-require_relative "Hierarchy.rb"
 
 require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
@@ -162,15 +160,11 @@ require_relative "NxBackups.rb"
 require_relative "NxCounters.rb"
 require_relative "NxPriorities.rb"
 require_relative "NxDirectives.rb"
-require_relative "NxRoots.rb"
-require_relative "NxDirectories.rb"
-require_relative "NxFeeders.rb"
 
 require_relative "Operations.rb"
 
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
-require_relative "Prefix.rb"
 
 require_relative "SectionsType0141.rb"
 require_relative "Search.rb"

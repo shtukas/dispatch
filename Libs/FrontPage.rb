@@ -23,7 +23,7 @@ class FrontPage
         storePrefix = "(#{store.prefixString()})"
         lines = []
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::suffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayloads::suffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix(item)}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -65,7 +65,7 @@ class FrontPage
     # FrontPage::isAccessible(item)
     def self.isAccessible(item)
         if item["payload-37"] and item["payload-37"]["mikuType"] == "Dx8Unit" then
-            if Config::instanceId().start_with?("Lucille26") then
+            if Config::instanceId() == "Lucille26-pascal-honore" then
                 # We don't do Dx8Units on Lucille26
                 return false
             end
@@ -86,8 +86,7 @@ class FrontPage
             Waves::listingItemsNonInterruption(),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
-            NxFeeders::listingItems(),
-            NxRoots::listingItems()
+            NxTasks::listingItems()
         ]
             .flatten
             .select {|item| DoNotShowUntil::isVisible(item) }
@@ -127,9 +126,7 @@ class FrontPage
 
         store = ItemStore.new()
         items = FrontPage::itemsForListingOrdered()
-        items = Prefix::prefix(items)
         items = NxBalls::activeItems() + items
-        items = Prefix::prefix(items)
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
 
         items = items.take(CommonUtils::screenHeight()-7)

@@ -1,2 +1,0 @@
-Hierarchy
-Each regular item contains the uuid of its parent in `parentuuid`.

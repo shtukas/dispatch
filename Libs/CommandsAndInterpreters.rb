@@ -5,8 +5,8 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | donation * | dismiss | :: * (prioritise) | before * | after * | focus *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | directive | priority | priorities | feed item | netflix",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | dismiss | :: * (prioritise) | before * | after * | focus *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | directive | priority | priorities",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | directives",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | fsck-force | global-maintenance | display <uuid>",
@@ -193,21 +193,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("donation", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Donations::interactivelySetDonation(item)
-            return
-        end
-
-        if Interpreting::match("donation *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Donations::interactivelySetDonation(item)
-            return
-        end
-
         if Interpreting::match("program *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -227,20 +212,6 @@ class CommandsAndInterpreters
         if Interpreting::match("fsck", input) then
             Fsck::fsckAll()
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("feed item", input) then
-            item = NxFeeders::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("netflix", input) then
-            item = NxFeeders::netflix()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
             return
         end
 
@@ -281,18 +252,6 @@ class CommandsAndInterpreters
             selected = CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
             selected.reverse.each{|item|
                 ListPos39::markItemWithFirstPosition(item)
-            }
-            return
-        end
-
-        if Interpreting::match("sort *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            items = Hierarchy::childrenInOrder(item).sort_by{|item| item["global-pos-07"] || 0 }
-            selected = CommonUtils::selectZeroOrMore(items, lambda {|item| PolyFunctions::toString(item) })
-            selected.reverse.each{|item|
-                GlobalPositioning::insert_first(item)
             }
             return
         end
@@ -421,7 +380,6 @@ class CommandsAndInterpreters
             return if description == ""
             item = NxPriorities::issueNew(description)
             puts JSON.pretty_generate(item)
-            Donations::interactivelySetDonation(item)
             return
         end
 
@@ -433,7 +391,6 @@ class CommandsAndInterpreters
                 .reverse.each{|line|
                     item = NxPriorities::issueNew(line)
                     puts JSON.pretty_generate(item)
-                    Donations::interactivelySetDonation(item)
                 }
             return
         end

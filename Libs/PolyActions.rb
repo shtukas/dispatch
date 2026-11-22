@@ -21,14 +21,6 @@ class PolyActions
             NxCounters::interactivelyIncrement(item)
             return
         end
-        if item["mikuType"] == "NxRoot" then
-            Hierarchy::dive(item)
-            return
-        end
-        if item["mikuType"] == "NxDirectory" then
-            Hierarchy::dive(item)
-            return
-        end
         UxPayloads::access(item["payload-37"])
     end
 
@@ -48,13 +40,6 @@ class PolyActions
 
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
-            return
-        end
-
-        if item["mikuType"] == "NxFeeder" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
-                PolyActions::destroy(item, true)
-            end
             return
         end
 
@@ -140,40 +125,12 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxRoot" then
-            return
-        end
-
-        if item["mikuType"] == "NxDirectory" then
-            puts "#{PolyFunctions::toString(item).green}"
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["dismiss for the day", "destroy"])
-            if option == "dismiss" then
-                NxBalls::stop(item)
-                DoNotShowUntil::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            end
-            if option == "destroy" then
-                NxBalls::stop(item)
-                PolyActions::destroy(item, true)
-            end
-            return
-        end
-
         puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
     # PolyActions::doubleDots(item)
     def self.doubleDots(item)
-
-        if item["mikuType"] == "NxRoot" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxDirectory" then
-            PolyActions::access(item)
-            return
-        end
 
         if NxBalls::itemIsRunning(item) then
             return
@@ -185,11 +142,6 @@ class PolyActions
 
     # PolyActions::tripleDots(item)
     def self.tripleDots(item)
-
-        if item["mikuType"] == "NxDirectory" then
-            PolyActions::access(item)
-            return
-        end
 
         return if NxBalls::itemIsActive(item)
 
@@ -220,12 +172,6 @@ class PolyActions
             return
         end
 
-        if Hierarchy::childrenInOrder(item).size > 0 then
-            puts "item has children, cannot be destroyed right now"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         afters = Items::mikuType("NxAfter")
                 .select{|x| x["targetuuid"] == item["uuid"] }
         if afters.size > 0 then
@@ -238,26 +184,6 @@ class PolyActions
                     itemx["description"] = after["description"]
                     Items::commitItem(itemx) # this way the after has been updated, including taking the MikuType of the item
                 }
-                Items::deleteItem(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxDirectory" then
-            children = Hierarchy::childrenInOrder(item)
-            if children.size > 0 then
-                puts "You cannot destroy a non empty directory. Children size: #{children.size}"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxFeeder" then
-            if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Items::deleteItem(item["uuid"])
             end
             return
@@ -325,19 +251,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxRoot" then
-            children = Hierarchy::childrenInOrder(item)
-            if children.size > 0 then
-                puts "You cannot destroy a non empty root. Children size: #{children.size}"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             if already_confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
             end

@@ -24,7 +24,6 @@ class GuDependabotAlerts
                 timestamp = (XCache::getOrNull("405ada91-02eb-4428-9c72-13aad665715a:#{url}") || "0").to_i
                 next if (Time.new.to_i - timestamp) < 86400 * 7
                 item = NxPriorities::issuePriorityWithUrl(itemuuid, url)
-                Donations::setDonation(item, NxRoots::guardianuuid())
                 XCache::set("405ada91-02eb-4428-9c72-13aad665715a:#{url}", Time.new.to_i)
                 puts JSON.pretty_generate(item)
             }

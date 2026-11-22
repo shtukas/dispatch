@@ -25,14 +25,6 @@ class Fsck
             return
         end
 
-        if item["mikuType"] == "NxFeeder" then
-            return
-        end
-
-        if item["mikuType"] == "NxRoot" then
-            return
-        end
-
         if item["mikuType"] == "BufferInDelegate" then
             return
         end
@@ -54,6 +46,9 @@ class Fsck
         end
 
         if item["mikuType"] == "NxTask" then
+            if item["domain"].nil? then
+                raise "[840e1dfa] with item: #{item}"
+            end
             return
         end
 
@@ -70,10 +65,6 @@ class Fsck
         end
 
         if item["mikuType"] == "NxBefore" then
-            return
-        end
-
-        if item["mikuType"] == "NxDirectory" then
             return
         end
 
