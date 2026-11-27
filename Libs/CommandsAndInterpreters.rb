@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | dismiss | :: * (prioritise) | before * | after * | focus *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip (default item) | bank accounts * | payload (*) | bank data * | push * | * on <datecode> | edit * | destroy * | transmute (*) | dismiss | :: * (prioritise) | before * | after * | focus * | domain *",
             "makers        : anniversary | wave | today | tomorrow | desktop | ondate | on <weekday> | backup | counter | todo | >> * (transmute) | directive | priority | priorities",
             "divings       : anniversaries | ondates | waves | desktop | backups | tomorrows | todays | counters | directives",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -261,6 +261,15 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             GlobalPositioning::insert_first(item)
+            return
+        end
+
+        if Interpreting::match("domain *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            domain = Domains::interactivelyDecideDomain()
+            Items::setAttribute(item["uuid"], "domain", domain)
             return
         end
 

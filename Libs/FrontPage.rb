@@ -75,6 +75,8 @@ class FrontPage
 
     # FrontPage::itemsForListingOrdered()
     def self.itemsForListingOrdered()
+        domain = Domains::decideDomainUsingTheInstanceId()
+
         items = [
             NxDirectives::listingItems(),
             Waves::listingItemsInterruption(),
@@ -91,6 +93,7 @@ class FrontPage
             .flatten
             .select {|item| DoNotShowUntil::isVisible(item) }
             .select {|item| FrontPage::isAccessible(item) }
+            .select {|item| item["domain"].nil? or item["domain"] == domain }
 
         is1, is2 = items.partition{|item| item["listpos39"] and item["listpos39"]["date"] == CommonUtils::today() }
         is1 = is1.sort_by{|item| item["listpos39"]["position"] }

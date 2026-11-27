@@ -11,7 +11,7 @@ class BufferIn
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "payload-37", UxPayloads::locationToPayload(filepath))
         Items::setAttribute(uuid, "global-pos-07", NxTasks::determineNewPosition())
-        Items::setAttribute(uuid, "domain", Domains::domainUsingTheInstanceId())
+        Items::setAttribute(uuid, "domain", Domains::decideDomainUsingTheInstanceId())
         Items::setAttribute(uuid, "mikuType", "NxTask")
         item = Items::itemOrNull(uuid)
         item

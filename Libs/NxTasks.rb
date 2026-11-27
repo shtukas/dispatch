@@ -4,7 +4,7 @@ class NxTasks
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
-        domain = Domains::decideDomain()
+        domain = Domains::interactivelyDecideDomain()
         uuid = SecureRandom.uuid
         payload = UxPayloads::makeNewPayloadOrNull()
         Items::init(uuid)
@@ -56,7 +56,7 @@ class NxTasks
 
     # NxTasks::listingItems()
     def self.listingItems()
-        domain = Domains::domainUsingTheInstanceId()
+        domain = Domains::decideDomainUsingTheInstanceId()
 
         NxTasks::itemsInOrder()
             .select{|item| item["domain"] == domain }

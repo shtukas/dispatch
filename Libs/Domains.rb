@@ -3,15 +3,15 @@
 
 class Domains
 
-    # Domains::decideDomain()
-    def self.decideDomain()
+    # Domains::interactivelyDecideDomain()
+    def self.interactivelyDecideDomain()
         domain = LucilleCore::selectEntityFromListOfEntitiesOrNull("domain", ["infinity", "guardian"])
         return domain if domain
-        Domains::decideDomain()
+        Domains::interactivelyDecideDomain()
     end
 
-    # Domains::domainUsingTheInstanceId()
-    def self.domainUsingTheInstanceId()
+    # Domains::decideDomainUsingTheInstanceId()
+    def self.decideDomainUsingTheInstanceId()
         if Config::instanceId() == "Lucille26-pascal-honore" then
             return "guardian"
         end

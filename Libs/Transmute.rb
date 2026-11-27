@@ -14,7 +14,7 @@ class Transmute
         if item["mikuType"] == "NxOndate" and targetType == "NxTask" then
             Items::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
             Items::setAttribute(item["uuid"], "parentuuid", root["uuid"]) # this should come after GlobalPositioning::decideNewElementPositionInParent
-            Items::setAttribute(item["uuid"], "domain", Domains::decideDomain())
+            Items::setAttribute(item["uuid"], "domain", Domains::interactivelyDecideDomain())
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Items::itemOrNull(item["uuid"])
         end
@@ -29,7 +29,7 @@ class Transmute
         if item["mikuType"] == "NxPriority" and targetType == "NxTask" then
             Items::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
             Items::setAttribute(item["uuid"], "parentuuid", root["uuid"]) # this should come after GlobalPositioning::decideNewElementPositionInParent
-            Items::setAttribute(item["uuid"], "domain", Domains::decideDomain())
+            Items::setAttribute(item["uuid"], "domain", Domains::interactivelyDecideDomain())
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Items::itemOrNull(item["uuid"])
         end
