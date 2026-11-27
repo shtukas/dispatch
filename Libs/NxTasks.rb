@@ -45,7 +45,8 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "#{NxTasks::icon()} #{item["description"]} (#{item["global-pos-07"].to_s.green})"
+        posstr1 = item["global-pos-07"] ? " (#{item["global-pos-07"].to_s.green})" : ""
+        "#{NxTasks::icon()} #{item["description"]}#{posstr1}"
     end
 
     # NxTasks::itemsInOrder()
