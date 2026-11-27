@@ -80,6 +80,14 @@ class Waves
         Items::mikuType("Wave")
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| item["interruption"] }
+            .map{|item|
+                # We do not allow domain setting for interruptions
+                if item["domain"] then
+                    Items::setAttribute(item["uuid"], "domain", nil)
+                end
+                item["domain"] = nil
+                item
+            }
             .sort_by{|item| item["lastDoneUnixtime"] }
     end
 

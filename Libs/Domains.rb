@@ -3,9 +3,14 @@
 
 class Domains
 
+    # Domains::interactivelyDecideDomainOrNull()
+    def self.interactivelyDecideDomainOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("domain", ["infinity", "guardian"])
+    end
+
     # Domains::interactivelyDecideDomain()
     def self.interactivelyDecideDomain()
-        domain = LucilleCore::selectEntityFromListOfEntitiesOrNull("domain", ["infinity", "guardian"])
+        domain = Domains::interactivelyDecideDomainOrNull()
         return domain if domain
         Domains::interactivelyDecideDomain()
     end
