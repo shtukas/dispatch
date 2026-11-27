@@ -18,6 +18,14 @@ class Transmute
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return Items::itemOrNull(item["uuid"])
         end
+        if item["mikuType"] == "NxOndate" and targetType == "Wave" then
+            nx46 = Nx46::interactivelyMakeNewOrNull()
+            Items::setAttribute(item["uuid"], "nx46", nx46)
+            Items::setAttribute(item["uuid"], "mikuType", "Wave")
+            Items::setAttribute(item["uuid"], "lastDoneUnixtime", 0)
+            Items::setAttribute(item["uuid"], "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ?: "))
+            return Items::itemOrNull(item["uuid"])
+        end
         if item["mikuType"] == "NxPriority" and targetType == "NxTask" then
             Items::setAttribute(item["uuid"], "global-pos-07", GlobalPositioning::first_position() - 1)
             Items::setAttribute(item["uuid"], "parentuuid", root["uuid"]) # this should come after GlobalPositioning::decideNewElementPositionInParent
@@ -31,7 +39,7 @@ class Transmute
     # Transmute::transmute(item)
     def self.transmute(item)
         mapping = {
-            "NxOndate" => ["NxDirective","NxPriority","NxTask"],
+            "NxOndate" => ["NxDirective","NxPriority","NxTask", "Wave"],
             "NxPriority"   => ["NxTask"],
         }
         targetTypes = mapping[item["mikuType"]]
